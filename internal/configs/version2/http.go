@@ -3,6 +3,8 @@ package version2
 import (
 	"bytes"
 	"fmt"
+
+	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 )
 
 // UpstreamLabels describes the Prometheus labels for an NGINX upstream.
@@ -31,6 +33,9 @@ type VirtualServerConfig struct {
 	Upstreams               []Upstream
 	DynamicSSLReloadEnabled bool
 	StaticSSLPath           string
+	WallarmEnabled          bool
+	WallarmAPIFwEnabled     bool
+	WallarmAPIFwPort        int
 }
 
 // AuthJWTClaimSet defines the values for the `auth_jwt_claim_set` directive
@@ -235,6 +240,7 @@ type Location struct {
 	APIKey                   *APIKey
 	WAF                      *WAF
 	Dos                      *Dos
+	Wallarm                  *commonhelpers.Wallarm
 	PoliciesErrorReturn      *Return
 	Cache                    *Cache
 	ServiceName              string

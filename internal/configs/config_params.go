@@ -138,6 +138,38 @@ type ConfigParams struct {
 	LimitReqLogLevel   string
 	LimitReqRejectCode int
 	LimitReqScale      bool
+
+	// Wallarm WAF configuration for server/location level
+	WallarmMode                  string
+	WallarmModeAllowOverride     string
+	WallarmFallback              string
+	WallarmApplication           string
+	WallarmPartnerClientUUID     string
+	WallarmBlockPage             string
+	WallarmACLBlockPage          string
+	WallarmParseResponse         string
+	WallarmParseWebsocket        string
+	WallarmUnpackResponse        string
+	WallarmParserDisable         []string
+
+	// Wallarm WAF main config (nginx.conf level)
+	MainEnableWallarm                       bool
+	MainWallarmUpstreamService              string
+	MainWallarmUpstreamConnectAttempts      int
+	MainWallarmUpstreamReconnectInterval    string
+	MainWallarmProcessTimeLimit             int
+	MainWallarmProcessTimeLimitBlock        string
+	MainWallarmRequestMemoryLimit           string
+	MainWallarmWorkerRlimitVmem             string
+	MainWallarmMetricsPort                  int
+	MainWallarmACLExportEnable              string
+	MainWallarmACLExportShmSize             string
+	MainWallarmACLExportSampleLimit         int
+	MainWallarmACLExportSampleGroupLifetime string
+	MainWallarmACLExportStatsBucketInterval string
+	MainWallarmACLExportStatsBucketLifetime string
+	MainWallarmAPIFwEnabled                 bool
+	MainWallarmAPIFwPort                    int
 }
 
 // StaticConfigParams holds immutable NGINX configuration parameters that affect the main NGINX config.
@@ -278,6 +310,25 @@ func NewDefaultConfigParams(ctx context.Context, isPlus bool) *ConfigParams {
 			RefreshTimeout: "8h",
 			SIDSTimeout:    "8h",
 		},
+		// Wallarm default values for server/location level
+		WallarmMode:              "off",
+		WallarmModeAllowOverride: "on",
+		WallarmFallback:          "on",
+		WallarmParseResponse:     "on",
+		WallarmParseWebsocket:    "off",
+		WallarmUnpackResponse:    "on",
+
+		// Wallarm default values for main config (nginx.conf level)
+		MainEnableWallarm:                    false,
+		MainWallarmUpstreamConnectAttempts:   10,
+		MainWallarmUpstreamReconnectInterval: "15s",
+		MainWallarmProcessTimeLimit:          1000,
+		MainWallarmProcessTimeLimitBlock:     "attack",
+		MainWallarmRequestMemoryLimit:        "0",
+		MainWallarmWorkerRlimitVmem:          "1g",
+		MainWallarmMetricsPort:               18080,
+		MainWallarmACLExportEnable:           "on",
+		MainWallarmAPIFwPort:                 8088,
 	}
 }
 

@@ -3,8 +3,13 @@ package configs
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"regexp"
 	"slices"
+	"strconv"
+	"strings"
 
+	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 	nl "github.com/nginx/kubernetes-ingress/internal/logger"
 	"github.com/nginx/kubernetes-ingress/internal/validation"
 )
@@ -44,6 +49,45 @@ const AppProtectDosProtectedAnnotation = "appprotectdos.f5.com/app-protect-dos-r
 
 // nginxMeshInternalRoute specifies if the ingress resource is an internal route.
 const nginxMeshInternalRouteAnnotation = "nsm.nginx.com/internal-route"
+
+// Wallarm WAF annotation constants
+const (
+	// WallarmModeAnnotation specifies Wallarm WAF mode (off, monitoring, safe_blocking, block)
+	WallarmModeAnnotation = "nginx.ingress.kubernetes.io/wallarm-mode"
+
+	// WallarmModeAllowOverrideAnnotation controls mode override via filtering rules (on, off, strict)
+	WallarmModeAllowOverrideAnnotation = "nginx.ingress.kubernetes.io/wallarm-mode-allow-override"
+
+	// WallarmFallbackAnnotation enables fallback mode (on, off)
+	WallarmFallbackAnnotation = "nginx.ingress.kubernetes.io/wallarm-fallback"
+
+	// WallarmApplicationAnnotation is the unique application identifier used in Wallarm Cloud
+	WallarmApplicationAnnotation = "nginx.ingress.kubernetes.io/wallarm-application"
+
+	// WallarmInstanceAnnotation is an alias for WallarmApplicationAnnotation (deprecated)
+	WallarmInstanceAnnotation = "nginx.ingress.kubernetes.io/wallarm-instance"
+
+	// WallarmPartnerClientUUIDAnnotation for multi-tenant Wallarm setups
+	WallarmPartnerClientUUIDAnnotation = "nginx.ingress.kubernetes.io/wallarm-partner-client-uuid"
+
+	// WallarmBlockPageAnnotation specifies custom block page configuration
+	WallarmBlockPageAnnotation = "nginx.ingress.kubernetes.io/wallarm-block-page"
+
+	// WallarmACLBlockPageAnnotation specifies ACL block page (deprecated)
+	WallarmACLBlockPageAnnotation = "nginx.ingress.kubernetes.io/wallarm-acl-block-page"
+
+	// WallarmParseResponseAnnotation enables response analysis (on, off)
+	WallarmParseResponseAnnotation = "nginx.ingress.kubernetes.io/wallarm-parse-response"
+
+	// WallarmParseWebsocketAnnotation enables WebSocket message analysis (on, off)
+	WallarmParseWebsocketAnnotation = "nginx.ingress.kubernetes.io/wallarm-parse-websocket"
+
+	// WallarmUnpackResponseAnnotation enables response decompression (on, off)
+	WallarmUnpackResponseAnnotation = "nginx.ingress.kubernetes.io/wallarm-unpack-response"
+
+	// WallarmParserDisableAnnotation disables specific parsers (comma-separated list)
+	WallarmParserDisableAnnotation = "nginx.ingress.kubernetes.io/wallarm-parser-disable"
+)
 
 var masterDenylist = map[string]bool{
 	"nginx.org/rewrites":                      true,
@@ -118,6 +162,7 @@ var allowedAnnotationKeys = []string{
 	"nginx.org",
 	"nginx.com",
 	"f5.com",
+	"nginx.ingress.kubernetes.io",
 	"ingress.kubernetes.io/ssl-redirect",
 }
 
@@ -476,6 +521,10 @@ func parseAnnotations(ingEx *IngressEx, baseCfgParams *ConfigParams, isPlus bool
 			cfgParams.AppProtectDosResource = appProtectDosResource
 		}
 	}
+
+	// Parse Wallarm annotations
+	parseWallarmAnnotations(ingEx, &cfgParams, l)
+
 	if enableInternalRoutes {
 		if spiffeServerCerts, exists, err := GetMapKeyAsBool(ingEx.Ingress.Annotations, nginxMeshInternalRouteAnnotation, ingEx.Ingress); exists {
 			if err != nil {
@@ -680,5 +729,261 @@ func mergeMasterAnnotationsIntoMinion(minionAnnotations map[string]string, maste
 				minionAnnotations[key] = val
 			}
 		}
+	}
+}
+
+// parseWallarmAnnotations parses Wallarm WAF-related annotations
+func parseWallarmAnnotations(ingEx *IngressEx, cfgParams *ConfigParams, l *slog.Logger) {
+	// wallarm-mode: off, monitoring, safe_blocking, block
+	if wallarmMode, exists := ingEx.Ingress.Annotations[WallarmModeAnnotation]; exists {
+		if isValidWallarmMode(wallarmMode) {
+			cfgParams.WallarmMode = wallarmMode
+		} else {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q. Allowed values: off, monitoring, safe_blocking, block",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmModeAnnotation, wallarmMode)
+		}
+	}
+
+	// wallarm-mode-allow-override: on, off, strict
+	if wallarmModeAllowOverride, exists := ingEx.Ingress.Annotations[WallarmModeAllowOverrideAnnotation]; exists {
+		if isValidWallarmModeAllowOverride(wallarmModeAllowOverride) {
+			cfgParams.WallarmModeAllowOverride = wallarmModeAllowOverride
+		} else {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q. Allowed values: on, off, strict",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmModeAllowOverrideAnnotation, wallarmModeAllowOverride)
+		}
+	}
+
+	// wallarm-fallback: on, off
+	if wallarmFallback, exists := ingEx.Ingress.Annotations[WallarmFallbackAnnotation]; exists {
+		if isValidOnOff(wallarmFallback) {
+			cfgParams.WallarmFallback = wallarmFallback
+		} else {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q. Allowed values: on, off",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmFallbackAnnotation, wallarmFallback)
+		}
+	}
+
+	// wallarm-application / wallarm-instance: positive integer (application takes precedence, instance is alias)
+	if wallarmApp, exists := ingEx.Ingress.Annotations[WallarmApplicationAnnotation]; exists {
+		if err := validateApplicationID(wallarmApp); err != nil {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmApplicationAnnotation, wallarmApp, err)
+		} else {
+			cfgParams.WallarmApplication = wallarmApp
+		}
+	} else if wallarmInstance, exists := ingEx.Ingress.Annotations[WallarmInstanceAnnotation]; exists {
+		if err := validateApplicationID(wallarmInstance); err != nil {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmInstanceAnnotation, wallarmInstance, err)
+		} else {
+			cfgParams.WallarmApplication = wallarmInstance
+		}
+	}
+
+	// wallarm-partner-client-uuid: UUID string
+	if wallarmPartnerClientUUID, exists := ingEx.Ingress.Annotations[WallarmPartnerClientUUIDAnnotation]; exists {
+		if err := validateUUID(wallarmPartnerClientUUID); err != nil {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmPartnerClientUUIDAnnotation, wallarmPartnerClientUUID, err)
+		} else {
+			cfgParams.WallarmPartnerClientUUID = wallarmPartnerClientUUID
+		}
+	}
+
+	// wallarm-block-page: custom block page configuration
+	if wallarmBlockPage, exists := ingEx.Ingress.Annotations[WallarmBlockPageAnnotation]; exists {
+		if err := validateBlockPage(wallarmBlockPage); err != nil {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmBlockPageAnnotation, wallarmBlockPage, err)
+		} else {
+			cfgParams.WallarmBlockPage = wallarmBlockPage
+		}
+	}
+
+	// wallarm-acl-block-page: deprecated ACL block page
+	if wallarmACLBlockPage, exists := ingEx.Ingress.Annotations[WallarmACLBlockPageAnnotation]; exists {
+		if err := validateBlockPage(wallarmACLBlockPage); err != nil {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmACLBlockPageAnnotation, wallarmACLBlockPage, err)
+		} else {
+			cfgParams.WallarmACLBlockPage = wallarmACLBlockPage
+		}
+	}
+
+	// wallarm-parse-response: on, off
+	if wallarmParseResponse, exists := ingEx.Ingress.Annotations[WallarmParseResponseAnnotation]; exists {
+		if isValidOnOff(wallarmParseResponse) {
+			cfgParams.WallarmParseResponse = wallarmParseResponse
+		} else {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q. Allowed values: on, off",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmParseResponseAnnotation, wallarmParseResponse)
+		}
+	}
+
+	// wallarm-parse-websocket: on, off
+	if wallarmParseWebsocket, exists := ingEx.Ingress.Annotations[WallarmParseWebsocketAnnotation]; exists {
+		if isValidOnOff(wallarmParseWebsocket) {
+			cfgParams.WallarmParseWebsocket = wallarmParseWebsocket
+		} else {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q. Allowed values: on, off",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmParseWebsocketAnnotation, wallarmParseWebsocket)
+		}
+	}
+
+	// wallarm-unpack-response: on, off
+	if wallarmUnpackResponse, exists := ingEx.Ingress.Annotations[WallarmUnpackResponseAnnotation]; exists {
+		if isValidOnOff(wallarmUnpackResponse) {
+			cfgParams.WallarmUnpackResponse = wallarmUnpackResponse
+		} else {
+			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q. Allowed values: on, off",
+				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmUnpackResponseAnnotation, wallarmUnpackResponse)
+		}
+	}
+
+	// wallarm-parser-disable: comma-separated list of parsers
+	if wallarmParserDisable, exists := ingEx.Ingress.Annotations[WallarmParserDisableAnnotation]; exists {
+		parsers := strings.Split(wallarmParserDisable, ",")
+		validParsers := make([]string, 0)
+		for _, p := range parsers {
+			p = strings.TrimSpace(p)
+			if isValidWallarmParser(p) {
+				validParsers = append(validParsers, p)
+			} else {
+				nl.Errorf(l, "Ingress %s/%s: Invalid parser in %s: got %q. Allowed values: cookie, zlib, htmljs, json, multipart, base64, percent, urlenc, xml, jwt",
+					ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmParserDisableAnnotation, p)
+			}
+		}
+		cfgParams.WallarmParserDisable = validParsers
+	}
+}
+
+// isValidWallarmMode validates Wallarm mode values
+func isValidWallarmMode(mode string) bool {
+	switch strings.ToLower(mode) {
+	case "off", "monitoring", "safe_blocking", "block":
+		return true
+	}
+	return false
+}
+
+// isValidWallarmModeAllowOverride validates Wallarm mode allow override values
+func isValidWallarmModeAllowOverride(value string) bool {
+	switch strings.ToLower(value) {
+	case "on", "off", "strict":
+		return true
+	}
+	return false
+}
+
+// isValidOnOff validates on/off values
+func isValidOnOff(value string) bool {
+	switch strings.ToLower(value) {
+	case "on", "off":
+		return true
+	}
+	return false
+}
+
+// isValidWallarmParser validates Wallarm parser names
+func isValidWallarmParser(parser string) bool {
+	validParsers := map[string]bool{
+		"cookie":    true,
+		"zlib":      true,
+		"htmljs":    true,
+		"json":      true,
+		"multipart": true,
+		"base64":    true,
+		"percent":   true,
+		"urlenc":    true,
+		"xml":       true,
+		"jwt":       true,
+	}
+	return validParsers[strings.ToLower(parser)]
+}
+
+// validateApplicationID validates that the value is a positive integer (for Wallarm application/instance ID)
+func validateApplicationID(s string) error {
+	i, err := strconv.Atoi(s)
+	if err == nil && i <= 0 {
+		err = fmt.Errorf("value should be positive integer")
+	}
+	return err
+}
+
+var uuidRegex = regexp.MustCompile(`[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}`)
+
+// validateUUID validates that the value is a valid UUID
+func validateUUID(s string) error {
+	if !uuidRegex.MatchString(s) {
+		return fmt.Errorf("value should be a valid UUID")
+	}
+	return nil
+}
+
+// validateBlockPage validates Wallarm block page configuration
+// https://docs.wallarm.com/admin-en/configuration-guides/configure-block-page-and-code/
+func validateBlockPage(s string) error {
+	if s == "" {
+		return nil
+	}
+	for _, value := range strings.Split(s, ";") {
+		valueSplit := strings.Split(value, " ")
+		page := valueSplit[0]
+		switch page[0] {
+		case '/', '&', '@', '$':
+			break
+		default:
+			return fmt.Errorf("invalid block page format \"%s\"", page)
+		}
+		if len(valueSplit) == 1 {
+			continue
+		}
+		for _, optional := range valueSplit[1:] {
+			optionalSplit := strings.Split(optional, "=")
+			if len(optionalSplit) != 2 {
+				return fmt.Errorf("invalid block page optional param format \"%s\"", optional)
+			}
+			optionalKey := optionalSplit[0]
+			optionalValue := optionalSplit[1]
+			switch optionalKey {
+			case "response_code":
+				_, err := strconv.Atoi(optionalValue)
+				if err != nil {
+					return fmt.Errorf("invalid response_code value \"%s\"", optionalValue)
+				}
+			case "type":
+				for _, typeValue := range strings.Split(optionalValue, ",") {
+					switch typeValue {
+					case "acl_ip", "acl_source", "attack":
+						break
+					default:
+						return fmt.Errorf("invalid type value \"%s\"", typeValue)
+					}
+				}
+			default:
+				return fmt.Errorf("invalid block page optional param name \"%s\"", optionalKey)
+			}
+		}
+	}
+	return nil
+}
+
+func generateWallarm(cfg *ConfigParams) *commonhelpers.Wallarm {
+	if cfg.WallarmMode == "" {
+		return nil
+	}
+	return &commonhelpers.Wallarm{
+		Mode:              cfg.WallarmMode,
+		ModeAllowOverride: cfg.WallarmModeAllowOverride,
+		Fallback:          cfg.WallarmFallback,
+		Application:       cfg.WallarmApplication,
+		PartnerClientUUID: cfg.WallarmPartnerClientUUID,
+		BlockPage:         cfg.WallarmBlockPage,
+		ACLBlockPage:      cfg.WallarmACLBlockPage,
+		ParseResponse:     cfg.WallarmParseResponse,
+		ParseWebsocket:    cfg.WallarmParseWebsocket,
+		UnpackResponse:    cfg.WallarmUnpackResponse,
+		ParserDisable:     cfg.WallarmParserDisable,
 	}
 }

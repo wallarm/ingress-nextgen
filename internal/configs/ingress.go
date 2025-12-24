@@ -361,6 +361,9 @@ func generateNginxCfg(p NginxCfgParams) (version1.IngressNginxConfig, Warnings) 
 		DynamicSSLReloadEnabled: p.staticParams.DynamicSSLReload,
 		StaticSSLPath:           p.staticParams.StaticSSLPath,
 		LimitReqZones:           limitReqZones,
+		WallarmEnabled:          p.BaseCfgParams.MainEnableWallarm,
+		WallarmAPIFwEnabled:     p.BaseCfgParams.MainWallarmAPIFwEnabled,
+		WallarmAPIFwPort:        p.BaseCfgParams.MainWallarmAPIFwPort,
 	}, allWarnings
 }
 
@@ -512,6 +515,7 @@ func createLocation(path string, upstream version1.Upstream, cfg *ConfigParams, 
 		ProxySSLName:         proxySSLName,
 		LocationSnippets:     cfg.LocationSnippets,
 		ServiceName:          serviceName,
+		Wallarm:              generateWallarm(cfg),
 	}
 
 	return loc
@@ -759,6 +763,9 @@ func generateNginxCfgForMergeableIngresses(p NginxCfgParams) (version1.IngressNg
 		DynamicSSLReloadEnabled: p.staticParams.DynamicSSLReload,
 		StaticSSLPath:           p.staticParams.StaticSSLPath,
 		LimitReqZones:           limitReqZones,
+		WallarmEnabled:          p.BaseCfgParams.MainEnableWallarm,
+		WallarmAPIFwEnabled:     p.BaseCfgParams.MainWallarmAPIFwEnabled,
+		WallarmAPIFwPort:        p.BaseCfgParams.MainWallarmAPIFwPort,
 	}, warnings
 }
 

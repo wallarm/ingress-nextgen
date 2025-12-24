@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 	"github.com/nginx/kubernetes-ingress/internal/configs/version2"
 	"github.com/nginx/kubernetes-ingress/internal/k8s/secrets"
 	nl "github.com/nginx/kubernetes-ingress/internal/logger"
@@ -922,6 +923,9 @@ func (vsc *virtualServerConfigurator) GenerateVirtualServerConfig(
 		KeyValZones:             keyValZones,
 		KeyVals:                 keyVals,
 		TwoWaySplitClients:      twoWaySplitClients,
+		WallarmEnabled:          vsc.cfgParams.MainEnableWallarm,
+		WallarmAPIFwEnabled:     vsc.cfgParams.MainWallarmAPIFwEnabled,
+		WallarmAPIFwPort:        vsc.cfgParams.MainWallarmAPIFwPort,
 	}
 
 	return vsCfg, vsc.warnings
@@ -1004,6 +1008,7 @@ type policiesCfg struct {
 	OIDC            bool
 	APIKey          apiKeyAuth
 	WAF             *version2.WAF
+	Wallarm         *commonhelpers.Wallarm
 	Cache           *version2.Cache
 	ErrorReturn     *version2.Return
 	BundleValidator bundleValidator
@@ -1793,6 +1798,39 @@ func (p *policiesCfg) addWAFConfig(
 	return res
 }
 
+func (p *policiesCfg) addWallarmConfig(
+	wallarm *conf_v1.Wallarm,
+	polKey string,
+) *validationResults {
+	res := newValidationResults()
+	if p.Wallarm != nil {
+		res.addWarningf("Multiple Wallarm policies in the same context is not valid. Wallarm policy %s will be ignored", polKey)
+		return res
+	}
+
+	p.Wallarm = &commonhelpers.Wallarm{
+		Mode:              wallarm.Mode,
+		ModeAllowOverride: wallarm.ModeAllowOverride,
+		Fallback:          wallarm.Fallback,
+		PartnerClientUUID: wallarm.PartnerClientUUID,
+		BlockPage:         wallarm.BlockPage,
+		ACLBlockPage:      wallarm.ACLBlockPage,
+		ParseResponse:     wallarm.ParseResponse,
+		ParseWebsocket:    wallarm.ParseWebsocket,
+		UnpackResponse:    wallarm.UnpackResponse,
+		ParserDisable:     wallarm.ParserDisable,
+	}
+
+	// Application takes precedence over Instance (Instance is an alias)
+	if wallarm.Application != nil {
+		p.Wallarm.Application = strconv.Itoa(*wallarm.Application)
+	} else if wallarm.Instance != nil {
+		p.Wallarm.Application = strconv.Itoa(*wallarm.Instance)
+	}
+
+	return res
+}
+
 func (p *policiesCfg) addCacheConfig(
 	cache *conf_v1.Cache,
 	polKey string,
@@ -1863,6 +1901,8 @@ func (vsc *virtualServerConfigurator) generatePolicies(
 					ownerDetails.vsName, policyOpts.secretRefs)
 			case pol.Spec.WAF != nil:
 				res = config.addWAFConfig(vsc.cfgParams.Context, pol.Spec.WAF, key, polNamespace, policyOpts.apResources)
+			case pol.Spec.Wallarm != nil:
+				res = config.addWallarmConfig(pol.Spec.Wallarm, key)
 			case pol.Spec.Cache != nil:
 				res = config.addCacheConfig(pol.Spec.Cache, key, ownerDetails.vsNamespace, ownerDetails.vsName, ownerDetails.ownerNamespace, ownerDetails.ownerName)
 			default:
@@ -2173,6 +2213,7 @@ func addPoliciesCfgToLocation(cfg policiesCfg, location *version2.Location) {
 	location.EgressMTLS = cfg.EgressMTLS
 	location.OIDC = cfg.OIDC
 	location.WAF = cfg.WAF
+	location.Wallarm = cfg.Wallarm
 	location.APIKey = cfg.APIKey.Key
 	location.Cache = cfg.Cache
 	location.PoliciesErrorReturn = cfg.ErrorReturn
@@ -2720,6 +2761,7 @@ func generateLocationForProxying(path string, upstreamName string, upstream conf
 		VSRName:                  vsrName,
 		VSRNamespace:             vsrNamespace,
 		GRPCPass:                 generateGRPCPass(isGRPC(upstream.Type), upstream.TLS.Enable, upstreamName),
+		Wallarm:                  generateWallarm(cfgParams),
 	}
 }
 

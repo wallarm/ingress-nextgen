@@ -707,6 +707,124 @@ func ParseConfigMap(ctx context.Context, cfgm *v1.ConfigMap, nginxPlus bool, has
 		}
 	}
 
+	// Wallarm WAF main config parsing
+	if enableWallarm, exists, err := GetMapKeyAsBool(cfgm.Data, "enable-wallarm", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainEnableWallarm = enableWallarm
+		}
+	}
+
+	if wallarmUpstreamService, exists := cfgm.Data["wallarm-upstream-service"]; exists {
+		cfgParams.MainWallarmUpstreamService = wallarmUpstreamService
+	}
+
+	if wallarmUpstreamConnectAttempts, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-upstream-connect-attempts", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmUpstreamConnectAttempts = wallarmUpstreamConnectAttempts
+		}
+	}
+
+	if wallarmUpstreamReconnectInterval, exists := cfgm.Data["wallarm-upstream-reconnect-interval"]; exists {
+		cfgParams.MainWallarmUpstreamReconnectInterval = wallarmUpstreamReconnectInterval
+	}
+
+	if wallarmProcessTimeLimit, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-process-time-limit", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmProcessTimeLimit = wallarmProcessTimeLimit
+		}
+	}
+
+	if wallarmProcessTimeLimitBlock, exists := cfgm.Data["wallarm-process-time-limit-block"]; exists {
+		cfgParams.MainWallarmProcessTimeLimitBlock = wallarmProcessTimeLimitBlock
+	}
+
+	if wallarmRequestMemoryLimit, exists := cfgm.Data["wallarm-request-memory-limit"]; exists {
+		cfgParams.MainWallarmRequestMemoryLimit = wallarmRequestMemoryLimit
+	}
+
+	if wallarmWorkerRlimitVmem, exists := cfgm.Data["wallarm-worker-rlimit-vmem"]; exists {
+		cfgParams.MainWallarmWorkerRlimitVmem = wallarmWorkerRlimitVmem
+	}
+
+	if wallarmMetricsPort, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-metrics-port", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			if wallarmMetricsPort >= 1024 && wallarmMetricsPort <= 65535 {
+				cfgParams.MainWallarmMetricsPort = wallarmMetricsPort
+			} else {
+				errorText := fmt.Sprintf("ConfigMap %s/%s: invalid value for 'wallarm-metrics-port': %d, must be between 1024 and 65535", cfgm.GetNamespace(), cfgm.GetName(), wallarmMetricsPort)
+				nl.Error(l, errorText)
+				eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, errorText)
+				configOk = false
+			}
+		}
+	}
+
+	if wallarmACLExportEnable, exists := cfgm.Data["wallarm-acl-export-enable"]; exists {
+		cfgParams.MainWallarmACLExportEnable = wallarmACLExportEnable
+	}
+
+	if wallarmACLExportShmSize, exists := cfgm.Data["wallarm-acl-export-shm-size"]; exists {
+		cfgParams.MainWallarmACLExportShmSize = wallarmACLExportShmSize
+	}
+
+	if wallarmACLExportSampleLimit, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-acl-export-sample-limit", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmACLExportSampleLimit = wallarmACLExportSampleLimit
+		}
+	}
+
+	if wallarmACLExportSampleGroupLifetime, exists := cfgm.Data["wallarm-acl-export-sample-group-lifetime"]; exists {
+		cfgParams.MainWallarmACLExportSampleGroupLifetime = wallarmACLExportSampleGroupLifetime
+	}
+
+	if wallarmACLExportStatsBucketInterval, exists := cfgm.Data["wallarm-acl-export-stats-bucket-interval"]; exists {
+		cfgParams.MainWallarmACLExportStatsBucketInterval = wallarmACLExportStatsBucketInterval
+	}
+
+	if wallarmACLExportStatsBucketLifetime, exists := cfgm.Data["wallarm-acl-export-stats-bucket-lifetime"]; exists {
+		cfgParams.MainWallarmACLExportStatsBucketLifetime = wallarmACLExportStatsBucketLifetime
+	}
+
+	if wallarmAPIFwEnabled, exists, err := GetMapKeyAsBool(cfgm.Data, "wallarm-apifw-enabled", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmAPIFwEnabled = wallarmAPIFwEnabled
+		}
+	}
+
+	if wallarmAPIFwPort, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-apifw-port", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmAPIFwPort = wallarmAPIFwPort
+		}
+	}
+
 	return cfgParams, configOk
 }
 
@@ -1205,6 +1323,24 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		DynamicSSLReloadEnabled: staticCfgParams.DynamicSSLReload,
 		StaticSSLPath:           staticCfgParams.StaticSSLPath,
 		NginxVersion:            staticCfgParams.NginxVersion,
+
+		// Wallarm WAF configuration
+		EnableWallarm:                       config.MainEnableWallarm,
+		WallarmUpstreamService:              config.MainWallarmUpstreamService,
+		WallarmUpstreamConnectAttempts:      config.MainWallarmUpstreamConnectAttempts,
+		WallarmUpstreamReconnectInterval:    config.MainWallarmUpstreamReconnectInterval,
+		WallarmProcessTimeLimit:             config.MainWallarmProcessTimeLimit,
+		WallarmProcessTimeLimitBlock:        config.MainWallarmProcessTimeLimitBlock,
+		WallarmRequestMemoryLimit:           config.MainWallarmRequestMemoryLimit,
+		WallarmWorkerRlimitVmem:             config.MainWallarmWorkerRlimitVmem,
+		WallarmMetricsPort:                  config.MainWallarmMetricsPort,
+		WallarmFallback:                     config.WallarmFallback,
+		WallarmACLExportEnable:              config.MainWallarmACLExportEnable,
+		WallarmACLExportShmSize:             config.MainWallarmACLExportShmSize,
+		WallarmACLExportSampleLimit:         config.MainWallarmACLExportSampleLimit,
+		WallarmACLExportSampleGroupLifetime: config.MainWallarmACLExportSampleGroupLifetime,
+		WallarmACLExportStatsBucketInterval: config.MainWallarmACLExportStatsBucketInterval,
+		WallarmACLExportStatsBucketLifetime: config.MainWallarmACLExportStatsBucketLifetime,
 	}
 	return nginxCfg
 }

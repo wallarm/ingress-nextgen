@@ -27,3 +27,18 @@ func MakeOnOffFromBool(b *bool) string {
 func BoolToPointerBool(b bool) *bool {
 	return &b
 }
+
+// Wallarm defines Wallarm WAF configuration for location level.
+type Wallarm struct {
+	Mode              string
+	ModeAllowOverride string
+	Fallback          string
+	Application       string
+	PartnerClientUUID string
+	BlockPage         string
+	ACLBlockPage      string
+	ParseResponse     string
+	ParseWebsocket    string
+	UnpackResponse    string
+	ParserDisable     []string
+}
