@@ -1,8 +1,139 @@
+# Wallarm WAF configuration
+config:
+  wallarm:
+    ## Enable the Wallarm WAF module in the Ingress Controller.
+    ## Requires a Wallarm-enabled NGINX image with the wallarm module installed.
+    enabled: false
+
+    ## Wallarm API configuration for cloud communication
+    api:
+      host: "api.wallarm.com"
+      port: 443
+      ssl: true
+      token: ""
+      ## The name of Node group, required if API token is used to register the Node
+      ## https://docs.wallarm.com/user-guides/nodes/nodes/#api-and-node-tokens-for-node-creation
+      ##
+      nodeGroup: "defaultIngressGroup"
+      ## Existing secret feature allows to pull Wallarm API token from existing Kubernetes secret
+      ## https://docs.wallarm.com/admin-en/configure-kubernetes-en/#controllerwallarmexistingsecret
+      ##
+      existingSecret:
+        enabled: false
+        ## Name of the existing secret containing the token
+        # secretName: "wallarm-api-token"
+        ## Key in the secret that contains the token
+        # secretKey: "token"
+    ## Enable fallback mode when Wallarm proton.db or LOM cannot be downloaded
+    fallback: "on"
+
+  ### Image settings
+  images:
+    controller:
+      repository: "docker.io/wallarm/nginx-node-ic"
+      tag: "0.0.1"
+      pullPolicy: IfNotPresent
+    helper:
+      repository: "docker.io/wallarm/node-helpers"
+      tag: "6.7.5"
+      pullPolicy: IfNotPresent
+
+  ## Wallarm CLI postanalytics configuration (runs in postanalytics pod)
+  wcliPostanalytics:
+    ## Log level for wcli
+    logLevel: "WARN"
+    ## Per-job log levels
+    commands:
+      blkexp:
+        logLevel: INFO
+      botexp:
+        logLevel: WARN
+      cntexp:
+        logLevel: ERROR
+      cntsync:
+        logLevel: INFO
+      credstuff:
+        logLevel: INFO
+      envexp:
+        logLevel: INFO
+      jwtexp:
+        logLevel: INFO
+      mrksync:
+        logLevel: INFO
+      register:
+        logLevel: INFO
+      reqexp:
+        logLevel: INFO
+
+  ## Wallarm CLI controller configuration (runs in controller pod)
+  wcliController:
+    ## Log level for wcli
+    logLevel: "WARN"
+    ## Per-job log levels
+    commands:
+      apispec:
+        logLevel: INFO
+      envexp:
+        logLevel: INFO
+      ipfeed:
+        logLevel: INFO
+      iplist:
+        logLevel: INFO
+      metricsexp:
+        logLevel: INFO
+      register:
+        logLevel: INFO
+      syncnode:
+        logLevel: INFO
+
+  ## API Firewall configuration (runs in controller pod)
+  apiFirewall:
+    ### Enable or disable API Firewall functionality (true|false)
+    ###
+    enabled: true
+    ### Per-connection buffer size (in bytes) for requests' reading. This also limits the maximum header size.
+    ### Increase this buffer if your clients send multi-KB RequestURIs and/or multi-KB headers (for example, BIG cookies)
+    readBufferSize: 8192
+    ### Per-connection buffer size (in bytes) for responses' writing.
+    ###
+    writeBufferSize: 8192
+    ### Maximum request body size (in bytes). The server rejects requests with bodies exceeding this limit.
+    ###
+    maxRequestBodySize: 4194304
+    ### Whether to disable keep-alive connections. The server will close all the incoming connections after sending
+    ## the first response to client if this option is set to 'true'
+    ###
+    disableKeepalive: false
+    ### Maximum number of concurrent client connections allowed per IP. '0' means unlimited
+    ###
+    maxConnectionsPerIp: 0
+    ### Maximum number of requests served per connection. The server closes connection after the last request.
+    ### 'Connection: close' header is added to the last response. '0' means unlimited
+    ###
+    maxRequestsPerConnection: 0
+    ### Maximum number of errors limiting apiFirewall response size
+    ### to prevent it from exceeding the configured subrequest threshold.
+    ###
+    maxErrorsInResponse: 3
+    ## API Firewall configuration
+    config:
+      mainPort: 18081
+      healthPort: 18082
+      specificationUpdatePeriod: "1m"
+      unknownParametersDetection: true
+      #### Log level RACE|DEBUG|INFO|WARNING|ERROR
+      logLevel: "INFO"
+      ### Log format TEXT|JSON
+      logFormat: "TEXT"
+
+
+
+# Controller component detailed configuration
 controller:
-  ## The name of the Ingress Controller daemonset, deployment, or statefulset.
+  ## The name of the Ingress Controller daemonset or deployment.
   name: controller
 
-  ## The kind of the Ingress Controller installation - deployment, daemonset, or statefulset.
+  ## The kind of the Ingress Controller installation - deployment or daemonset.
   kind: deployment
 
   ## The selectorLabels used to override the default values.
@@ -11,122 +142,145 @@ controller:
   ## Annotations for deployments and daemonsets
   annotations: {}
 
-  ## Deploys the Ingress Controller for NGINX Plus.
-  nginxplus: false
-
-  ## Configures NGINX mgmt block for NGINX Plus
-  mgmt:
-    ## Secret name of license token for NGINX Plus
-    licenseTokenSecretName: "license-token" # required for NGINX Plus
-
-    ## Enables the 180-day grace period for sending the initial usage report
-    # enforceInitialReport: false
-
-    # usageReport:
-    #   endpoint: "product.connect.nginx.com" # Endpoint for usage report
-    #   interval: 1h # Interval for usage report, must be between 60s and 24h,
-    #   proxyHost: "proxy.example.com:3138" # Proxy server for usage report, with optional port
-    #   proxyCredentialsSecretName: "proxy-credentials" # Secret containing proxy credentials, must contain a `username` and `password` field
-
-    ## Configures the ssl_verify directive in the mgmt block
-    # sslVerify: true
-
-    ## Configures the resolver directive in the mgmt block
-    # resolver:
-    #   ipv6: true
-    #   valid: 1s
-    #   addresses:
-    #     - kube-dns.kube-system.svc.cluster.local
-
-    ## Secret containing TLS client certificate
-    # sslCertificateSecretName: ssl-certificate # kubernetes.io/tls secret type
-
-    ## Secret containing trusted CA certificate
-    # sslTrustedCertificateSecretName: ssl-trusted-cert
-
-    # configMapName allows changing the name of the MGMT config map
-    # the name should not include a namespace
-    # configMapName: ""
-
-
   ## Timeout in milliseconds which the Ingress Controller will wait for a successful NGINX reload after a change or at the initial start.
   nginxReloadTimeout: 60000
 
-  ## Support for App Protect WAF
-  appprotect:
-    ## Enable the App Protect WAF module in the Ingress Controller.
-    enable: false
-    ## Enables App Protect WAF v5.
-    v5: false
-    ## Sets log level for App Protect WAF. Allowed values: fatal, error, warn, info, debug, trace
-    # logLevel: fatal
+  # Wallarm containers inside of controller pod
+  wallarm:
+    ## Wallarm metrics endpoint configuration
+    metrics:
+      ## Port for Wallarm metrics (separate from NGINX metrics)
+      port: 18080
+      ## Enable Wallarm metrics
+      enabled: true
 
-    # Volumes for App Protect WAF v5
-    # Required volumes are: app-protect-bd-config, app-protect-config, and app-protect-bundles
-    volumes:
-      - name: app-protect-bd-config
-        emptyDir: {}
-      - name: app-protect-config
-        emptyDir: {}
-      - name: app-protect-bundles
-        emptyDir: {}
-
-    ## Configuration for App Protect WAF v5 Enforcer
-    enforcer:
-      # Host that the App Protect WAF v5 Enforcer runs on.
-      # This will normally be "127.0.0.1" as the Enforcer container
-      # will run in the same pod as the Ingress Controller container.
-      host: "127.0.0.1"
-      # Port that the App Protect WAF v5 Enforcer runs on.
-      port: 50000
-      image:
-        ## The image repository of the App Protect WAF v5 Enforcer.
-        repository: private-registry.nginx.com/nap/waf-enforcer
-
-        ## The tag of the App Protect WAF v5 Enforcer image.
-        tag: "5.9.0"
-        ## The digest of the App Protect WAF v5 Enforcer image.
-        ## If digest is specified it has precedence over tag and will be used instead
-        # digest: "sha256:CHANGEME"
-
-        ## The pull policy for the App Protect WAF v5 Enforcer image.
-        pullPolicy: IfNotPresent
+    ## Init container for node registration
+    initContainer:
+      ## Resource requests and limits
+      resources: {}
+      ## Security context for the init container
       securityContext: {}
+      ## Additional environment variables
+      extraEnvs: []
 
-    ## Configuration for App Protect WAF v5 Configuration Manager
-    configManager:
-      image:
-        ## The image repository of the App Protect WAF v5 Configuration Manager.
-        repository: private-registry.nginx.com/nap/waf-config-mgr
+    ## Wallarm CLI controller configuration (runs in controller pod)
+    wcli:
+      ## Resource requests and limits
+      resources: {}
+      ## Security context for the wcli container
+      securityContext: {}
+      ## Metrics configuration
+      metrics:
+        ## Enable metrics collection
+        enabled: true
+        ## Port for metrics endpoint
+        port: 9004
+        ## Port name for metrics endpoint
+        portName: wcli-ctrl-mtrc
+        ## Path at which the metrics endpoint is exposed
+        endpointPath: ""
+        ## IP address and/or port for the metrics endpoint
+        host: ":9004"
+        service:
+          annotations: {}
+          # prometheus.io/scrape: "true"
+          # prometheus.io/port: "9004"
+          labels: {}
+          # clusterIP: ""
+          externalIPs: []
+          # loadBalancerIP: ""
+          loadBalancerSourceRanges: []
+          servicePort: 9004
+          type: ClusterIP
+          # externalTrafficPolicy: ""
+          # nodePort: ""
+        serviceMonitor:
+          enabled: false
+          additionalLabels: {}
+          annotations: {}
+          namespace: ""
+          namespaceSelector: {}
+          scrapeInterval: 30s
+          # honorLabels: true
+          targetLabels: []
+          relabelings: []
+          metricRelabelings: []
+      ## Additional environment variables
+      extraEnvs: []
 
-        ## The tag of the App Protect WAF v5 Configuration Manager image.
-        tag: "5.9.0"
-        ## The digest of the App Protect WAF v5 Configuration Manager image.
-        ## If digest is specified it has precedence over tag and will be used instead
-        # digest: "sha256:CHANGEME"
+    ## API Firewall configuration
+    apiFirewall:
+      ## Resource requests and limits
+      resources: {}
+      ## Security context for the API Firewall container
+      securityContext: {}
+      ## Liveness probe configuration
+      livenessProbeEnabled: false
+      livenessProbe:
+        httpGet:
+          path: "/v1/liveness"
+          port: 18082
+          scheme: HTTP
+        failureThreshold: 3
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      readinessProbeEnabled: false
+      readinessProbe:
+        httpGet:
+          path: "/v1/readiness"
+          port: 18082
+          scheme: HTTP
+        failureThreshold: 3
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      ## Metrics configuration
+      metrics:
+        ## Enable metrics collection
+        enabled: false
+        ## Port for metrics endpoint
+        port: 9010
+        ## Port name for metrics endpoint
+        portName: apifw-metrics
+        ## Path at which the metrics endpoint is exposed
+        endpointPath: "/metrics"
+        ## IP address and/or port for the metrics endpoint
+        host: ":9010"
+        service:
+          annotations: {}
+          # prometheus.io/scrape: "true"
+          # prometheus.io/port: "9010"
+          labels: {}
+          # clusterIP: ""
+          externalIPs: []
+          # loadBalancerIP: ""
+          loadBalancerSourceRanges: []
+          servicePort: 9010
+          type: ClusterIP
+          # externalTrafficPolicy: ""
+          # nodePort: ""
+        serviceMonitor:
+          enabled: false
+          additionalLabels: {}
+          annotations: {}
+          namespace: ""
+          namespaceSelector: {}
+          scrapeInterval: 30s
+          # honorLabels: true
+          targetLabels: []
+          relabelings: []
+          metricRelabelings: []
+      ## Additional environment variables
+      extraEnvs: []
 
-        ## The pull policy for the App Protect WAF v5 Configuration Manager image.
-        pullPolicy: IfNotPresent
-      securityContext:
-        allowPrivilegeEscalation: false
-        runAsUser: 101 #nginx
-        runAsNonRoot: true
-        capabilities:
-          drop:
-            - all
+    ## Additional volumes for Wallarm
+    extraVolumes: []
 
-  ## Support for App Protect DoS
-  appprotectdos:
-    ## Enable the App Protect DoS module in the Ingress Controller.
-    enable: false
-    ## Enable debugging for App Protect DoS.
-    debug: false
-    ## Max number of nginx processes to support.
-    maxWorkers: 0
-    ## Max number of ADMD instances.
-    maxDaemons: 0
-    ## RAM memory size to consume in MB.
-    memory: 0
+    ## Additional volume mounts for Wallarm
+    extraVolumeMounts: []
 
   ## Enables the Ingress Controller pods to use the host's network namespace.
   hostNetwork: false
@@ -170,19 +324,6 @@ controller:
 
   ## A list of custom ports to expose on the NGINX Ingress Controller pod. Follows the conventional Kubernetes yaml syntax for container ports.
   customPorts: []
-
-  image:
-    ## The image repository of the Ingress Controller.
-    repository: nginx/nginx-ingress
-
-    ## The tag of the Ingress Controller image. If not specified the appVersion from Chart.yaml is used as a tag.
-    # tag: "5.2.1"
-    ## The digest of the Ingress Controller image.
-    ## If digest is specified it has precedence over tag and will be used instead
-    # digest: "sha256:CHANGEME"
-
-    ## The pull policy for the Ingress Controller image.
-    pullPolicy: IfNotPresent
 
   ## The lifecycle of the Ingress Controller pods.
   lifecycle: {}
@@ -343,32 +484,36 @@ controller:
     ## The number of Ingress Controller pods that can be unavailable. This is a mutually exclusive setting with "minAvailable".
     # maxUnavailable: 1
 
+  ## Network policy for the Ingress Controller pods.
+  ## Restricts network access to/from the controller pods for enhanced security.
+  networkPolicy:
+    ## Enables NetworkPolicy for the controller.
+    enabled: false
+    ## Annotations for the NetworkPolicy resource.
+    annotations: {}
+    ## Custom source selectors to allow ingress traffic from.
+    ## If not specified, allows HTTP/HTTPS from anywhere.
+    # allowIngressFrom:
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         kubernetes.io/metadata.name: my-namespace
+    ## Custom source selectors to allow metrics scraping from.
+    ## If not specified, allows from the release namespace.
+    # allowMetricsFrom:
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         name: monitoring
+    ## Custom destination selectors to allow egress traffic to.
+    ## If not specified, allows to any pod in the cluster.
+    # allowEgressTo:
+    #   - namespaceSelector: {}
+    ## Additional custom ingress rules.
+    # ingressRules: []
+    ## Additional custom egress rules.
+    # egressRules: []
+
     ## Strategy used to replace old Pods by new ones. .spec.strategy.type can be "Recreate" or "RollingUpdate" for Deployments, and "OnDelete" or "RollingUpdate" for Daemonsets. "RollingUpdate" is the default value.
   strategy: {}
-
-  ## StatefulSet-specific configuration (only used when kind is "statefulset")
-  statefulset:
-    ## Pod management policy for StatefulSet. Can be "OrderedReady" or "Parallel".
-    ## OrderedReady will start pods one at a time in order, Parallel will start all pods at once.
-    podManagementPolicy: "OrderedReady"
-
-    ## PersistentVolumeClaim retention policy for StatefulSet
-    ## Determines when to delete PVCs when the StatefulSet is deleted or scaled down
-    persistentVolumeClaimRetentionPolicy:
-      ## When to delete PVCs when the StatefulSet is deleted. Can be "Retain" or "Delete".
-      whenDeleted: "Retain"
-      ## When to delete PVCs when the StatefulSet is scaled down. Can be "Retain" or "Delete".
-      whenScaled: "Retain"
-
-    ##  Configuration for StatefulSet nginx-cache PVC
-    nginxCachePVC:
-      ## Storage size for the nginx-cache volume
-      size: "256Mi"
-      ## Storage class for the nginx-cache volume. If empty, uses the cluster default.
-      storageClass: ""
-      ## Access modes for the nginx-cache volume
-      accessModes:
-      - "ReadWriteOnce"
 
   ## Extra containers for the Ingress Controller pods.
   extraContainers: []
@@ -407,9 +552,6 @@ controller:
 
   ## Enable the custom resources.
   enableCustomResources: true
-
-  ## Enable OIDC policies.
-  enableOIDC: false
 
   ## Enable TLS Passthrough on port 443. Requires controller.enableCustomResources.
   enableTLSPassthrough: false
@@ -457,7 +599,7 @@ controller:
     enable: true
 
     ## Set the port where the NGINX stub_status or the NGINX Plus API is exposed.
-    port: 8080
+    port: 10246
 
     ## Add IPv4 IP/CIDR blocks to the allow list for NGINX stub_status or the NGINX Plus API. Separate multiple IP/CIDR by commas.
     allowCidrs: "127.0.0.1"
@@ -659,12 +801,196 @@ controller:
   ## Configure telemetry reporting options
   telemetryReporting:
     ## Enable telemetry reporting
-    enable: true
+    enable: false
 
-  ## Allows weight adjustments without reloading the NGINX Configuration for two-way splits in NGINX Plus.
-  ## May require increasing map_hash_bucket_size, map_hash_max_size,
-  ## variable_hash_bucket_size, and variable_hash_max_size in the ConfigMap based on the number of two-way splits.
-  enableWeightChangesDynamicReload: false
+
+
+
+# Postanalytics (wstore) component detailed configuration
+postanalytics:
+  ## Deployment kind: Deployment or DaemonSet
+  kind: "Deployment"
+  ## Number of replicas (only for Deployment kind)
+  replicaCount: 1
+  ## List of image pull secrets for postanalytics images.
+  ## Secrets must already exist in the same namespace as the helm release.
+  ## Example:
+  ##   imagePullSecrets:
+  ##     - name: my-registry-secret
+  ##     - name: another-secret
+  imagePullSecrets: []
+  ## Memory arena size in GB
+  arena: "2.0"
+  ## Service address for wstore
+  serviceAddress: "0.0.0.0:3313"
+  ## Protocol for wstore service (tcp, tcp4, tcp6)
+  serviceProtocol: "tcp4"
+  ## Resource requests and limits
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  ## Security context for wstore container
+  securityContext: {}
+  ## Liveness probe configuration
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  ## Readiness probe configuration
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  ## Additional environment variables
+  extraEnvs: []
+  ## Additional volumes
+  extraVolumes: []
+  ## Additional volume mounts
+  extraVolumeMounts: []
+  ## Service configuration
+  service:
+    ## Additional annotations for the service
+    annotations: {}
+    ## Additional labels for the service
+    labels: {}
+  ## Pod annotations
+  podAnnotations: {}
+  ## Pod labels
+  podLabels: {}
+  ## Node selector
+  nodeSelector: {}
+  ## Tolerations
+  tolerations: []
+  ## Affinity
+  affinity: {}
+  ## Topology spread constraints
+  topologySpreadConstraints: []
+  ## Annotations for the deployment/daemonset
+  annotations: {}
+  ## Network policy for the postanalytics pods.
+  ## Restricts network access to the postanalytics pods for enhanced security.
+  networkPolicy:
+    ## Enables NetworkPolicy for postanalytics.
+    enabled: false
+    ## Annotations for the NetworkPolicy resource.
+    annotations: {}
+    ## Custom source selectors to allow health check traffic from.
+    ## If not specified, health checks are only allowed from localhost.
+    # allowHealthCheckFrom:
+    #   - podSelector: {}
+    ## Custom source selectors to allow metrics scraping from.
+    ## If not specified, allows from the release namespace.
+    # allowMetricsFrom:
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         name: monitoring
+    ## Additional custom ingress rules.
+    # ingressRules: []
+    ## Custom egress rules. If specified, egress policy type is enabled.
+    # egressRules:
+    #   - to:
+    #       - ipBlock:
+    #           cidr: 0.0.0.0/0
+    #     ports:
+    #       - protocol: TCP
+    #         port: 443
+  ## Pod disruption budget for the postanalytics pods.
+  podDisruptionBudget:
+    ## Enables PodDisruptionBudget.
+    enabled: false
+    ## The annotations of the postanalytics pod disruption budget.
+    annotations: {}
+    ## The number of postanalytics pods that should be available. This is a mutually exclusive setting with "maxUnavailable".
+    # minAvailable: 1
+    ## The number of postanalytics pods that can be unavailable. This is a mutually exclusive setting with "minAvailable".
+    # maxUnavailable: 1
+  ## Termination grace period
+  terminationGracePeriodSeconds: 30
+  tls:
+    enabled: false
+  #   certFile: "/root/test-tls-certs/server.crt"
+  #   keyFile: "/root/test-tls-certs/server.key"
+  #   caCertFile: "/root/test-tls-certs/ca.crt"
+  #   mutualTLS:
+  #     enabled: false
+  #     clientCACertFile: "/root/test-tls-certs/ca.crt"
+  # -- Additional environment variables to set
+  metrics:
+    listenAddress: "127.0.0.1:9001"
+    protocol: "tcp4"
+
+  ## Init container for node registration
+  initContainer:
+    ## Resource requests and limits
+    resources: {}
+    ## Security context for the init container
+    securityContext: {}
+    ## Additional environment variables
+    extraEnvs: []
+
+  ## Wallarm CLI configuration (runs in postanalytics pod)
+  wcli:
+    ## Resource requests and limits
+    resources: {}
+    ## Security context for the wcli container
+    securityContext: {}
+    ## Metrics configuration
+    metrics:
+      ## Enable metrics collection
+      enabled: true
+      ## Port for metrics endpoint
+      port: 9003
+      ## Port name for metrics endpoint
+      portName: wcli-post-mtrc
+      ## Path at which the metrics endpoint is exposed
+      endpointPath: ""
+      ## IP address and/or port for the metrics endpoint
+      host: ":9003"
+      service:
+        annotations: {}
+        # prometheus.io/scrape: "true"
+        # prometheus.io/port: "9003"
+        labels: {}
+        # clusterIP: ""
+        externalIPs: []
+        # loadBalancerIP: ""
+        loadBalancerSourceRanges: []
+        servicePort: 9003
+        type: ClusterIP
+        # externalTrafficPolicy: ""
+        # nodePort: ""
+      serviceMonitor:
+        enabled: false
+        additionalLabels: {}
+        annotations: {}
+        namespace: ""
+        namespaceSelector: {}
+        scrapeInterval: 30s
+        # honorLabels: true
+        targetLabels: []
+        relabelings: []
+        metricRelabelings: []
+    ## Additional environment variables
+    extraEnvs: []
+
+  ## Wallarm appstructure configuration (runs in postanalytics pod)
+  appstructure:
+    ## Resource requests and limits
+    resources: {}
+    ## Security context for the appstructure container
+    securityContext: {}
+    ## Additional environment variables
+    extraEnvs: []
+
+
 
 rbac:
   ## Configures RBAC.
@@ -710,61 +1036,3 @@ prometheus:
     ## Matches on the name of a Service port.
     endpoints:
       - port: prometheus
-
-serviceInsight:
-  ## Expose NGINX Plus Service Insight endpoint.
-  create: false
-
-  ## Configures the port to expose endpoint.
-  port: 9114
-
-  ## Specifies the namespace/name of a Kubernetes TLS Secret which will be used to protect the Service Insight endpoint.
-  secret: ""
-
-  ## Configures the HTTP scheme used.
-  scheme: http
-
-nginxServiceMesh:
-  ## Enables integration with NGINX Service Mesh.
-  enable: false
-
-  ## Enables NGINX Service Mesh workload to route egress traffic through the Ingress Controller.
-  ## Requires nginxServiceMesh.enable
-  enableEgress: false
-
-nginxAgent:
-  ## Enables NGINX Agent.
-  enable: false
-  logLevel: "info"
-
-  # Agent V3 configuration
-  # Dataplane key is required to authenticate NGINX Agent with NGINX One Console
-  dataplaneKeySecretName: ""
-  endpointHost: "agent.connect.nginx.com"
-  endpointPort: 443
-  tlsSkipVerify: false
-
-  # Agent V2 configuration
-  ## If nginxAgent.instanceGroup is not set the value of nginx-ingress.controller.fullname will be used
-  instanceGroup: ""
-  instanceManager:
-    # FQDN or IP for connecting to NGINX Instance Manager, e.g. nim.example.com
-    host: ""
-    grpcPort: 443
-    tls:
-      enabled: true
-      skipVerify: false
-      ## kubernetes.io/tls secret with a TLS certificate and key for using mTLS between NGINX Agent and Instance Manager
-      secret: ""
-      ## nginx.org/ca secret for verification of Instance Manager TLS
-      caSecret: ""
-    sni: ""
-  ## Syslog listener which NGINX Agent uses to accept messages from App Protect WAF
-  syslog:
-    host: "127.0.0.1"
-    port: 1514
-  napMonitoring:
-    collectorBufferSize: 50000
-    processorBufferSize: 50000
-  ## The name of a custom ConfigMap to use instead of the one provided by default
-  customConfigMap: ""

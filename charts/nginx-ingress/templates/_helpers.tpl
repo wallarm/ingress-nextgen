@@ -65,14 +65,6 @@ Pod labels
 */}}
 {{- define "nginx-ingress.podLabels" -}}
 {{- include "nginx-ingress.selectorLabels" . }}
-{{- if .Values.nginxServiceMesh.enable }}
-nsm.nginx.com/enable-ingress: "true"
-nsm.nginx.com/enable-egress: "{{ .Values.nginxServiceMesh.enableEgress }}"
-nsm.nginx.com/{{ .Values.controller.kind }}: {{ include "nginx-ingress.controller.fullname" . }}
-{{- end }}
-{{- if and .Values.nginxAgent.enable (eq (.Values.nginxAgent.customConfigMap | default "") "") }}
-agent-configuration-revision-hash: {{ include "nginx-ingress.agentConfiguration" . | sha1sum | trunc 8 | quote }}
-{{- end }}
 {{- if .Values.controller.pod.extraLabels }}
 {{ toYaml .Values.controller.pod.extraLabels }}
 {{- end }}
@@ -98,39 +90,6 @@ Expand the name of the configmap.
 {{ .Values.controller.customConfigMap }}
 {{- else -}}
 {{- default (include "nginx-ingress.fullname" .) .Values.controller.config.name -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Expand the name of the configmap used for NGINX Agent.
-*/}}
-{{- define "nginx-ingress.agentConfigName" -}}
-{{- if ne (.Values.nginxAgent.customConfigMap | default "") "" -}}
-{{ .Values.nginxAgent.customConfigMap }}
-{{- else -}}
-{{- printf "%s-agent-config"  (include "nginx-ingress.fullname" . | trunc 49 | trimSuffix "-") -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Expand the name of the mgmt configmap.
-*/}}
-{{- define "nginx-ingress.mgmtConfigName" -}}
-{{- if .Values.controller.mgmt.configMapName -}}
-{{ .Values.controller.mgmt.configMapName }}
-{{- else -}}
-{{- default (printf "%s-mgmt" (include "nginx-ingress.fullname" .)) -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Expand license token secret name.
-*/}}
-{{- define "nginx-ingress.licenseTokenSecretName" -}}
-{{- if hasKey .Values.controller.mgmt "licenseTokenSecretName" -}}
-{{- .Values.controller.mgmt.licenseTokenSecretName -}}
-{{- else }}
-{{- fail "Error: When using Nginx Plus, 'controller.mgmt.licenseTokenSecretName' must be set." }}
 {{- end -}}
 {{- end -}}
 
@@ -167,28 +126,20 @@ Expand wildcard TLS name.
 {{- end -}}
 
 {{- define "nginx-ingress.tag" -}}
-{{- default .Chart.AppVersion .Values.controller.image.tag -}}
+{{- default .Chart.AppVersion .Values.config.images.controller.tag -}}
 {{- end -}}
 
 {{/*
 Expand image name.
 */}}
 {{- define "nginx-ingress.image" -}}
-{{ include "nginx-ingress.image-digest-or-tag" (dict "image" .Values.controller.image "default" .Chart.AppVersion ) }}
-{{- end -}}
-
-{{- define "nap-enforcer.image" -}}
-{{ include "nginx-ingress.image-digest-or-tag" (dict "image" .Values.controller.appprotect.enforcer.image "default" .Chart.AppVersion ) }}
-{{- end -}}
-
-{{- define "nap-config-manager.image" -}}
-{{ include "nginx-ingress.image-digest-or-tag" (dict "image" .Values.controller.appprotect.configManager.image "default" .Chart.AppVersion ) }}
+{{ include "nginx-ingress.image-digest-or-tag" (dict "image" .Values.config.images.controller "default" .Chart.AppVersion ) }}
 {{- end -}}
 
 {{/*
-Accepts an image struct like .Values.controller.image along with a default value to use
+Accepts an image struct like .Values.config.images.controller along with a default value to use
 if the digest or tag is not set. Can be called like:
-include "nginx-ingress.image-digest-or-tag" (dict "image" .Values.controller.image "default" .Chart.AppVersion
+include "nginx-ingress.image-digest-or-tag" (dict "image" .Values.config.images.controller "default" .Chart.AppVersion
 */}}
 {{- define "nginx-ingress.image-digest-or-tag" -}}
 {{- if .image.digest -}}
@@ -265,26 +216,8 @@ Build the args for the service binary.
 {{- end }}
 - --
 {{- end }}
-- -nginx-plus={{ .Values.controller.nginxplus }}
 - -nginx-reload-timeout={{ .Values.controller.nginxReloadTimeout }}
-- -enable-app-protect={{ .Values.controller.appprotect.enable }}
-{{- if and .Values.controller.appprotect.enable .Values.controller.appprotect.logLevel }}
-- -app-protect-log-level={{ .Values.controller.appprotect.logLevel }}
-{{ end }}
-{{- if and .Values.controller.appprotect.enable .Values.controller.appprotect.v5 }}
-- -app-protect-enforcer-address="{{ .Values.controller.appprotect.enforcer.host | default "127.0.0.1" }}:{{ .Values.controller.appprotect.enforcer.port | default 50000 }}"
-{{- end }}
-- -enable-app-protect-dos={{ .Values.controller.appprotectdos.enable }}
-{{- if .Values.controller.appprotectdos.enable }}
-- -app-protect-dos-debug={{ .Values.controller.appprotectdos.debug }}
-- -app-protect-dos-max-daemons={{ .Values.controller.appprotectdos.maxDaemons }}
-- -app-protect-dos-max-workers={{ .Values.controller.appprotectdos.maxWorkers }}
-- -app-protect-dos-memory={{ .Values.controller.appprotectdos.memory }}
-{{ end }}
 - -nginx-configmaps=$(POD_NAMESPACE)/{{ include "nginx-ingress.configName" . }}
-{{- if .Values.controller.nginxplus }}
-- -mgmt-configmap=$(POD_NAMESPACE)/{{ include "nginx-ingress.mgmtConfigName" . }}
-{{- end }}
 {{- if .Values.controller.defaultTLS.secret }}
 - -default-server-tls-secret={{ .Values.controller.defaultTLS.secret }}
 {{ else if and (.Values.controller.defaultTLS.cert) (.Values.controller.defaultTLS.key) }}
@@ -332,9 +265,6 @@ Build the args for the service binary.
 - -enable-prometheus-metrics={{ .Values.prometheus.create }}
 - -prometheus-metrics-listen-port={{ .Values.prometheus.port }}
 - -prometheus-tls-secret={{ .Values.prometheus.secret }}
-- -enable-service-insight={{ .Values.serviceInsight.create }}
-- -service-insight-listen-port={{ .Values.serviceInsight.port }}
-- -service-insight-tls-secret={{ .Values.serviceInsight.secret }}
 - -enable-custom-resources={{ .Values.controller.enableCustomResources }}
 - -enable-snippets={{ .Values.controller.enableSnippets }}
 - -disable-ipv6={{ .Values.controller.disableIPV6 }}
@@ -347,7 +277,6 @@ Build the args for the service binary.
 - -tls-passthrough-port={{ .Values.controller.tlsPassthroughPort }}
 {{- end }}
 - -enable-cert-manager={{ .Values.controller.enableCertManager }}
-- -enable-oidc={{ .Values.controller.enableOIDC }}
 - -enable-external-dns={{ .Values.controller.enableExternalDNS }}
 - -default-http-listener-port={{ .Values.controller.defaultHTTPListenerPort}}
 - -default-https-listener-port={{ .Values.controller.defaultHTTPSListenerPort}}
@@ -362,13 +291,6 @@ Build the args for the service binary.
 - -enable-latency-metrics={{ .Values.controller.enableLatencyMetrics }}
 - -ssl-dynamic-reload={{ .Values.controller.enableSSLDynamicReload }}
 - -enable-telemetry-reporting={{ .Values.controller.telemetryReporting.enable}}
-- -weight-changes-dynamic-reload={{ .Values.controller.enableWeightChangesDynamicReload}}
-{{- if .Values.nginxAgent.enable }}
-- -agent=true
-{{- if eq .Values.nginxAgent.dataplaneKeySecretName "" }}
-- -agent-instance-group={{ default (include "nginx-ingress.controller.fullname" .) .Values.nginxAgent.instanceGroup }}
-{{- end }}
-{{- end }}
 {{- end -}}
 
 {{/*
@@ -397,43 +319,14 @@ List of volumes for controller.
   emptyDir: {}
 - name: nginx-log
   emptyDir: {}
-{{- /* For StatefulSet, nginx-cache volume is always provided via volumeClaimTemplates */ -}}
-{{- if ne .Values.controller.kind "statefulset" }}
 - name: nginx-cache
   emptyDir: {}
-{{- end }}
-{{- end }}
-{{- if .Values.controller.appprotect.v5 }}
-{{ toYaml .Values.controller.appprotect.volumes }}
 {{- end }}
 {{- if .Values.controller.volumes }}
 {{ toYaml .Values.controller.volumes }}
 {{- end }}
-{{- if .Values.nginxAgent.enable }}
-- name: agent-conf
-  configMap:
-    name: {{ include "nginx-ingress.agentConfigName" . }}
-{{- if ne .Values.nginxAgent.dataplaneKeySecretName "" }}
-- name: dataplane-key
-  secret:
-    secretName: {{ .Values.nginxAgent.dataplaneKeySecretName }}
-{{- else }}
-- name: agent-dynamic
-  emptyDir: {}
-{{- end }}
-{{- if and .Values.nginxAgent.instanceManager.tls (or (ne (.Values.nginxAgent.instanceManager.tls.secret | default "") "") (ne (.Values.nginxAgent.instanceManager.tls.caSecret | default "") "")) }}
-- name: nginx-agent-tls
-  projected:
-    sources:
-{{- if ne .Values.nginxAgent.instanceManager.tls.secret "" }}
-      - secret:
-          name: {{ .Values.nginxAgent.instanceManager.tls.secret }}
-{{- end }}
-{{- if ne .Values.nginxAgent.instanceManager.tls.caSecret "" }}
-      - secret:
-          name: {{ .Values.nginxAgent.instanceManager.tls.caSecret }}
-{{- end }}
-{{- end }}
+{{- if .Values.config.wallarm.enabled }}
+{{ include "nginx-ingress.wallarm.volumes" . }}
 {{- end -}}
 {{- end -}}
 
@@ -461,143 +354,532 @@ volumeMounts:
   name: nginx-state
 - mountPath: /var/log/nginx
   name: nginx-log
-{{- else if eq .Values.controller.kind "statefulset" }}
-- mountPath: /var/cache/nginx
-  name: nginx-cache
-{{- end }}
-{{- if .Values.controller.appprotect.v5 }}
-- name: app-protect-bd-config
-  mountPath: /opt/app_protect/bd_config
-- name: app-protect-config
-  mountPath: /opt/app_protect/config
-  # app-protect-bundles is mounted so that Ingress Controller
-  # can verify that referenced bundles are present
-- name: app-protect-bundles
-  mountPath: /etc/app_protect/bundles
 {{- end }}
 {{- if .Values.controller.volumeMounts }}
 {{ toYaml .Values.controller.volumeMounts }}
 {{- end }}
-{{- if .Values.nginxAgent.enable }}
-- name: agent-conf
-  mountPath: /etc/nginx-agent/nginx-agent.conf
-  subPath: nginx-agent.conf
-{{- if ne .Values.nginxAgent.dataplaneKeySecretName "" }}
-- name: dataplane-key
-  mountPath: /etc/nginx-agent/secrets
-{{- else }}
-- name: agent-dynamic
-  mountPath: /var/lib/nginx-agent
+{{- if .Values.config.wallarm.enabled }}
+{{ include "nginx-ingress.wallarm.volumeMounts" . }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Wallarm helper templates
+*/}}
+
+{{/*
+Get specific paths
+*/}}
+{{- define "wallarm.path" -}}
+{{- printf "/opt/wallarm/etc/wallarm" -}}
+{{- end -}}
+
+{{- define "wallarm-acl.path" -}}
+{{- printf "/opt/wallarm/var/lib/wallarm-acl" -}}
+{{- end -}}
+
+{{- define "wallarm-cache.path" -}}
+{{- printf "/opt/wallarm/var/lib/nginx/wallarm" -}}
+{{- end -}}
+
+{{- define "wallarm-apifw.path" -}}
+{{- printf "/opt/wallarm/var/lib/wallarm-api" -}}
+{{- end -}}
+
+{{- define "ingress-nginx.wallarmPostanalyticsPort" -}}3313{{- end -}}
+{{- define "ingress-nginx.wallarmPostanalyticsHealthPort" -}}5005{{- end -}}
+
+{{- define "wallarm.credentials" -}}
+- name: WALLARM_API_HOST
+  value: {{ .Values.config.wallarm.api.host | quote }}
+- name: WALLARM_API_PORT
+  value: {{ .Values.config.wallarm.api.port | toString | quote }}
+{{- if hasKey .Values.config.wallarm.api "ssl" }}
+- name: WALLARM_API_USE_SSL
+  value: {{ .Values.config.wallarm.api.ssl | toString | quote }}
 {{- end }}
-{{- if and .Values.nginxAgent.instanceManager.tls (or (ne (.Values.nginxAgent.instanceManager.tls.secret | default "") "") (ne (.Values.nginxAgent.instanceManager.tls.caSecret | default "") "")) }}
-- name: nginx-agent-tls
-  mountPath: /etc/ssl/nms
+{{- if hasKey .Values.config.wallarm "caverify" }}
+- name: WALLARM_API_CA_VERIFY
+  value: {{ .Values.config.wallarm.api.caverify | toString | quote }}
+{{- end }}
+- name: WALLARM_API_TOKEN_PATH
+  value: "/secrets/wallarm/token"
+- name: WALLARM_COMPONENT_NAME
+  value: wallarm-new-ingress-controller
+- name: WALLARM_COMPONENT_VERSION
+  value: {{ .Chart.Version | quote }}
+{{- end -}}
+
+{{- define "ingress-nginx.wallarmSecret" -}}{{ include "nginx-ingress.fullname" . }}-wallarm-token{{- end -}}
+
+{{- define "ingress-nginx.wallarmTokenVolume" -}}
+- name: wallarm-token
+  secret:
+    secretName: {{ ternary .Values.config.wallarm.api.existingSecret.secretName (include "ingress-nginx.wallarmSecret" .) .Values.config.wallarm.api.existingSecret.enabled }}
+    items:
+      - key: {{ ternary .Values.config.wallarm.api.existingSecret.secretKey "token" .Values.config.wallarm.api.existingSecret.enabled }}
+        path: {{ ternary .Values.config.wallarm.api.existingSecret.secretKey "token" .Values.config.wallarm.api.existingSecret.enabled }}
+{{- end -}}
+
+{{/*
+Wallarm token secret name
+*/}}
+{{- define "nginx-ingress.wallarm.tokenSecretName" -}}
+{{- if .Values.config.wallarm.api.existingSecret.enabled }}
+{{- .Values.config.wallarm.api.existingSecret.secretName }}
+{{- else }}
+{{- printf "%s-wallarm-token" (include "nginx-ingress.fullname" .) }}
+{{- end }}
+{{- end }}
+
+{{/*
+Wallarm token secret key
+*/}}
+{{- define "nginx-ingress.wallarm.tokenSecretKey" -}}
+{{- if .Values.config.wallarm.api.existingSecret.enabled }}
+{{- .Values.config.wallarm.api.existingSecret.secretKey }}
+{{- else -}}
+token
+{{- end }}
+{{- end }}
+
+{{/*
+Wallarm postanalytics service name (for use in controller args)
+*/}}
+{{- define "nginx-ingress.wallarm.postanalyticsServiceName" -}}
+{{- printf "%s-wallarm-postanalytics" (include "nginx-ingress.fullname" .) }}
+{{- end }}
+
+# taken from default baked-in controller container defaults
+{{- define "nginx-ingress.wallarm.defaultSecurityContext" -}}
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsUser: 101 #nginx
+  runAsNonRoot: true
+  capabilities:
+    drop:
+    - ALL
+    add:
+    - NET_BIND_SERVICE
+{{- end }}
+
+{{/*
+Wallarm init container for controller/postanalytics pod (registers node with Wallarm cloud)
+Accepts a dict with:
+  - context: the root context (.)
+  - registerMode: "filtering" or "post_analytic"
+  - initContainerConfig: the initContainer config object containing resources and extraEnvs
+*/}}
+{{- define "nginx-ingress.wallarm.initContainer" -}}
+- name: wallarm-init
+  image: {{ .context.Values.config.images.helper.repository }}:{{ .context.Values.config.images.helper.tag }}
+  imagePullPolicy: {{ .context.Values.config.images.helper.pullPolicy }}
+  args: [ "register", "{{ .registerMode }}" {{- if eq .context.Values.config.wallarm.fallback "on" }}, "fallback"{{- end }} ]
+  env:
+  {{- include "wallarm.credentials" .context | nindent 2 }}
+  - name: WALLARM_NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: WALLARM_SYNCNODE_OWNER
+    value: www-data
+  - name: WALLARM_SYNCNODE_GROUP
+    value: www-data
+{{- if .context.Values.config.wallarm.api.nodeGroup }}
+  - name: WALLARM_LABELS
+    value: "group={{ .context.Values.config.wallarm.api.nodeGroup }}"
+{{- end }}
+  {{- with .initContainerConfig.extraEnvs }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  volumeMounts:
+  - mountPath: {{ include "wallarm.path" .context }}
+    name: wallarm
+  - mountPath: {{ include "wallarm-acl.path" .context }}
+    name: wallarm-acl
+  - mountPath: {{ include "wallarm-apifw.path" .context }}
+    name: wallarm-apifw
+  - mountPath: /secrets/wallarm/token
+    name: wallarm-token
+    subPath: token
+    readOnly: true
+{{- if .initContainerConfig.securityContext }}
+  securityContext:
+{{ toYaml .initContainerConfig.securityContext | indent 4 }}
+{{- else }}
+  {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .context) | nindent 2 }}
+{{- end }}
+  {{- with .initContainerConfig.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{/*
+Universal Wallarm WCLI container template
+Accepts a dict with:
+  - context: the root context (.)
+  - wcliConfig: the wcli configuration object containing resources, metrics, extraEnvs, securityContext
+  - wcliArgsConfig: the wcli args configuration object containing logLevel and commands
+  - volumeMountsType: "controller" or "postanalytics" - determines which volume mounts template to use
+*/}}
+{{- define "nginx-ingress.wallarm.wcliContainer" -}}
+- name: wcli
+  image: {{ .context.Values.config.images.helper.repository }}:{{ .context.Values.config.images.helper.tag }}
+  imagePullPolicy: {{ .context.Values.config.images.helper.pullPolicy }}
+  args: ["wcli", "run", {{ include "ingress-nginx.wcli-args" .wcliArgsConfig | trimSuffix ", " | replace "\n" ""}}]
+  env:
+  {{- include "wallarm.credentials" .context | nindent 2 }}
+  - name: WALLARM_NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  {{- if .wcliConfig.metrics.enabled }}
+  - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+    value: "{{ .wcliConfig.metrics.host }}"
+    {{- if .wcliConfig.metrics.endpointPath }}
+  - name: WALLARM_WCLI__METRICS__ENDPOINT
+    value: "{{ .wcliConfig.metrics.endpointPath }}"
+    {{- end }}
+  {{- else }}
+  - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+    value: ""
+  {{- end }}
+  {{- with .wcliConfig.extraEnvs }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- if .wcliConfig.metrics.enabled }}
+  ports:
+  - name: {{ .wcliConfig.metrics.portName }}
+    containerPort: {{ .wcliConfig.metrics.port }}
+    protocol: TCP
+  {{- end }}
+  volumeMounts:
+  {{- if eq .volumeMountsType "controller" }}
+  {{- include "nginx-ingress.wallarm.wcliVolumeMounts" .context | nindent 2 }}
+  - mountPath: {{ include "wallarm-apifw.path" .context }}
+    name: wallarm-apifw
+  {{- else if eq .volumeMountsType "postanalytics" }}
+  {{- include "nginx-ingress.wallarm.wcliVolumeMounts" .context | nindent 2 }}
+  {{- end }}
+{{- if .wcliConfig.securityContext }}
+  securityContext:
+{{ toYaml .wcliConfig.securityContext | indent 4 }}
+{{- else }}
+  {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .context) | nindent 2 }}
+{{- end }}
+  {{- with .wcliConfig.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{/*
+Wallarm WCLI volume mounts
+*/}}
+{{- define "nginx-ingress.wallarm.wcliVolumeMounts" -}}
+- mountPath: {{ include "wallarm.path" . }}
+  name: wallarm
+- mountPath: {{ include "wallarm-acl.path" . }}
+  name: wallarm-acl
+- mountPath: /secrets/wallarm/token
+  name: wallarm-token
+  subPath: token
   readOnly: true
 {{- end }}
-{{- end -}}
-{{- end -}}
 
-{{- define "nginx-ingress.appprotect.v5" -}}
-{{- if .Values.controller.appprotect.v5}}
-- name: waf-enforcer
-  image: {{ include "nap-enforcer.image" . }}
-  imagePullPolicy: "{{ .Values.controller.appprotect.enforcer.image.pullPolicy }}"
-{{- if .Values.controller.appprotect.enforcer.securityContext }}
-  securityContext:
-{{ toYaml .Values.controller.appprotect.enforcer.securityContext | nindent 6 }}
-{{- end }}
+{{/*
+Wallarm API Firewall container for controller pod
+*/}}
+{{- define "nginx-ingress.wallarm.apiFirewallContainer" -}}
+- name: api-firewall
+  image: {{ .Values.config.images.helper.repository }}:{{ .Values.config.images.helper.tag }}
+  imagePullPolicy: {{ .Values.config.images.helper.pullPolicy }}
+  args: ["api-firewall"]
   env:
-    - name: ENFORCER_PORT
-      value: "{{ .Values.controller.appprotect.enforcer.port | default 50000 }}"
-    - name: ENFORCER_CONFIG_TIMEOUT
-      value: "0"
-  volumeMounts:
-    - name: app-protect-bd-config
-      mountPath: /opt/app_protect/bd_config
-- name: waf-config-mgr
-  image: {{ include "nap-config-manager.image" . }}
-  imagePullPolicy: "{{ .Values.controller.appprotect.configManager.image.pullPolicy }}"
-{{- if .Values.controller.appprotect.configManager.securityContext }}
-  securityContext:
-{{ toYaml .Values.controller.appprotect.configManager.securityContext | nindent 6 }}
+    - name: APIFW_SPECIFICATION_UPDATE_PERIOD
+      value: "{{ .Values.config.apiFirewall.config.specificationUpdatePeriod }}"
+    - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
+      value: "{{ .Values.config.apiFirewall.config.unknownParametersDetection }}"
+    - name: APIFW_URL
+      value: "http://0.0.0.0:{{ .Values.config.apiFirewall.config.mainPort }}"
+    - name: APIFW_HEALTH_HOST
+      value: "0.0.0.0:{{ .Values.config.apiFirewall.config.healthPort }}"
+    - name: APIFW_LOG_LEVEL
+      value: "{{ .Values.config.apiFirewall.config.logLevel }}"
+    - name: APIFW_LOG_FORMAT
+      value: "{{ .Values.config.apiFirewall.config.logFormat }}"
+    - name: APIFW_MODE
+      value: api
+    - name: APIFW_READ_TIMEOUT
+      value: 5s
+    - name: APIFW_WRITE_TIMEOUT
+      value: 5s
+    - name: APIFW_READ_BUFFER_SIZE
+      value: "{{ .Values.config.apiFirewall.readBufferSize | int64 }}"
+    - name: APIFW_WRITE_BUFFER_SIZE
+      value: "{{ .Values.config.apiFirewall.writeBufferSize | int64 }}"
+    - name: APIFW_MAX_REQUEST_BODY_SIZE
+      value: "{{ .Values.config.apiFirewall.maxRequestBodySize | int64 }}"
+    - name: APIFW_DISABLE_KEEPALIVE
+      value: "{{ .Values.config.apiFirewall.disableKeepalive }}"
+    - name: APIFW_MAX_CONNS_PER_IP
+      value: "{{ .Values.config.apiFirewall.maxConnectionsPerIp }}"
+    - name: APIFW_MAX_REQUESTS_PER_CONN
+      value: "{{ .Values.config.apiFirewall.maxRequestsPerConnection }}"
+    - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
+      value: "{{ .Values.config.apiFirewall.maxErrorsInResponse }}"
+    - name: APIFW_API_MODE_DEBUG_PATH_DB
+      value: "{{ include "wallarm-apifw.path" . }}/2/wallarm_api.db"
+{{- if .Values.controller.wallarm.apiFirewall.metrics.enabled }}
+    - name: APIFW_METRICS_ENABLED
+      value: "true"
+    - name: APIFW_METRICS_HOST
+      value: "{{ .Values.controller.wallarm.apiFirewall.metrics.host }}"
+    - name: APIFW_METRICS_ENDPOINT_NAME
+      value: "{{ .Values.controller.wallarm.apiFirewall.metrics.endpointPath }}"
+{{- else }}
+    - name: APIFW_METRICS_ENABLED
+      value: "false"
 {{- end }}
+  {{- with .Values.controller.wallarm.apiFirewall.extraEnvs }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  ports:
+  - name: apifw-health
+    containerPort: {{ .Values.config.apiFirewall.config.healthPort }}
+    protocol: TCP
+  {{- if .Values.controller.wallarm.apiFirewall.metrics.enabled }}
+  - name: apifw-metrics
+    containerPort: {{ .Values.controller.wallarm.apiFirewall.metrics.port }}
+    protocol: TCP
+  {{- end }}
   volumeMounts:
-    - name: app-protect-bd-config
-      mountPath: /opt/app_protect/bd_config
-    - name: app-protect-config
-      mountPath: /opt/app_protect/config
-    - name: app-protect-bundles
-      mountPath: /etc/app_protect/bundles
-{{- end}}
+  - name: wallarm-apifw
+    mountPath: /opt/wallarm/var/lib/wallarm-api
+{{- if .Values.controller.wallarm.apiFirewall.livenessProbeEnabled }}
+  livenessProbe: {{ toYaml .Values.controller.wallarm.apiFirewall.livenessProbe | nindent 4 }}
+{{- end }}
+{{- if .Values.controller.wallarm.apiFirewall.readinessProbeEnabled }}
+  readinessProbe: {{ toYaml .Values.controller.wallarm.apiFirewall.readinessProbe | nindent 4 }}
+{{- end }}
+{{- if .Values.controller.wallarm.apiFirewall.securityContext }}
+  securityContext:
+{{ toYaml .Values.controller.wallarm.apiFirewall.securityContext | indent 4 }}
+{{- else }}
+  {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .) | nindent 2 }}
+{{- end }}
+  {{- with .Values.controller.wallarm.apiFirewall.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{/*
+Wallarm volumes for controller pod
+*/}}
+{{- define "nginx-ingress.wallarm.volumes" -}}
+- name: wallarm
+  emptyDir: {}
+- name: wallarm-acl
+  emptyDir: {}
+- name: wallarm-cache
+  emptyDir: {}
+{{ include "ingress-nginx.wallarmTokenVolume" . }}
+{{- if .Values.config.apiFirewall.enabled }}
+- name: wallarm-apifw
+  emptyDir: {}
+{{- end }}
+{{- with .Values.controller.wallarm.extraVolumes }}
+  {{- toYaml . | nindent 0 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Wallarm volume mounts for main NGINX container
+*/}}
+{{- define "nginx-ingress.wallarm.volumeMounts" -}}
+- name: wallarm
+  mountPath: {{ include "wallarm.path" . }}
+- name: wallarm-acl
+  mountPath: {{ include "wallarm-acl.path" . }}
+- name: wallarm-cache
+  mountPath: {{ include "wallarm-cache.path" . }}
+{{- if .Values.config.apiFirewall.enabled }}
+- name: wallarm-apifw
+  mountPath: {{ include "wallarm-apifw.path" . }}
+{{- end }}
+{{- with .Values.controller.wallarm.extraVolumeMounts }}
+  {{- toYaml . | nindent 0 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create a metrics Service for Wallarm components
+*/}}
+{{- define "nginx-ingress.wallarm.metricsService" -}}
+{{- if .metricsConfig.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .metricsConfig.service.annotations }}
+  annotations: {{ toYaml .metricsConfig.service.annotations | nindent 4 }}
+{{- end }}
+  labels:
+    {{- include "nginx-ingress.labels" .context | nindent 4 }}
+    app.kubernetes.io/component: {{ .componentSelector }}
+  {{- if .metricsConfig.service.labels }}
+    {{- toYaml .metricsConfig.service.labels | nindent 4 }}
+  {{- end }}
+  name: {{ include "nginx-ingress.fullname" .context }}-{{ .serviceSuffix }}-metrics
+  namespace: {{ .context.Release.Namespace }}
+spec:
+  type: {{ .metricsConfig.service.type }}
+{{- if .metricsConfig.service.clusterIP }}
+  clusterIP: {{ .metricsConfig.service.clusterIP }}
+{{- end }}
+{{- if .metricsConfig.service.externalIPs }}
+  externalIPs: {{ toYaml .metricsConfig.service.externalIPs | nindent 4 }}
+{{- end }}
+{{- if .metricsConfig.service.loadBalancerIP }}
+  loadBalancerIP: {{ .metricsConfig.service.loadBalancerIP }}
+{{- end }}
+{{- if .metricsConfig.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{ toYaml .metricsConfig.service.loadBalancerSourceRanges | nindent 4 }}
+{{- end }}
+{{- if .metricsConfig.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .metricsConfig.service.externalTrafficPolicy }}
+{{- end }}
+  ports:
+    - name: {{ .metricsConfig.portName }}
+      port: {{ .metricsConfig.service.servicePort }}
+      protocol: TCP
+      targetPort: {{ .metricsConfig.portName }}
+    {{- $setNodePorts := (or (eq .metricsConfig.service.type "NodePort") (eq .metricsConfig.service.type "LoadBalancer")) }}
+    {{- if (and $setNodePorts (not (empty .metricsConfig.service.nodePort))) }}
+      nodePort: {{ .metricsConfig.service.nodePort }}
+    {{- end }}
+  selector:
+    {{- include "nginx-ingress.selectorLabels" .context | nindent 4 }}
+    app.kubernetes.io/component: {{ .componentSelector }}
+{{- end }}
 {{- end -}}
 
-{{- define "nginx-ingress.agentConfiguration" -}}
-{{- if ne .Values.nginxAgent.dataplaneKeySecretName "" }}
-log:
-  # set log level (error, info, debug; default "info")
-  level: {{ .Values.nginxAgent.logLevel }}
-  # set log path. if empty, don't log to file.
-  path: ""
-
-allowed_directories:
-  - /etc/nginx
-  - /usr/lib/nginx/modules
-
-features:
-  - certificates
-  - connection
-  - metrics
-  - file-watcher
-
-## command server settings
-command:
-  server:
-    host: {{ .Values.nginxAgent.endpointHost }}
-    port: {{ .Values.nginxAgent.endpointPort }}
-  auth:
-    tokenpath: "/etc/nginx-agent/secrets/dataplane.key"
-  tls:
-    skip_verify: {{ .Values.nginxAgent.tlsSkipVerify | default false }}
-
-{{- else }}
-log:
-  level: {{ .Values.nginxAgent.logLevel }}
-  path: ""
-server:
-  host: {{ required ".Values.nginxAgent.instanceManager.host is required when setting .Values.nginxAgent.enable to true" .Values.nginxAgent.instanceManager.host }}
-  grpcPort: {{ .Values.nginxAgent.instanceManager.grpcPort }}
-{{- if ne (.Values.nginxAgent.instanceManager.sni | default "") ""  }}
-  metrics: {{ .Values.nginxAgent.instanceManager.sni }}
-  command: {{ .Values.nginxAgent.instanceManager.sni }}
-{{- end }}
-{{- if .Values.nginxAgent.instanceManager.tls  }}
-tls:
-  enable: {{ .Values.nginxAgent.instanceManager.tls.enable | default true }}
-  skip_verify: {{ .Values.nginxAgent.instanceManager.tls.skipVerify | default false }}
-  {{- if ne .Values.nginxAgent.instanceManager.tls.caSecret "" }}
-  ca: "/etc/ssl/nms/ca.crt"
+{{/*
+Create a ServiceMonitor for Wallarm components
+*/}}
+{{- define "nginx-ingress.wallarm.serviceMonitor" -}}
+{{- if and .metricsConfig.enabled .metricsConfig.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "nginx-ingress.fullname" .context }}-{{ .monitorSuffix }}
+  {{- if .metricsConfig.serviceMonitor.namespace }}
+  namespace: {{ .metricsConfig.serviceMonitor.namespace }}
+  {{- else }}
+  namespace: {{ .context.Release.Namespace }}
   {{- end }}
-  {{- if ne .Values.nginxAgent.instanceManager.tls.secret "" }}
-  cert: "/etc/ssl/nms/tls.crt"
-  key: "/etc/ssl/nms/tls.key"
+  labels:
+    {{- include "nginx-ingress.labels" .context | nindent 4 }}
+    app.kubernetes.io/component: {{ .componentSelector }}
+  {{- if .metricsConfig.serviceMonitor.additionalLabels }}
+    {{- toYaml .metricsConfig.serviceMonitor.additionalLabels | nindent 4 }}
+  {{- end }}
+  {{- if .metricsConfig.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml .metricsConfig.serviceMonitor.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .metricsConfig.serviceMonitor.namespaceSelector }}
+  namespaceSelector:
+    {{- toYaml .metricsConfig.serviceMonitor.namespaceSelector | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "nginx-ingress.selectorLabels" .context | nindent 6 }}
+      app.kubernetes.io/component: {{ .componentSelector }}
+  endpoints:
+  - port: {{ .metricsConfig.portName }}
+    path: {{ .metricsConfig.endpointPath | default "/metrics" }}
+    interval: {{ .metricsConfig.serviceMonitor.scrapeInterval }}
+    {{- if .metricsConfig.serviceMonitor.honorLabels }}
+    honorLabels: true
+    {{- end }}
+    {{- if .metricsConfig.serviceMonitor.relabelings }}
+    relabelings: {{ toYaml .metricsConfig.serviceMonitor.relabelings | nindent 4 }}
+    {{- end }}
+    {{- if .metricsConfig.serviceMonitor.metricRelabelings }}
+    metricRelabelings: {{ toYaml .metricsConfig.serviceMonitor.metricRelabelings | nindent 4 }}
+    {{- end }}
+  {{- if .metricsConfig.serviceMonitor.targetLabels }}
+  targetLabels: {{ toYaml .metricsConfig.serviceMonitor.targetLabels | nindent 2 }}
   {{- end }}
 {{- end }}
-features:
-  - registration
-  - nginx-counting
-  - metrics
-  - dataplane-status
-extensions:
-  - nginx-app-protect
-  - nap-monitoring
-nginx_app_protect:
-  report_interval: 15s
-  precompiled_publication: true
-nap_monitoring:
-  collector_buffer_size: {{ .Values.nginxAgent.napMonitoring.collectorBufferSize }}
-  processor_buffer_size: {{ .Values.nginxAgent.napMonitoring.processorBufferSize }}
-  syslog_ip: {{ .Values.nginxAgent.syslog.host }}
-  syslog_port: {{ .Values.nginxAgent.syslog.port }}
+{{- end -}}
 
+{{/*
+Wallarm postanalytics name (for component selector)
+*/}}
+{{- define "nginx-ingress.wallarm.postanalyticsName" -}}
+wallarm-postanalytics
+{{- end -}}
+
+{{/*
+Convert camelCase to kebab‑case
+*/}}
+{{- define "wallarm.kebabcase" -}}
+{{- regexReplaceAll "([a-z0-9])([A-Z])" . "${1}-${2}" | lower -}}
 {{- end }}
-{{ end }}
+
+{{/*
+Wcli arguments building
+*/}}
+{{- define "ingress-nginx.wcli-args" -}}
+"-log-level", "{{ .logLevel }}",{{ " " }}
+{{- with .commands }}
+{{- range $jobName, $jobCfg := . }}
+"job:{{ $jobName }}",{{ " " }}
+{{- range $key, $val := $jobCfg }}
+{{- $flag := include "wallarm.kebabcase" $key -}}
+{{- if ne $flag "log-level" }}
+  {{- $kind := kindOf $val -}}
+  {{- if or (eq $kind "map") (eq $kind "slice") }}
+"-{{ $flag }}", {{ $val | toJson | quote }},{{ " " }}
+  {{- else }}
+"-{{ $flag }}", {{ $val | quote }},{{ " " }}
+  {{- end }}
+{{- end }}
+{{- end }}
+"-log-level", "{{ $jobCfg.logLevel | default .logLevel }}",{{ " " }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{- define "ingress-nginx.wallarmWstoreTlsVariables" -}}
+- name: WALLARM_WSTORE__SERVICE__TLS__ENABLED
+  value: "{{ .Values.postanalytics.tls.enabled }}"
+- name: WALLARM_WSTORE__SERVICE__TLS__CERT_FILE
+  value: "{{ .Values.postanalytics.tls.certFile }}"
+- name: WALLARM_WSTORE__SERVICE__TLS__KEY_FILE
+  value: "{{ .Values.postanalytics.tls.keyFile }}"
+- name: WALLARM_WSTORE__SERVICE__TLS__CA_CERT_FILE
+  value: "{{ .Values.postanalytics.tls.caCertFile }}"
+- name: WALLARM_WSTORE__SERVICE__TLS__MUTUAL_TLS__ENABLED
+  value: "{{ .Values.postanalytics.tls.mutualTLS.enabled }}"
+- name: WALLARM_WSTORE__SERVICE__TLS__MUTUAL_TLS__CLIENT_CA_CERT_FILE
+  value: "{{ .Values.postanalytics.tls.mutualTLS.clientCACertFile }}"
+{{- end -}}
+
+{{- define "ingress-nginx.wallarmWstoreVariables" -}}
+- name: SLAB_ALLOC_ARENA
+  value: "{{ .Values.postanalytics.arena }}"
+- name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
+  value: "{{ .Values.postanalytics.metrics.listenAddress }}"
+- name: WALLARM_WSTORE__METRICS__PROTOCOL
+  value: "{{ .Values.postanalytics.metrics.protocol }}"
+- name: WALLARM_WSTORE__SERVICE__ADDRESS
+  value: "{{ .Values.postanalytics.serviceAddress }}"
+- name: WALLARM_WSTORE__SERVICE__PROTOCOL
+  value: "{{ .Values.postanalytics.serviceProtocol }}"
+{{- end -}}

@@ -1,0 +1,148 @@
+{{- if .Values.config.wallarm.enabled }}
+{{- if eq .Values.postanalytics.kind "Deployment" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nginx-ingress.fullname" . }}-wallarm-postanalytics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: wallarm-postanalytics
+  {{- with .Values.postanalytics.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.postanalytics.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nginx-ingress.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: wallarm-postanalytics
+  template:
+    metadata:
+      labels:
+        {{- include "nginx-ingress.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: wallarm-postanalytics
+      {{- with .Values.postanalytics.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      annotations:
+        wallarm-enabled: "true"
+{{- if not .Values.config.wallarm.api.existingSecret.enabled }}
+        checksum/token: {{ .Values.config.wallarm.api.token | sha256sum }}
+{{- end }}
+      {{- with .Values.postanalytics.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.postanalytics.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nginx-ingress.serviceAccountName" . }}
+      terminationGracePeriodSeconds: {{ .Values.postanalytics.terminationGracePeriodSeconds | default 30 }}
+      initContainers:
+      {{ include "nginx-ingress.wallarm.initContainer" (dict "context" . "registerMode" "post_analytic" "initContainerConfig" .Values.postanalytics.initContainer) | nindent 6 }}
+      containers:
+        {{ include "nginx-ingress.wallarm.wcliContainer" (dict "context" . "wcliConfig" .Values.postanalytics.wcli "wcliArgsConfig" .Values.config.wcliPostanalytics "volumeMountsType" "postanalytics") | nindent 8 }}
+        - name: wstore
+          image: {{ .Values.config.images.helper.repository }}:{{ .Values.config.images.helper.tag }}
+          imagePullPolicy: {{ .Values.config.images.helper.pullPolicy }}
+          args: ["wstore"]
+          env:
+            {{ include "ingress-nginx.wallarmWstoreVariables" . | nindent 12 }}
+          {{- if .Values.postanalytics.tls.enabled }}
+            {{ include "ingress-nginx.wallarmWstoreTlsVariables" . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.postanalytics.extraEnvs }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          ports:
+          - name: wstore
+            containerPort: {{ include "ingress-nginx.wallarmPostanalyticsPort" . }}
+            protocol: TCP
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          {{- with .Values.postanalytics.extraVolumeMounts }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ include "ingress-nginx.wallarmPostanalyticsHealthPort" . }}
+            initialDelaySeconds: {{ .Values.postanalytics.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.postanalytics.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.postanalytics.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.postanalytics.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.postanalytics.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ include "ingress-nginx.wallarmPostanalyticsHealthPort" . }}
+            initialDelaySeconds: {{ .Values.postanalytics.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.postanalytics.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.postanalytics.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.postanalytics.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.postanalytics.readinessProbe.failureThreshold }}
+          {{- with .Values.postanalytics.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.postanalytics.securityContext }}
+          securityContext:
+            {{- toYaml .Values.postanalytics.securityContext | nindent 12 }}
+          {{- else }}
+          {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .) | nindent 10 }}
+          {{- end }}
+        - name: wallarm-appstructure
+          image: {{ .Values.config.images.helper.repository }}:{{ .Values.config.images.helper.tag }}
+          imagePullPolicy: {{ .Values.config.images.helper.pullPolicy }}
+          args: ["appstructure"]
+          {{- with .Values.postanalytics.appstructure.extraEnvs }}
+          env:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          {{- with .Values.postanalytics.appstructure.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.postanalytics.appstructure.securityContext }}
+          securityContext:
+            {{- toYaml .Values.postanalytics.appstructure.securityContext | nindent 12 }}
+          {{- else }}
+          {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .) | nindent 10 }}
+          {{- end }}
+
+      {{- with .Values.postanalytics.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postanalytics.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postanalytics.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postanalytics.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-apifw
+        emptyDir: {}
+      {{- include "ingress-nginx.wallarmTokenVolume" . | nindent 6 }}
+      {{- with .Values.postanalytics.extraVolumes }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+{{- end }}
+{{- end }}

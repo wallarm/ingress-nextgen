@@ -71,7 +71,6 @@ rules:
   resources:
   - replicasets
   - daemonsets
-  - statefulsets
   verbs:
   - get
 - apiGroups:
@@ -88,30 +87,6 @@ rules:
   - ingresses/status
   verbs:
   - update
-{{- end }}
-{{- if .Values.controller.appprotect.enable }}
-- apiGroups:
-  - appprotect.f5.com
-  resources:
-  - appolicies
-  - aplogconfs
-  - apusersigs
-  verbs:
-  - get
-  - watch
-  - list
-{{- end }}
-{{- if .Values.controller.appprotectdos.enable }}
-- apiGroups:
-    - appprotectdos.f5.com
-  resources:
-    - apdospolicies
-    - apdoslogconfs
-    - dosprotectedresources
-  verbs:
-    - get
-    - watch
-    - list
 {{- end }}
 {{- if .Values.controller.enableCustomResources }}
 - apiGroups:
