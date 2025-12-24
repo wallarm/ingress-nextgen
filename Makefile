@@ -1,7 +1,7 @@
 # variables that should not be overridden by the user
 VER = $(shell grep IC_VERSION .github/data/version.txt | cut -d '=' -f 2)
 GIT_TAG = $(shell git describe --exact-match --tags || echo untagged)
-VERSION = $(VER)-SNAPSHOT
+VERSION = $(VER)
 # renovate: datasource=docker depName=nginx/nginx
 NGINX_OSS_VERSION             ?= 1.29.3
 NGINX_PLUS_VERSION            ?= R35
@@ -14,12 +14,13 @@ PLUS_ARGS = --build-arg NGINX_PLUS_VERSION=$(NGINX_PLUS_VERSION) --secret id=ngi
 
 # Variables that can be overridden
 REGISTRY                      ?= ## The registry where the image is located.
-PREFIX                        ?= nginx/nginx-ingress ## The name of the image. For example, nginx/nginx-ingress
+PREFIX                        ?= wallarm/nginx-ic-new ## The name of the image. For example, wallarm/nginx-ic-new
 TAG                           ?= $(VERSION:v%=%) ## The tag of the image. For example, 2.0.0
 TARGET                        ?= local ## The target of the build. Possible values: local, container and download
 PLUS_REPO                     ?= "pkgs.nginx.com" ## The package repo to install nginx-plus from
 override DOCKER_BUILD_OPTIONS += --build-arg IC_VERSION=$(VERSION) --build-arg PACKAGE_REPO=$(PLUS_REPO) ## The options for the docker build command. For example, --pull
 ARCH                          ?= amd64 ## The architecture of the image or binary. For example: amd64, arm64, ppc64le, s390x. Not all architectures are supported for all targets
+PLATFORM                      ?= linux/amd64
 GOOS                          ?= linux ## The OS of the binary. For example linux, darwin
 TELEMETRY_ENDPOINT            ?= oss.edge.df.f5.com:443
 # renovate: datasource=docker depName=golangci/golangci-lint
@@ -43,8 +44,14 @@ else
 BUILD_IMAGE             := $(strip $(REGISTRY))/$(strip $(PREFIX)):$(strip $(TAG))
 endif
 
+ifndef CI
+	DOCKER_ACTION=--load
+else
+	DOCKER_ACTION=--push
+endif
+
 # final docker build command
-DOCKER_CMD = docker build --platform linux/$(strip $(ARCH)) $(strip $(DOCKER_BUILD_OPTIONS)) --target $(strip $(TARGET)) -f build/Dockerfile -t $(BUILD_IMAGE) .
+DOCKER_CMD = docker buildx build --platform $(PLATFORM) $(strip $(DOCKER_BUILD_OPTIONS)) --target $(strip $(TARGET)) -f build/Dockerfile -t $(BUILD_IMAGE) $(DOCKER_ACTION) .
 
 export DOCKER_BUILDKIT = 1
 

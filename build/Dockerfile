@@ -86,6 +86,21 @@ RUN --mount=type=bind,from=nginx-files,src=patch-os.sh,target=/usr/local/bin/pat
 	&& patch-os.sh
 USER 101
 
+############################################# WALLARM files #############################################
+FROM alpine AS wallarm-files
+ARG AIO_VERSION
+ARG TARGETARCH
+
+# Simply download, unpack, pass some scripts for later exec
+ADD --chown=101:0 --chmod=0555 AIO_BASE AIO_BASE
+ADD --chown=101:0 --chmod=0755 build/scripts/fetch-wallarm.sh fetch-wallarm.sh
+ADD --chown=101:0 --chmod=0755 build/scripts/copy-wallarm.sh copy-wallarm.sh
+ADD --chown=101:0 --chmod=0755 build/scripts/pick-module.sh pick-module.sh
+
+# First line is a tmp fix fox buggy busybox which ruined multi-arch builds
+RUN apk upgrade --no-cache --scripts=no apk-tools && \
+	apk add --no-cache bash grep curl && \
+	./fetch-wallarm.sh
 
 ############################################# Base image for Alpine #############################################
 FROM nginx:1.29.3-alpine3.22@sha256:b3c656d55d7ad751196f21b7fd2e8d4da9cb430e32f646adcf92441b72f82b14 AS alpine
@@ -96,6 +111,9 @@ ARG NGINX_AGENT_VERSION
 RUN --mount=type=bind,from=nginx-files,src=nginx_signing.rsa.pub,target=/etc/apk/keys/nginx_signing.rsa.pub \
 	--mount=type=bind,from=nginx-files,src=user_agent,target=/tmp/user_agent \
 	--mount=type=bind,from=nginx-files,src=agent.sh,target=/usr/local/bin/agent.sh \
+	--mount=type=bind,from=wallarm-files,src=copy-wallarm.sh,target=/tmp/copy-wallarm.sh \
+	--mount=type=bind,from=wallarm-files,src=/tmp/opt/wallarm/,target=/tmp/opt/wallarm/ \
+	/tmp/copy-wallarm.sh \
 	apk add --no-cache libcap libstdc++ \
 	&& export $(cat /tmp/user_agent) \
 	&& printf "%s%s%s\n" "http://packages.nginx.org/nginx/mainline/alpine/v" `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` "/main" >> /etc/apk/repositories \
@@ -598,6 +616,7 @@ ENV BUILD_OS=${BUILD_OS}
 RUN --mount=type=bind,target=/code \
 	--mount=type=bind,from=nginx-files,src=common.sh,target=/usr/local/bin/common.sh \
 	--mount=type=bind,from=nginx-files,src=patch-os.sh,target=/usr/local/bin/patch-os.sh \
+	apk add --no-cache libcap && \
 	patch-os.sh \
 	&& common.sh
 
@@ -609,8 +628,8 @@ ENTRYPOINT ["/nginx-ingress"]
 USER 101
 
 LABEL org.opencontainers.image.version="${IC_VERSION}" \
-	org.opencontainers.image.documentation=https://docs.nginx.com/nginx-ingress-controller \
-	org.opencontainers.image.vendor="NGINX Inc <kubernetes@nginx.com>" \
+	org.opencontainers.image.documentation=https://docs.wallarm.com/ \
+	org.opencontainers.image.vendor="Wallarm <support@wallarm.com>" \
 	org.nginx.kic.image.build.target="${TARGETPLATFORM}" \
 	org.nginx.kic.image.build.os="${BUILD_OS}" \
 	org.nginx.kic.image.build.nginx.version="${NGINX_VERSION}"
