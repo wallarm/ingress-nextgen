@@ -116,7 +116,7 @@ server {
 	{{- range $value := $server.ServerSnippets}}
 	{{$value}}{{- end}}
 
-	{{ if $.WallarmEnabled }}
+	{{- if $.WallarmEnabled }}
 	{{ if and ($.WallarmAPIFwEnabled) (isServerOkForWallarmAPIFW $server) }}
 	# Wallarm API Firewall
 	location ~ ^/wallarm-apifw(.*)$ {
@@ -266,7 +266,7 @@ server {
 		{{if $location.LimitReq.RejectCode}}limit_req_status {{$location.LimitReq.RejectCode}};{{end}}
 		{{end}}
 
-		{{ if $.WallarmEnabled }}
+		{{- if $.WallarmEnabled }}
 		{{- with $location.Wallarm }}
 		# Wallarm WAF location-level configuration
 		{{- if .Mode }}
@@ -305,8 +305,8 @@ server {
 		{{- end }}
 		{{ if and (isServerOkForWallarmAPIFW $server) (not (isLocationOkForWallarmAPIFW $location)) }}
 		wallarm_enable_apifw off;
-		{{ end }}
-		{{ end }}
+		{{- end }}
+		{{- end }}
 	}
 	{{end -}}
 	{{- if $server.GRPCOnly}}

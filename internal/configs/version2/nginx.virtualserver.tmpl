@@ -209,8 +209,8 @@ server {
     {{ $snippet }}
     {{- end }}
 
-    {{ if $.WallarmEnabled }}
-    {{ if and ($.WallarmAPIFwEnabled) (isServerOkForWallarmAPIFW $s) }}
+    {{- if $.WallarmEnabled }}
+    {{- if and ($.WallarmAPIFwEnabled) (isServerOkForWallarmAPIFW $s) }}
     # Wallarm API Firewall
     location ~ ^/wallarm-apifw(.*)$ {
         wallarm_mode off;
@@ -225,10 +225,10 @@ server {
         access_log off;
         return 500 "API FW fallback";
     }
-    {{ else }}
+    {{- else }}
     wallarm_enable_apifw off;
-    {{ end }}
-    {{ end }}
+    {{- end }}
+    {{- end }}
 
     {{- range $l := $s.InternalRedirectLocations }}
     location {{ $l.Path }} {
@@ -495,47 +495,47 @@ server {
         {{ $proxyOrGRPC }}_next_upstream_tries {{ $l.ProxyNextUpstreamTries }};
         {{- end }}
 
-        {{ if $.WallarmEnabled }}
-        {{- with $l.Wallarm }}
+        {{- if $.WallarmEnabled }}
+            {{- with $l.Wallarm }}
         # Wallarm WAF location-level configuration
-        {{- if .Mode }}
+                {{- if .Mode }}
         wallarm_mode {{ .Mode }};
-        {{- end }}
-        {{- if .ModeAllowOverride }}
+                {{- end }}
+                {{- if .ModeAllowOverride }}
         wallarm_mode_allow_override {{ .ModeAllowOverride }};
-        {{- end }}
-        {{- if .Fallback }}
+                {{- end }}
+                {{- if .Fallback }}
         wallarm_fallback {{ .Fallback }};
-        {{- end }}
-        {{- if .Application }}
+                {{- end }}
+                {{- if .Application }}
         wallarm_application {{ .Application }};
-        {{- end }}
-        {{- if .PartnerClientUUID }}
+                {{- end }}
+                {{- if .PartnerClientUUID }}
         wallarm_partner_client_uuid {{ .PartnerClientUUID }};
-        {{- end }}
-        {{- if .BlockPage }}
+                {{- end }}
+                {{- if .BlockPage }}
         wallarm_block_page {{ .BlockPage }};
-        {{- end }}
-        {{- if .ACLBlockPage }}
+                {{- end }}
+                {{- if .ACLBlockPage }}
         wallarm_acl_block_page {{ .ACLBlockPage }};
-        {{- end }}
-        {{- if .ParseResponse }}
+                {{- end }}
+                {{- if .ParseResponse }}
         wallarm_parse_response {{ .ParseResponse }};
-        {{- end }}
-        {{- if .ParseWebsocket }}
+                {{- end }}
+                {{- if .ParseWebsocket }}
         wallarm_parse_websocket {{ .ParseWebsocket }};
-        {{- end }}
-        {{- if .UnpackResponse }}
+                {{- end }}
+                {{- if .UnpackResponse }}
         wallarm_unpack_response {{ .UnpackResponse }};
-        {{- end }}
-        {{- range $parser := .ParserDisable }}
+                {{- end }}
+                {{- range $parser := .ParserDisable }}
         wallarm_parser_disable {{ $parser }};
-        {{- end }}
-        {{- end }}
-        {{ if and (isServerOkForWallarmAPIFW $s) (not (isLocationOkForWallarmAPIFW $l)) }}
+                {{- end }}
+            {{- end }}
+            {{- if and (isServerOkForWallarmAPIFW $s) (not (isLocationOkForWallarmAPIFW $l)) }}
         wallarm_enable_apifw off;
-        {{ end }}
-        {{ end }}
+            {{- end }}
+        {{- end }}
     }
     {{- end }}
 

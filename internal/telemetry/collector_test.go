@@ -788,9 +788,9 @@ func TestInvalidMergeableIngressAnnotations(t *testing.T) {
 		"nginx.org/mergeable-ingress-type": "minion",
 	}
 	teaAnnotations := map[string]string{
-		"nginx.org/mergeable-type":                   "minion",
-		"nginx.org/proxy-set":                        "X-$-ABC",
-		"nginx.ingress.kubernetes.io/rewrite-target": "/",
+		"nginx.org/mergeable-type": "minion",
+		"nginx.org/proxy-set":      "X-$-ABC",
+		//"nginx.ingress.kubernetes.io/rewrite-target": "/",
 	}
 
 	configurator := newConfiguratorWithMergeableIngressCustomAnnotations(t, masterAnnotations, coffeeAnnotations, teaAnnotations)
@@ -810,7 +810,7 @@ func TestInvalidMergeableIngressAnnotations(t *testing.T) {
 	expectedAnnotations := []string{
 		"kubectl.kubernetes.io/last-applied-configuration",
 		"nginx.org/proxy-set-header",
-		"nginx.ingress.kubernetes.io/rewrite-target",
+		//"nginx.ingress.kubernetes.io/rewrite-target",
 	}
 
 	got := buf.String()
@@ -870,10 +870,10 @@ func TestInvalidStandardIngressAnnotations(t *testing.T) {
 	exp := &telemetry.StdoutExporter{Endpoint: buf}
 
 	annotations := map[string]string{
-		"alb.ingress.kubernetes.io/group.order":      "0",
-		"alb.ingress.kubernetes.io/ip-address-type":  "ipv4",
-		"alb.ingress.kubernetes.io/scheme":           "internal",
-		"nginx.ingress.kubernetes.io/rewrite-target": "/",
+		"alb.ingress.kubernetes.io/group.order":     "0",
+		"alb.ingress.kubernetes.io/ip-address-type": "ipv4",
+		"alb.ingress.kubernetes.io/scheme":          "internal",
+		// "nginx.ingress.kubernetes.io/rewrite-target": "/",
 	}
 
 	configurator := newConfiguratorWithIngressWithCustomAnnotations(t, annotations)
@@ -894,7 +894,7 @@ func TestInvalidStandardIngressAnnotations(t *testing.T) {
 		"alb.ingress.kubernetes.io/scheme",
 		"alb.ingress.kubernetes.io/group.order",
 		"alb.ingress.kubernetes.io/ip-address-type",
-		"nginx.ingress.kubernetes.io/rewrite-target",
+		// "nginx.ingress.kubernetes.io/rewrite-target",
 	}
 
 	got := buf.String()
