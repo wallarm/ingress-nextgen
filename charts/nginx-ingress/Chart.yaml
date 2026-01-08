@@ -1,5 +1,5 @@
 apiVersion: v2
-name: wallarm-ingress-new
+name: wallarm-ingress
 version: 7.0.0
 appVersion: 6.7.5
 kubeVersion: ">= 1.25.0-0"
@@ -8,7 +8,7 @@ description: Ingress controller for Kubernetes using NGINX as a reverse proxy an
 icon: https://static.wallarm.com/wallarm-logo.svg
 home: https://www.wallarm.com
 sources:
-  - https://github.com/wallarm/ingress # TODO: fix
+  - https://github.com/wallarm/ingress2 # TODO: fix
 keywords:
   - ingress
   - nginx

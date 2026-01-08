@@ -53,34 +53,34 @@ const nginxMeshInternalRouteAnnotation = "nsm.nginx.com/internal-route"
 // Wallarm WAF annotation constants
 const (
 	// WallarmModeAnnotation specifies Wallarm WAF mode (off, monitoring, safe_blocking, block)
-	WallarmModeAnnotation = "nginx.ingress.kubernetes.io/wallarm-mode"
+	WallarmModeAnnotation = "nginx.org/wallarm-mode"
 
 	// WallarmModeAllowOverrideAnnotation controls mode override via filtering rules (on, off, strict)
-	WallarmModeAllowOverrideAnnotation = "nginx.ingress.kubernetes.io/wallarm-mode-allow-override"
+	WallarmModeAllowOverrideAnnotation = "nginx.org/wallarm-mode-allow-override"
 
 	// WallarmFallbackAnnotation enables fallback mode (on, off)
-	WallarmFallbackAnnotation = "nginx.ingress.kubernetes.io/wallarm-fallback"
+	WallarmFallbackAnnotation = "nginx.org/wallarm-fallback"
 
 	// WallarmApplicationAnnotation is the unique application identifier used in Wallarm Cloud
-	WallarmApplicationAnnotation = "nginx.ingress.kubernetes.io/wallarm-application"
+	WallarmApplicationAnnotation = "nginx.org/wallarm-application"
 
 	// WallarmPartnerClientUUIDAnnotation for multi-tenant Wallarm setups
-	WallarmPartnerClientUUIDAnnotation = "nginx.ingress.kubernetes.io/wallarm-partner-client-uuid"
+	WallarmPartnerClientUUIDAnnotation = "nginx.org/wallarm-partner-client-uuid"
 
 	// WallarmBlockPageAnnotation specifies custom block page configuration
-	WallarmBlockPageAnnotation = "nginx.ingress.kubernetes.io/wallarm-block-page"
+	WallarmBlockPageAnnotation = "nginx.org/wallarm-block-page"
 
 	// WallarmParseResponseAnnotation enables response analysis (on, off)
-	WallarmParseResponseAnnotation = "nginx.ingress.kubernetes.io/wallarm-parse-response"
+	WallarmParseResponseAnnotation = "nginx.org/wallarm-parse-response"
 
 	// WallarmParseWebsocketAnnotation enables WebSocket message analysis (on, off)
-	WallarmParseWebsocketAnnotation = "nginx.ingress.kubernetes.io/wallarm-parse-websocket"
+	WallarmParseWebsocketAnnotation = "nginx.org/wallarm-parse-websocket"
 
 	// WallarmUnpackResponseAnnotation enables response decompression (on, off)
-	WallarmUnpackResponseAnnotation = "nginx.ingress.kubernetes.io/wallarm-unpack-response"
+	WallarmUnpackResponseAnnotation = "nginx.org/wallarm-unpack-response"
 
 	// WallarmParserDisableAnnotation disables specific parsers (comma-separated list)
-	WallarmParserDisableAnnotation = "nginx.ingress.kubernetes.io/wallarm-parser-disable"
+	WallarmParserDisableAnnotation = "nginx.org/wallarm-parser-disable"
 )
 
 var masterDenylist = map[string]bool{
@@ -156,7 +156,6 @@ var allowedAnnotationKeys = []string{
 	"nginx.org",
 	"nginx.com",
 	"f5.com",
-	"nginx.ingress.kubernetes.io",
 	"ingress.kubernetes.io/ssl-redirect",
 }
 
