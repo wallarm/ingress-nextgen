@@ -465,11 +465,6 @@ func validateWallarm(wallarm *v1.Wallarm, fieldPath *field.Path) field.ErrorList
 		allErrs = append(allErrs, validateWallarmBlockPage(wallarm.BlockPage, fieldPath.Child("blockPage"))...)
 	}
 
-	// Validate aclBlockPage format if provided
-	if wallarm.ACLBlockPage != "" {
-		allErrs = append(allErrs, validateWallarmBlockPage(wallarm.ACLBlockPage, fieldPath.Child("aclBlockPage"))...)
-	}
-
 	return allErrs
 }
 

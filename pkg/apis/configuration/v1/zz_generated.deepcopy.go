@@ -1872,11 +1872,6 @@ func (in *Wallarm) DeepCopyInto(out *Wallarm) {
 		*out = new(int)
 		**out = **in
 	}
-	if in.Instance != nil {
-		in, out := &in.Instance, &out.Instance
-		*out = new(int)
-		**out = **in
-	}
 	if in.ParserDisable != nil {
 		in, out := &in.ParserDisable, &out.ParserDisable
 		*out = make([]string, len(*in))

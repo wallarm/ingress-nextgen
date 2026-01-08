@@ -1814,7 +1814,6 @@ func (p *policiesCfg) addWallarmConfig(
 		Fallback:          wallarm.Fallback,
 		PartnerClientUUID: wallarm.PartnerClientUUID,
 		BlockPage:         wallarm.BlockPage,
-		ACLBlockPage:      wallarm.ACLBlockPage,
 		ParseResponse:     wallarm.ParseResponse,
 		ParseWebsocket:    wallarm.ParseWebsocket,
 		UnpackResponse:    wallarm.UnpackResponse,
@@ -1824,8 +1823,6 @@ func (p *policiesCfg) addWallarmConfig(
 	// Application takes precedence over Instance (Instance is an alias)
 	if wallarm.Application != nil {
 		p.Wallarm.Application = strconv.Itoa(*wallarm.Application)
-	} else if wallarm.Instance != nil {
-		p.Wallarm.Application = strconv.Itoa(*wallarm.Instance)
 	}
 
 	return res

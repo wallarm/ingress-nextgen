@@ -140,17 +140,16 @@ type ConfigParams struct {
 	LimitReqScale      bool
 
 	// Wallarm WAF configuration for server/location level
-	WallarmMode                  string
-	WallarmModeAllowOverride     string
-	WallarmFallback              string
-	WallarmApplication           string
-	WallarmPartnerClientUUID     string
-	WallarmBlockPage             string
-	WallarmACLBlockPage          string
-	WallarmParseResponse         string
-	WallarmParseWebsocket        string
-	WallarmUnpackResponse        string
-	WallarmParserDisable         []string
+	WallarmMode              string
+	WallarmModeAllowOverride string
+	WallarmFallback          string
+	WallarmApplication       string
+	WallarmPartnerClientUUID string
+	WallarmBlockPage         string
+	WallarmParseResponse     string
+	WallarmParseWebsocket    string
+	WallarmUnpackResponse    string
+	WallarmParserDisable     []string
 
 	// Wallarm WAF main config (nginx.conf level)
 	MainEnableWallarm                       bool

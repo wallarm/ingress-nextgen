@@ -589,10 +589,6 @@ spec:
                 description: The Wallarm policy configures Wallarm WAF protection
                   settings.
                 properties:
-                  aclBlockPage:
-                    description: 'Deprecated: Use BlockPage with type=acl_ip or type=acl_source
-                      instead.'
-                    type: string
                   application:
                     description: |-
                       The unique application identifier used in the Wallarm Cloud to distinguish data from different applications.
@@ -611,11 +607,6 @@ spec:
                     - "on"
                     - "off"
                     type: string
-                  instance:
-                    description: 'Deprecated: Use Application instead. Instance is
-                      an alias for Application.'
-                    minimum: 1
-                    type: integer
                   mode:
                     description: 'The Wallarm WAF mode. Allowed values: off, monitoring,
                       safe_blocking, block.'

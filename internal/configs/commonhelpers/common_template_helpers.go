@@ -36,7 +36,6 @@ type Wallarm struct {
 	Application       string
 	PartnerClientUUID string
 	BlockPage         string
-	ACLBlockPage      string
 	ParseResponse     string
 	ParseWebsocket    string
 	UnpackResponse    string

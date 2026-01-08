@@ -64,17 +64,11 @@ const (
 	// WallarmApplicationAnnotation is the unique application identifier used in Wallarm Cloud
 	WallarmApplicationAnnotation = "nginx.ingress.kubernetes.io/wallarm-application"
 
-	// WallarmInstanceAnnotation is an alias for WallarmApplicationAnnotation (deprecated)
-	WallarmInstanceAnnotation = "nginx.ingress.kubernetes.io/wallarm-instance"
-
 	// WallarmPartnerClientUUIDAnnotation for multi-tenant Wallarm setups
 	WallarmPartnerClientUUIDAnnotation = "nginx.ingress.kubernetes.io/wallarm-partner-client-uuid"
 
 	// WallarmBlockPageAnnotation specifies custom block page configuration
 	WallarmBlockPageAnnotation = "nginx.ingress.kubernetes.io/wallarm-block-page"
-
-	// WallarmACLBlockPageAnnotation specifies ACL block page (deprecated)
-	WallarmACLBlockPageAnnotation = "nginx.ingress.kubernetes.io/wallarm-acl-block-page"
 
 	// WallarmParseResponseAnnotation enables response analysis (on, off)
 	WallarmParseResponseAnnotation = "nginx.ingress.kubernetes.io/wallarm-parse-response"
@@ -772,13 +766,6 @@ func parseWallarmAnnotations(ingEx *IngressEx, cfgParams *ConfigParams, l *slog.
 		} else {
 			cfgParams.WallarmApplication = wallarmApp
 		}
-	} else if wallarmInstance, exists := ingEx.Ingress.Annotations[WallarmInstanceAnnotation]; exists {
-		if err := validateApplicationID(wallarmInstance); err != nil {
-			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
-				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmInstanceAnnotation, wallarmInstance, err)
-		} else {
-			cfgParams.WallarmApplication = wallarmInstance
-		}
 	}
 
 	// wallarm-partner-client-uuid: UUID string
@@ -798,16 +785,6 @@ func parseWallarmAnnotations(ingEx *IngressEx, cfgParams *ConfigParams, l *slog.
 				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmBlockPageAnnotation, wallarmBlockPage, err)
 		} else {
 			cfgParams.WallarmBlockPage = wallarmBlockPage
-		}
-	}
-
-	// wallarm-acl-block-page: deprecated ACL block page
-	if wallarmACLBlockPage, exists := ingEx.Ingress.Annotations[WallarmACLBlockPageAnnotation]; exists {
-		if err := validateBlockPage(wallarmACLBlockPage); err != nil {
-			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
-				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmACLBlockPageAnnotation, wallarmACLBlockPage, err)
-		} else {
-			cfgParams.WallarmACLBlockPage = wallarmACLBlockPage
 		}
 	}
 
@@ -931,8 +908,7 @@ func validateBlockPage(s string) error {
 		valueSplit := strings.Split(value, " ")
 		page := valueSplit[0]
 		switch page[0] {
-		case '/', '&', '@', '$':
-			break
+		case '/', '&', '@', '$': // ok
 		default:
 			return fmt.Errorf("invalid block page format \"%s\"", page)
 		}
@@ -955,8 +931,7 @@ func validateBlockPage(s string) error {
 			case "type":
 				for _, typeValue := range strings.Split(optionalValue, ",") {
 					switch typeValue {
-					case "acl_ip", "acl_source", "attack":
-						break
+					case "acl_ip", "acl_source", "attack": // ok
 					default:
 						return fmt.Errorf("invalid type value \"%s\"", typeValue)
 					}
@@ -980,7 +955,6 @@ func generateWallarm(cfg *ConfigParams) *commonhelpers.Wallarm {
 		Application:       cfg.WallarmApplication,
 		PartnerClientUUID: cfg.WallarmPartnerClientUUID,
 		BlockPage:         cfg.WallarmBlockPage,
-		ACLBlockPage:      cfg.WallarmACLBlockPage,
 		ParseResponse:     cfg.WallarmParseResponse,
 		ParseWebsocket:    cfg.WallarmParseWebsocket,
 		UnpackResponse:    cfg.WallarmUnpackResponse,

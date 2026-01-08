@@ -287,9 +287,6 @@ server {
 		{{- if .BlockPage }}
 		wallarm_block_page {{ .BlockPage }};
 		{{- end }}
-		{{- if .ACLBlockPage }}
-		wallarm_acl_block_page {{ .ACLBlockPage }};
-		{{- end }}
 		{{- if .ParseResponse }}
 		wallarm_parse_response {{ .ParseResponse }};
 		{{- end }}

@@ -1027,16 +1027,11 @@ type Wallarm struct {
 	// Must be a positive integer. Maps to wallarm_application directive.
 	// +kubebuilder:validation:Minimum=1
 	Application *int `json:"application"`
-	// Deprecated: Use Application instead. Instance is an alias for Application.
-	// +kubebuilder:validation:Minimum=1
-	Instance *int `json:"instance"`
 	// The UUID of the Wallarm partner client for multi-tenant setups.
 	// +kubebuilder:validation:Pattern=`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`
 	PartnerClientUUID string `json:"partnerClientUUID"`
 	// Custom block page configuration. Supports file path, named location, URL, or variable.
 	BlockPage string `json:"blockPage"`
-	// Deprecated: Use BlockPage with type=acl_ip or type=acl_source instead.
-	ACLBlockPage string `json:"aclBlockPage"`
 	// Enables analysis of responses from the application. Allowed values: on, off.
 	// +kubebuilder:validation:Enum=on;off
 	ParseResponse string `json:"parseResponse"`
