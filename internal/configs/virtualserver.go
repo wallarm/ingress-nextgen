@@ -923,7 +923,7 @@ func (vsc *virtualServerConfigurator) GenerateVirtualServerConfig(
 		KeyValZones:             keyValZones,
 		KeyVals:                 keyVals,
 		TwoWaySplitClients:      twoWaySplitClients,
-		WallarmEnabled:          vsc.cfgParams.MainEnableWallarm,
+		WallarmEnabled:          vsc.cfgParams.MainWallarmEnabled,
 		WallarmAPIFwEnabled:     vsc.cfgParams.MainWallarmAPIFwEnabled,
 		WallarmAPIFwPort:        vsc.cfgParams.MainWallarmAPIFwPort,
 	}

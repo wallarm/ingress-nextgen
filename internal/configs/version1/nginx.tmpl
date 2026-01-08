@@ -14,7 +14,7 @@ pid        /var/lib/nginx/nginx.pid;
 {{- if .MainOtelLoadModule}}
 load_module modules/ngx_otel_module.so;
 {{- end}}
-{{- if .EnableWallarm}}
+{{- if .WallarmEnabled}}
 load_module modules/ngx_http_wallarm_module.so;
 {{- end}}
 
@@ -71,7 +71,7 @@ http {
     access_log syslog:server=unix:/var/lib/nginx/nginx-syslog.sock,nohostname,tag=nginx response_time;
     {{- end}}
 
-    {{- if .EnableWallarm}}
+    {{- if .WallarmEnabled}}
     # Wallarm WAF configuration
     wallarm_upstream_connect_attempts {{.WallarmUpstreamConnectAttempts}};
     wallarm_upstream_reconnect_interval {{.WallarmUpstreamReconnectInterval}};
@@ -102,7 +102,7 @@ http {
     wallarm_fallback {{.WallarmFallback}};
 
     # Wallarm upstream for postanalytics (wstore)
-    {{- if .EnableWallarm}}
+    {{- if .WallarmEnabled}}
     upstream wallarm_wstore {
         server {{.WallarmUpstreamService}}:3313 max_fails=0 fail_timeout=0 max_conns=16;
         keepalive 16;
@@ -230,7 +230,7 @@ http {
         {{range $value := .NginxStatusAllowCIDRs}}
         allow {{$value}};{{end}}
 
-        {{ if .EnableWallarm }}
+        {{ if .WallarmEnabled }}
         wallarm_mode off;
         {{ end }}
 
@@ -239,7 +239,7 @@ http {
             stub_status;
         }
 
-        {{ if .EnableWallarm }}
+        {{ if .WallarmEnabled }}
         location /wallarm-status {
             access_log off;
             disable_acl "on";
@@ -254,7 +254,7 @@ http {
         listen unix:/var/lib/nginx/nginx-status.sock;
         access_log off;
 
-        {{ if .EnableWallarm }}
+        {{ if .WallarmEnabled }}
         wallarm_mode off;
         {{ end }}
 
@@ -293,7 +293,7 @@ http {
     }
     {{- end}}
 
-    {{- if .EnableWallarm }}
+    {{- if .WallarmEnabled }}
     # default server, used for wallarm nginx stats
     server {
         listen {{ .WallarmMetricsPort }};

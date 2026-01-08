@@ -152,7 +152,7 @@ type ConfigParams struct {
 	WallarmParserDisable     []string
 
 	// Wallarm WAF main config (nginx.conf level)
-	MainEnableWallarm                       bool
+	MainWallarmEnabled                      bool
 	MainWallarmUpstreamService              string
 	MainWallarmUpstreamConnectAttempts      int
 	MainWallarmUpstreamReconnectInterval    string
@@ -318,7 +318,7 @@ func NewDefaultConfigParams(ctx context.Context, isPlus bool) *ConfigParams {
 		WallarmUnpackResponse:    "on",
 
 		// Wallarm default values for main config (nginx.conf level)
-		MainEnableWallarm:                    false,
+		MainWallarmEnabled:                   false,
 		MainWallarmUpstreamConnectAttempts:   10,
 		MainWallarmUpstreamReconnectInterval: "15s",
 		MainWallarmProcessTimeLimit:          1000,

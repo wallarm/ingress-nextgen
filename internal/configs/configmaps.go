@@ -708,13 +708,13 @@ func ParseConfigMap(ctx context.Context, cfgm *v1.ConfigMap, nginxPlus bool, has
 	}
 
 	// Wallarm WAF main config parsing
-	if enableWallarm, exists, err := GetMapKeyAsBool(cfgm.Data, "enable-wallarm", cfgm); exists {
+	if WallarmEnabled, exists, err := GetMapKeyAsBool(cfgm.Data, "enable-wallarm", cfgm); exists {
 		if err != nil {
 			nl.Error(l, err)
 			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
 			configOk = false
 		} else {
-			cfgParams.MainEnableWallarm = enableWallarm
+			cfgParams.MainWallarmEnabled = WallarmEnabled
 		}
 	}
 
@@ -1325,7 +1325,7 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		NginxVersion:            staticCfgParams.NginxVersion,
 
 		// Wallarm WAF configuration
-		EnableWallarm:                       config.MainEnableWallarm,
+		WallarmEnabled:                      config.MainWallarmEnabled,
 		WallarmUpstreamService:              config.MainWallarmUpstreamService,
 		WallarmUpstreamConnectAttempts:      config.MainWallarmUpstreamConnectAttempts,
 		WallarmUpstreamReconnectInterval:    config.MainWallarmUpstreamReconnectInterval,

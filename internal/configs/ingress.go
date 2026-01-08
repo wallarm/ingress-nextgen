@@ -361,7 +361,7 @@ func generateNginxCfg(p NginxCfgParams) (version1.IngressNginxConfig, Warnings) 
 		DynamicSSLReloadEnabled: p.staticParams.DynamicSSLReload,
 		StaticSSLPath:           p.staticParams.StaticSSLPath,
 		LimitReqZones:           limitReqZones,
-		WallarmEnabled:          p.BaseCfgParams.MainEnableWallarm,
+		WallarmEnabled:          p.BaseCfgParams.MainWallarmEnabled,
 		WallarmAPIFwEnabled:     p.BaseCfgParams.MainWallarmAPIFwEnabled,
 		WallarmAPIFwPort:        p.BaseCfgParams.MainWallarmAPIFwPort,
 	}, allWarnings
@@ -763,7 +763,7 @@ func generateNginxCfgForMergeableIngresses(p NginxCfgParams) (version1.IngressNg
 		DynamicSSLReloadEnabled: p.staticParams.DynamicSSLReload,
 		StaticSSLPath:           p.staticParams.StaticSSLPath,
 		LimitReqZones:           limitReqZones,
-		WallarmEnabled:          p.BaseCfgParams.MainEnableWallarm,
+		WallarmEnabled:          p.BaseCfgParams.MainWallarmEnabled,
 		WallarmAPIFwEnabled:     p.BaseCfgParams.MainWallarmAPIFwEnabled,
 		WallarmAPIFwPort:        p.BaseCfgParams.MainWallarmAPIFwPort,
 	}, warnings

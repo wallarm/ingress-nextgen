@@ -321,19 +321,19 @@ type MainConfig struct {
 	NginxVersion                       nginx.Version
 
 	// Wallarm WAF static configuration
-	EnableWallarm                   bool
-	WallarmUpstreamService          string
-	WallarmUpstreamConnectAttempts  int
-	WallarmUpstreamReconnectInterval string
-	WallarmProcessTimeLimit         int
-	WallarmProcessTimeLimitBlock    string
-	WallarmRequestMemoryLimit       string
-	WallarmWorkerRlimitVmem         string
-	WallarmMetricsPort              int
-	WallarmFallback                 string
-	WallarmACLExportEnable          string
-	WallarmACLExportShmSize         string
-	WallarmACLExportSampleLimit     int
+	WallarmEnabled                      bool
+	WallarmUpstreamService              string
+	WallarmUpstreamConnectAttempts      int
+	WallarmUpstreamReconnectInterval    string
+	WallarmProcessTimeLimit             int
+	WallarmProcessTimeLimitBlock        string
+	WallarmRequestMemoryLimit           string
+	WallarmWorkerRlimitVmem             string
+	WallarmMetricsPort                  int
+	WallarmFallback                     string
+	WallarmACLExportEnable              string
+	WallarmACLExportShmSize             string
+	WallarmACLExportSampleLimit         int
 	WallarmACLExportSampleGroupLifetime string
 	WallarmACLExportStatsBucketInterval string
 	WallarmACLExportStatsBucketLifetime string
