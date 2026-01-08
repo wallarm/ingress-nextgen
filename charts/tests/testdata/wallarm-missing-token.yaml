@@ -1,0 +1,6 @@
+config:
+  wallarm:
+    enabled: true
+    api:
+      host: "api.wallarm.com"
+      # token is missing and existingSecret is not enabled - should fail

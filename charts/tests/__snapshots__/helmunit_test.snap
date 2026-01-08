@@ -11009,3 +11009,3725 @@ metadata:
     app.kubernetes.io/version: "6.7.5"
     app.kubernetes.io/managed-by: Helm
 ---
+
+[TestHelmNICTemplate/wallarmEnabled - 1]
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wallarm-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-wallarm-token
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  token: "dGVzdC10b2tlbi0xMjM="
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+data:
+  enable-wallarm: "true"
+  wallarm-upstream-service: "wallarm-enabled-wallarm-ingress-new-wallarm-postanalytics"
+  wallarm-metrics-port: "18080"
+  wallarm-apifw-enabled: "true"
+  wallarm-apifw-port: "18081"
+  wallarm-fallback: "on"
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-leader-election-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-leader-election
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrole.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - namespaces
+  - pods
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - list
+- apiGroups:
+  - "apps"
+  resources:
+  - replicasets
+  - daemonsets
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingressclasses
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers
+  - virtualserverroutes
+  - globalconfigurations
+  - transportservers
+  - policies
+  verbs:
+  - list
+  - watch
+  - get
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers/status
+  - virtualserverroutes/status
+  - policies/status
+  - transportservers/status
+  verbs:
+  - update
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+- kind: ServiceAccount
+  name: wallarm-enabled-wallarm-ingress-new
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: wallarm-enabled-wallarm-ingress-new
+  apiGroup: rbac.authorization.k8s.io
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-role.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  - secrets
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+    - ""
+  resources:
+    - namespaces
+  verbs:
+    - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  resourceNames:
+  - wallarm-enabled-wallarm-ingress-new-leader-election
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-rolebinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: wallarm-enabled-wallarm-ingress-new
+subjects:
+- kind: ServiceAccount
+  name: wallarm-enabled-wallarm-ingress-new
+  namespace: default
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-controller
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+    nodePort: 
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+    nodePort: 
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: wallarm-enabled-wallarm-ingress-new-wcli-metrics
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-ctrl-mtrc
+      port: 9004
+      protocol: TCP
+      targetPort: wcli-ctrl-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-wallarm-postanalytics
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  type: ClusterIP
+  ports:
+  - name: wstore
+    port: 3313
+    targetPort: 3313
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+  name: wallarm-enabled-wallarm-ingress-new-wcli-post-metrics
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-post-mtrc
+      port: 9003
+      protocol: TCP
+      targetPort: wcli-post-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-controller
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-enabled
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-enabled
+        app.kubernetes.io/component: controller
+      annotations:
+        wallarm-enabled: "true"
+        checksum/token: 19b6b086eebb807f54e6327309dec0ff347a6c3c30bf3bb396f167513eba3475
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9113"
+        prometheus.io/scheme: "http"
+    spec:      
+      volumes:
+      
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-cache
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: wallarm-enabled-wallarm-ingress-new-wallarm-token
+          items:
+            - key: token
+              path: token
+      - name: wallarm-apifw
+        emptyDir: {}
+      serviceAccountName: wallarm-enabled-wallarm-ingress-new
+      automountServiceAccountToken: true
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      containers:
+      - image: docker.io/wallarm/nginx-node-ic:0.0.1
+        name: wallarm-ingress-new
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: prometheus
+          containerPort: 9113
+        - name: readiness-port
+          containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /nginx-ready
+            port: readiness-port
+          periodSeconds: 1
+          initialDelaySeconds: 0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE        
+        volumeMounts:
+        
+        - name: wallarm
+          mountPath: /opt/wallarm/etc/wallarm
+        - name: wallarm-acl
+          mountPath: /opt/wallarm/var/lib/wallarm-acl
+        - name: wallarm-cache
+          mountPath: /opt/wallarm/var/lib/nginx/wallarm
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        args:
+          
+          - -nginx-reload-timeout=60000
+          - -nginx-configmaps=$(POD_NAMESPACE)/wallarm-enabled-wallarm-ingress-new
+          - -ingress-class=nginx
+          - -health-status=false
+          - -health-status-uri=/nginx-health
+          - -nginx-debug=false
+          - -log-level=info
+          - -log-format=glog
+          - -nginx-status=true
+          - -nginx-status-port=10246
+          - -nginx-status-allow-cidrs=127.0.0.1
+          - -report-ingress-status
+          - -external-service=wallarm-enabled-wallarm-ingress-new-controller
+          - -enable-leader-election=true
+          - -leader-election-lock-name=wallarm-enabled-wallarm-ingress-new-leader-election
+          - -enable-prometheus-metrics=true
+          - -prometheus-metrics-listen-port=9113
+          - -prometheus-tls-secret=
+          - -enable-custom-resources=true
+          - -enable-snippets=false
+          - -disable-ipv6=false
+          - -enable-tls-passthrough=false
+          - -enable-cert-manager=false
+          - -enable-external-dns=false
+          - -default-http-listener-port=80
+          - -default-https-listener-port=443
+          - -ready-status=true
+          - -ready-status-port=8081
+          - -enable-latency-metrics=false
+          - -ssl-dynamic-reload=true
+          - -enable-telemetry-reporting=false
+      - name: wcli
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+          value: ":9004"
+        ports:
+        - name: wcli-ctrl-mtrc
+          containerPort: 9004
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+
+      - name: api-firewall
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: ["api-firewall"]
+        env:
+          - name: APIFW_SPECIFICATION_UPDATE_PERIOD
+            value: "1m"
+          - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
+            value: "true"
+          - name: APIFW_URL
+            value: "http://0.0.0.0:18081"
+          - name: APIFW_HEALTH_HOST
+            value: "0.0.0.0:18082"
+          - name: APIFW_LOG_LEVEL
+            value: "INFO"
+          - name: APIFW_LOG_FORMAT
+            value: "TEXT"
+          - name: APIFW_MODE
+            value: api
+          - name: APIFW_READ_TIMEOUT
+            value: 5s
+          - name: APIFW_WRITE_TIMEOUT
+            value: 5s
+          - name: APIFW_READ_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_WRITE_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_MAX_REQUEST_BODY_SIZE
+            value: "4194304"
+          - name: APIFW_DISABLE_KEEPALIVE
+            value: "false"
+          - name: APIFW_MAX_CONNS_PER_IP
+            value: "0"
+          - name: APIFW_MAX_REQUESTS_PER_CONN
+            value: "0"
+          - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
+            value: "3"
+          - name: APIFW_API_MODE_DEBUG_PATH_DB
+            value: "/opt/wallarm/var/lib/wallarm-api/2/wallarm_api.db"
+          - name: APIFW_METRICS_ENABLED
+            value: "false"
+        ports:
+        - name: apifw-health
+          containerPort: 18082
+          protocol: TCP
+        volumeMounts:
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      initContainers:
+      
+      - name: wallarm-init
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "filtering", "fallback" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=test-group"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-wallarm-postanalytics
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-enabled
+      app.kubernetes.io/component: wallarm-postanalytics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-enabled
+        app.kubernetes.io/component: wallarm-postanalytics
+      annotations:
+        wallarm-enabled: "true"
+        checksum/token: 19b6b086eebb807f54e6327309dec0ff347a6c3c30bf3bb396f167513eba3475
+    spec:
+      serviceAccountName: wallarm-enabled-wallarm-ingress-new
+      terminationGracePeriodSeconds: 30
+      initContainers:
+      
+      - name: wallarm-init
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "post_analytic", "fallback" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=test-group"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      containers:
+        
+        - name: wcli
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
+          env:
+          - name: WALLARM_API_HOST
+            value: "api.wallarm.com"
+          - name: WALLARM_API_PORT
+            value: "443"
+          - name: WALLARM_API_USE_SSL
+            value: "true"
+          - name: WALLARM_API_TOKEN_PATH
+            value: "/secrets/wallarm/token"
+          - name: WALLARM_COMPONENT_NAME
+            value: wallarm-new-ingress-controller
+          - name: WALLARM_COMPONENT_VERSION
+            value: "7.0.0"
+          - name: WALLARM_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+            value: ":9003"
+          ports:
+          - name: wcli-post-mtrc
+            containerPort: 9003
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /opt/wallarm/etc/wallarm
+            name: wallarm
+          - mountPath: /opt/wallarm/var/lib/wallarm-acl
+            name: wallarm-acl
+          - mountPath: /secrets/wallarm/token
+            name: wallarm-token
+            subPath: token
+            readOnly: true
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wstore
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["wstore"]
+          env:
+            
+            - name: SLAB_ALLOC_ARENA
+              value: "2.0"
+            - name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
+              value: "127.0.0.1:9001"
+            - name: WALLARM_WSTORE__METRICS__PROTOCOL
+              value: "tcp4"
+            - name: WALLARM_WSTORE__SERVICE__ADDRESS
+              value: "0.0.0.0:3313"
+            - name: WALLARM_WSTORE__SERVICE__PROTOCOL
+              value: "tcp4"
+          ports:
+          - name: wstore
+            containerPort: 3313
+            protocol: TCP
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wallarm-appstructure
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["appstructure"]
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+      volumes:
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-apifw
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: wallarm-enabled-wallarm-ingress-new-wallarm-token
+          items:
+            - key: token
+              path: token
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-ingress-class.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  controller: nginx.org/ingress-controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-lease.yaml
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: wallarm-enabled-wallarm-ingress-new-leader-election
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-enabled
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+---
+
+[TestHelmNICTemplate/wallarmExistingSecret - 1]
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+data:
+  enable-wallarm: "true"
+  wallarm-upstream-service: "wallarm-existing-secret-wallarm-ingress-new-wallarm-postanalytics"
+  wallarm-metrics-port: "18080"
+  wallarm-apifw-enabled: "true"
+  wallarm-apifw-port: "18081"
+  wallarm-fallback: "on"
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-leader-election-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new-leader-election
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrole.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - namespaces
+  - pods
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - list
+- apiGroups:
+  - "apps"
+  resources:
+  - replicasets
+  - daemonsets
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingressclasses
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers
+  - virtualserverroutes
+  - globalconfigurations
+  - transportservers
+  - policies
+  verbs:
+  - list
+  - watch
+  - get
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers/status
+  - virtualserverroutes/status
+  - policies/status
+  - transportservers/status
+  verbs:
+  - update
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+- kind: ServiceAccount
+  name: wallarm-existing-secret-wallarm-ingress-new
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: wallarm-existing-secret-wallarm-ingress-new
+  apiGroup: rbac.authorization.k8s.io
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-role.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  - secrets
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+    - ""
+  resources:
+    - namespaces
+  verbs:
+    - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  resourceNames:
+  - wallarm-existing-secret-wallarm-ingress-new-leader-election
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-rolebinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: wallarm-existing-secret-wallarm-ingress-new
+subjects:
+- kind: ServiceAccount
+  name: wallarm-existing-secret-wallarm-ingress-new
+  namespace: default
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new-controller
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+    nodePort: 
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+    nodePort: 
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: wallarm-existing-secret-wallarm-ingress-new-wcli-metrics
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-ctrl-mtrc
+      port: 9004
+      protocol: TCP
+      targetPort: wcli-ctrl-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new-wallarm-postanalytics
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  type: ClusterIP
+  ports:
+  - name: wstore
+    port: 3313
+    targetPort: 3313
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+  name: wallarm-existing-secret-wallarm-ingress-new-wcli-post-metrics
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-post-mtrc
+      port: 9003
+      protocol: TCP
+      targetPort: wcli-post-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new-controller
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-existing-secret
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-existing-secret
+        app.kubernetes.io/component: controller
+      annotations:
+        wallarm-enabled: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9113"
+        prometheus.io/scheme: "http"
+    spec:      
+      volumes:
+      
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-cache
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: my-wallarm-secret
+          items:
+            - key: api-token
+              path: api-token
+      - name: wallarm-apifw
+        emptyDir: {}
+      serviceAccountName: wallarm-existing-secret-wallarm-ingress-new
+      automountServiceAccountToken: true
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      containers:
+      - image: docker.io/wallarm/nginx-node-ic:0.0.1
+        name: wallarm-ingress-new
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: prometheus
+          containerPort: 9113
+        - name: readiness-port
+          containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /nginx-ready
+            port: readiness-port
+          periodSeconds: 1
+          initialDelaySeconds: 0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE        
+        volumeMounts:
+        
+        - name: wallarm
+          mountPath: /opt/wallarm/etc/wallarm
+        - name: wallarm-acl
+          mountPath: /opt/wallarm/var/lib/wallarm-acl
+        - name: wallarm-cache
+          mountPath: /opt/wallarm/var/lib/nginx/wallarm
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        args:
+          
+          - -nginx-reload-timeout=60000
+          - -nginx-configmaps=$(POD_NAMESPACE)/wallarm-existing-secret-wallarm-ingress-new
+          - -ingress-class=nginx
+          - -health-status=false
+          - -health-status-uri=/nginx-health
+          - -nginx-debug=false
+          - -log-level=info
+          - -log-format=glog
+          - -nginx-status=true
+          - -nginx-status-port=10246
+          - -nginx-status-allow-cidrs=127.0.0.1
+          - -report-ingress-status
+          - -external-service=wallarm-existing-secret-wallarm-ingress-new-controller
+          - -enable-leader-election=true
+          - -leader-election-lock-name=wallarm-existing-secret-wallarm-ingress-new-leader-election
+          - -enable-prometheus-metrics=true
+          - -prometheus-metrics-listen-port=9113
+          - -prometheus-tls-secret=
+          - -enable-custom-resources=true
+          - -enable-snippets=false
+          - -disable-ipv6=false
+          - -enable-tls-passthrough=false
+          - -enable-cert-manager=false
+          - -enable-external-dns=false
+          - -default-http-listener-port=80
+          - -default-https-listener-port=443
+          - -ready-status=true
+          - -ready-status-port=8081
+          - -enable-latency-metrics=false
+          - -ssl-dynamic-reload=true
+          - -enable-telemetry-reporting=false
+      - name: wcli
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+          value: ":9004"
+        ports:
+        - name: wcli-ctrl-mtrc
+          containerPort: 9004
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+
+      - name: api-firewall
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: ["api-firewall"]
+        env:
+          - name: APIFW_SPECIFICATION_UPDATE_PERIOD
+            value: "1m"
+          - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
+            value: "true"
+          - name: APIFW_URL
+            value: "http://0.0.0.0:18081"
+          - name: APIFW_HEALTH_HOST
+            value: "0.0.0.0:18082"
+          - name: APIFW_LOG_LEVEL
+            value: "INFO"
+          - name: APIFW_LOG_FORMAT
+            value: "TEXT"
+          - name: APIFW_MODE
+            value: api
+          - name: APIFW_READ_TIMEOUT
+            value: 5s
+          - name: APIFW_WRITE_TIMEOUT
+            value: 5s
+          - name: APIFW_READ_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_WRITE_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_MAX_REQUEST_BODY_SIZE
+            value: "4194304"
+          - name: APIFW_DISABLE_KEEPALIVE
+            value: "false"
+          - name: APIFW_MAX_CONNS_PER_IP
+            value: "0"
+          - name: APIFW_MAX_REQUESTS_PER_CONN
+            value: "0"
+          - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
+            value: "3"
+          - name: APIFW_API_MODE_DEBUG_PATH_DB
+            value: "/opt/wallarm/var/lib/wallarm-api/2/wallarm_api.db"
+          - name: APIFW_METRICS_ENABLED
+            value: "false"
+        ports:
+        - name: apifw-health
+          containerPort: 18082
+          protocol: TCP
+        volumeMounts:
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      initContainers:
+      
+      - name: wallarm-init
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "filtering", "fallback" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=defaultIngressGroup"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new-wallarm-postanalytics
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-existing-secret
+      app.kubernetes.io/component: wallarm-postanalytics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-existing-secret
+        app.kubernetes.io/component: wallarm-postanalytics
+      annotations:
+        wallarm-enabled: "true"
+    spec:
+      serviceAccountName: wallarm-existing-secret-wallarm-ingress-new
+      terminationGracePeriodSeconds: 30
+      initContainers:
+      
+      - name: wallarm-init
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "post_analytic", "fallback" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=defaultIngressGroup"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      containers:
+        
+        - name: wcli
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
+          env:
+          - name: WALLARM_API_HOST
+            value: "api.wallarm.com"
+          - name: WALLARM_API_PORT
+            value: "443"
+          - name: WALLARM_API_USE_SSL
+            value: "true"
+          - name: WALLARM_API_TOKEN_PATH
+            value: "/secrets/wallarm/token"
+          - name: WALLARM_COMPONENT_NAME
+            value: wallarm-new-ingress-controller
+          - name: WALLARM_COMPONENT_VERSION
+            value: "7.0.0"
+          - name: WALLARM_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+            value: ":9003"
+          ports:
+          - name: wcli-post-mtrc
+            containerPort: 9003
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /opt/wallarm/etc/wallarm
+            name: wallarm
+          - mountPath: /opt/wallarm/var/lib/wallarm-acl
+            name: wallarm-acl
+          - mountPath: /secrets/wallarm/token
+            name: wallarm-token
+            subPath: token
+            readOnly: true
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wstore
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["wstore"]
+          env:
+            
+            - name: SLAB_ALLOC_ARENA
+              value: "2.0"
+            - name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
+              value: "127.0.0.1:9001"
+            - name: WALLARM_WSTORE__METRICS__PROTOCOL
+              value: "tcp4"
+            - name: WALLARM_WSTORE__SERVICE__ADDRESS
+              value: "0.0.0.0:3313"
+            - name: WALLARM_WSTORE__SERVICE__PROTOCOL
+              value: "tcp4"
+          ports:
+          - name: wstore
+            containerPort: 3313
+            protocol: TCP
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wallarm-appstructure
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["appstructure"]
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+      volumes:
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-apifw
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: my-wallarm-secret
+          items:
+            - key: api-token
+              path: api-token
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-ingress-class.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  controller: nginx.org/ingress-controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-lease.yaml
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: wallarm-existing-secret-wallarm-ingress-new-leader-election
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-existing-secret
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+---
+
+[TestHelmNICTemplate/wallarmFull - 1]
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wallarm-full-wallarm-ingress-new
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wallarm-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wallarm-full-wallarm-ingress-new-wallarm-token
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  token: "ZnVsbC10ZXN0LXRva2Vu"
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-full-wallarm-ingress-new
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+data:
+  enable-wallarm: "true"
+  wallarm-upstream-service: "wallarm-full-wallarm-ingress-new-wallarm-postanalytics"
+  wallarm-metrics-port: "18080"
+  wallarm-apifw-enabled: "true"
+  wallarm-apifw-port: "18081"
+  wallarm-fallback: "on"
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-leader-election-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-full-wallarm-ingress-new-leader-election
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrole.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-full-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - namespaces
+  - pods
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - list
+- apiGroups:
+  - "apps"
+  resources:
+  - replicasets
+  - daemonsets
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingressclasses
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers
+  - virtualserverroutes
+  - globalconfigurations
+  - transportservers
+  - policies
+  verbs:
+  - list
+  - watch
+  - get
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers/status
+  - virtualserverroutes/status
+  - policies/status
+  - transportservers/status
+  verbs:
+  - update
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-full-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+- kind: ServiceAccount
+  name: wallarm-full-wallarm-ingress-new
+  namespace: wallarm
+roleRef:
+  kind: ClusterRole
+  name: wallarm-full-wallarm-ingress-new
+  apiGroup: rbac.authorization.k8s.io
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-role.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-full-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: wallarm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  - secrets
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+    - ""
+  resources:
+    - namespaces
+  verbs:
+    - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  resourceNames:
+  - wallarm-full-wallarm-ingress-new-leader-election
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-rolebinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-full-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: wallarm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: wallarm-full-wallarm-ingress-new
+subjects:
+- kind: ServiceAccount
+  name: wallarm-full-wallarm-ingress-new
+  namespace: wallarm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-full-wallarm-ingress-new-controller
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+    nodePort: 
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+    nodePort: 
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: wallarm-full-wallarm-ingress-new-wcli-metrics
+  namespace: wallarm
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-ctrl-mtrc
+      port: 9004
+      protocol: TCP
+      targetPort: wcli-ctrl-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-full-wallarm-ingress-new-wallarm-postanalytics
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  type: ClusterIP
+  ports:
+  - name: wstore
+    port: 3313
+    targetPort: 3313
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+  name: wallarm-full-wallarm-ingress-new-wcli-post-metrics
+  namespace: wallarm
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-post-mtrc
+      port: 9003
+      protocol: TCP
+      targetPort: wcli-post-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-full-wallarm-ingress-new-controller
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-full
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-full
+        app.kubernetes.io/component: controller
+      annotations:
+        wallarm-enabled: "true"
+        checksum/token: f06ceae7fbe383316b59a24f4aee8463c00ea2de0e116ba9b2fbee8240cca4d0
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9113"
+        prometheus.io/scheme: "http"
+    spec:      
+      volumes:
+      
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-cache
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: wallarm-full-wallarm-ingress-new-wallarm-token
+          items:
+            - key: token
+              path: token
+      - name: wallarm-apifw
+        emptyDir: {}
+      serviceAccountName: wallarm-full-wallarm-ingress-new
+      automountServiceAccountToken: true
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      containers:
+      - image: custom-registry/nginx-node-ic:1.0.0
+        name: wallarm-ingress-new
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: prometheus
+          containerPort: 9113
+        - name: readiness-port
+          containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /nginx-ready
+            port: readiness-port
+          periodSeconds: 1
+          initialDelaySeconds: 0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE        
+        volumeMounts:
+        
+        - name: wallarm
+          mountPath: /opt/wallarm/etc/wallarm
+        - name: wallarm-acl
+          mountPath: /opt/wallarm/var/lib/wallarm-acl
+        - name: wallarm-cache
+          mountPath: /opt/wallarm/var/lib/nginx/wallarm
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        args:
+          
+          - -nginx-reload-timeout=60000
+          - -nginx-configmaps=$(POD_NAMESPACE)/wallarm-full-wallarm-ingress-new
+          - -ingress-class=nginx
+          - -health-status=false
+          - -health-status-uri=/nginx-health
+          - -nginx-debug=false
+          - -log-level=info
+          - -log-format=glog
+          - -nginx-status=true
+          - -nginx-status-port=10246
+          - -nginx-status-allow-cidrs=127.0.0.1
+          - -report-ingress-status
+          - -external-service=wallarm-full-wallarm-ingress-new-controller
+          - -enable-leader-election=true
+          - -leader-election-lock-name=wallarm-full-wallarm-ingress-new-leader-election
+          - -enable-prometheus-metrics=true
+          - -prometheus-metrics-listen-port=9113
+          - -prometheus-tls-secret=
+          - -enable-custom-resources=true
+          - -enable-snippets=false
+          - -disable-ipv6=false
+          - -enable-tls-passthrough=false
+          - -enable-cert-manager=false
+          - -enable-external-dns=false
+          - -default-http-listener-port=80
+          - -default-https-listener-port=443
+          - -ready-status=true
+          - -ready-status-port=8081
+          - -enable-latency-metrics=false
+          - -ssl-dynamic-reload=true
+          - -enable-telemetry-reporting=false
+      - name: wcli
+        image: custom-registry/node-helpers:1.0.0
+        imagePullPolicy: IfNotPresent
+        args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+          value: ":9004"
+        ports:
+        - name: wcli-ctrl-mtrc
+          containerPort: 9004
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+
+      - name: api-firewall
+        image: custom-registry/node-helpers:1.0.0
+        imagePullPolicy: IfNotPresent
+        args: ["api-firewall"]
+        env:
+          - name: APIFW_SPECIFICATION_UPDATE_PERIOD
+            value: "1m"
+          - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
+            value: "true"
+          - name: APIFW_URL
+            value: "http://0.0.0.0:18081"
+          - name: APIFW_HEALTH_HOST
+            value: "0.0.0.0:18082"
+          - name: APIFW_LOG_LEVEL
+            value: "DEBUG"
+          - name: APIFW_LOG_FORMAT
+            value: "TEXT"
+          - name: APIFW_MODE
+            value: api
+          - name: APIFW_READ_TIMEOUT
+            value: 5s
+          - name: APIFW_WRITE_TIMEOUT
+            value: 5s
+          - name: APIFW_READ_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_WRITE_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_MAX_REQUEST_BODY_SIZE
+            value: "8388608"
+          - name: APIFW_DISABLE_KEEPALIVE
+            value: "false"
+          - name: APIFW_MAX_CONNS_PER_IP
+            value: "0"
+          - name: APIFW_MAX_REQUESTS_PER_CONN
+            value: "0"
+          - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
+            value: "3"
+          - name: APIFW_API_MODE_DEBUG_PATH_DB
+            value: "/opt/wallarm/var/lib/wallarm-api/2/wallarm_api.db"
+          - name: APIFW_METRICS_ENABLED
+            value: "false"
+        ports:
+        - name: apifw-health
+          containerPort: 18082
+          protocol: TCP
+        volumeMounts:
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      initContainers:
+      
+      - name: wallarm-init
+        image: custom-registry/node-helpers:1.0.0
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "filtering", "fallback" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=full-test-group"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-full-wallarm-ingress-new-wallarm-postanalytics
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-full
+      app.kubernetes.io/component: wallarm-postanalytics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-full
+        app.kubernetes.io/component: wallarm-postanalytics
+      annotations:
+        wallarm-enabled: "true"
+        checksum/token: f06ceae7fbe383316b59a24f4aee8463c00ea2de0e116ba9b2fbee8240cca4d0
+    spec:
+      serviceAccountName: wallarm-full-wallarm-ingress-new
+      terminationGracePeriodSeconds: 30
+      initContainers:
+      
+      - name: wallarm-init
+        image: custom-registry/node-helpers:1.0.0
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "post_analytic", "fallback" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=full-test-group"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      containers:
+        
+        - name: wcli
+          image: custom-registry/node-helpers:1.0.0
+          imagePullPolicy: IfNotPresent
+          args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
+          env:
+          - name: WALLARM_API_HOST
+            value: "api.wallarm.com"
+          - name: WALLARM_API_PORT
+            value: "443"
+          - name: WALLARM_API_USE_SSL
+            value: "true"
+          - name: WALLARM_API_TOKEN_PATH
+            value: "/secrets/wallarm/token"
+          - name: WALLARM_COMPONENT_NAME
+            value: wallarm-new-ingress-controller
+          - name: WALLARM_COMPONENT_VERSION
+            value: "7.0.0"
+          - name: WALLARM_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+            value: ":9003"
+          ports:
+          - name: wcli-post-mtrc
+            containerPort: 9003
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /opt/wallarm/etc/wallarm
+            name: wallarm
+          - mountPath: /opt/wallarm/var/lib/wallarm-acl
+            name: wallarm-acl
+          - mountPath: /secrets/wallarm/token
+            name: wallarm-token
+            subPath: token
+            readOnly: true
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wstore
+          image: custom-registry/node-helpers:1.0.0
+          imagePullPolicy: IfNotPresent
+          args: ["wstore"]
+          env:
+            
+            - name: SLAB_ALLOC_ARENA
+              value: "4.0"
+            - name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
+              value: "127.0.0.1:9001"
+            - name: WALLARM_WSTORE__METRICS__PROTOCOL
+              value: "tcp4"
+            - name: WALLARM_WSTORE__SERVICE__ADDRESS
+              value: "0.0.0.0:3313"
+            - name: WALLARM_WSTORE__SERVICE__PROTOCOL
+              value: "tcp4"
+          ports:
+          - name: wstore
+            containerPort: 3313
+            protocol: TCP
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wallarm-appstructure
+          image: custom-registry/node-helpers:1.0.0
+          imagePullPolicy: IfNotPresent
+          args: ["appstructure"]
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+      volumes:
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-apifw
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: wallarm-full-wallarm-ingress-new-wallarm-token
+          items:
+            - key: token
+              path: token
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-ingress-class.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  controller: nginx.org/ingress-controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-lease.yaml
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: wallarm-full-wallarm-ingress-new-leader-election
+  namespace: wallarm
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-full
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+---
+
+[TestHelmNICTemplate/wallarmUSCloud - 1]
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wallarm-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-wallarm-token
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  token: "dXMtdGVzdC10b2tlbg=="
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+data:
+  enable-wallarm: "true"
+  wallarm-upstream-service: "wallarm-us-cloud-wallarm-ingress-new-wallarm-postanalytics"
+  wallarm-metrics-port: "18080"
+  wallarm-apifw-enabled: "true"
+  wallarm-apifw-port: "18081"
+  wallarm-fallback: "off"
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-leader-election-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-leader-election
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrole.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - namespaces
+  - pods
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - list
+- apiGroups:
+  - "apps"
+  resources:
+  - replicasets
+  - daemonsets
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingressclasses
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers
+  - virtualserverroutes
+  - globalconfigurations
+  - transportservers
+  - policies
+  verbs:
+  - list
+  - watch
+  - get
+- apiGroups:
+  - k8s.nginx.org
+  resources:
+  - virtualservers/status
+  - virtualserverroutes/status
+  - policies/status
+  - transportservers/status
+  verbs:
+  - update
+/-/-/-/
+# Source: wallarm-ingress-new/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+- kind: ServiceAccount
+  name: wallarm-us-cloud-wallarm-ingress-new
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: wallarm-us-cloud-wallarm-ingress-new
+  apiGroup: rbac.authorization.k8s.io
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-role.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  - secrets
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+    - ""
+  resources:
+    - namespaces
+  verbs:
+    - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - list
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  resourceNames:
+  - wallarm-us-cloud-wallarm-ingress-new-leader-election
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-rolebinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: wallarm-us-cloud-wallarm-ingress-new
+subjects:
+- kind: ServiceAccount
+  name: wallarm-us-cloud-wallarm-ingress-new
+  namespace: default
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-controller
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+    nodePort: 
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+    nodePort: 
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: wallarm-us-cloud-wallarm-ingress-new-wcli-metrics
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-ctrl-mtrc
+      port: 9004
+      protocol: TCP
+      targetPort: wcli-ctrl-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/component: controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-wallarm-postanalytics
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  type: ClusterIP
+  ports:
+  - name: wstore
+    port: 3313
+    targetPort: 3313
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-wcli-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+  name: wallarm-us-cloud-wallarm-ingress-new-wcli-post-metrics
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - name: wcli-post-mtrc
+      port: 9003
+      protocol: TCP
+      targetPort: wcli-post-mtrc
+  selector:
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/component: wallarm-postanalytics
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-controller
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-us-cloud
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-us-cloud
+        app.kubernetes.io/component: controller
+      annotations:
+        wallarm-enabled: "true"
+        checksum/token: 1126ecb99c9b230e17ce9f6119f8f588caf406b06796a39af9a90795c2438500
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9113"
+        prometheus.io/scheme: "http"
+    spec:      
+      volumes:
+      
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-cache
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: wallarm-us-cloud-wallarm-ingress-new-wallarm-token
+          items:
+            - key: token
+              path: token
+      - name: wallarm-apifw
+        emptyDir: {}
+      serviceAccountName: wallarm-us-cloud-wallarm-ingress-new
+      automountServiceAccountToken: true
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      containers:
+      - image: docker.io/wallarm/nginx-node-ic:0.0.1
+        name: wallarm-ingress-new
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: prometheus
+          containerPort: 9113
+        - name: readiness-port
+          containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /nginx-ready
+            port: readiness-port
+          periodSeconds: 1
+          initialDelaySeconds: 0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE        
+        volumeMounts:
+        
+        - name: wallarm
+          mountPath: /opt/wallarm/etc/wallarm
+        - name: wallarm-acl
+          mountPath: /opt/wallarm/var/lib/wallarm-acl
+        - name: wallarm-cache
+          mountPath: /opt/wallarm/var/lib/nginx/wallarm
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        args:
+          
+          - -nginx-reload-timeout=60000
+          - -nginx-configmaps=$(POD_NAMESPACE)/wallarm-us-cloud-wallarm-ingress-new
+          - -ingress-class=nginx
+          - -health-status=false
+          - -health-status-uri=/nginx-health
+          - -nginx-debug=false
+          - -log-level=info
+          - -log-format=glog
+          - -nginx-status=true
+          - -nginx-status-port=10246
+          - -nginx-status-allow-cidrs=127.0.0.1
+          - -report-ingress-status
+          - -external-service=wallarm-us-cloud-wallarm-ingress-new-controller
+          - -enable-leader-election=true
+          - -leader-election-lock-name=wallarm-us-cloud-wallarm-ingress-new-leader-election
+          - -enable-prometheus-metrics=true
+          - -prometheus-metrics-listen-port=9113
+          - -prometheus-tls-secret=
+          - -enable-custom-resources=true
+          - -enable-snippets=false
+          - -disable-ipv6=false
+          - -enable-tls-passthrough=false
+          - -enable-cert-manager=false
+          - -enable-external-dns=false
+          - -default-http-listener-port=80
+          - -default-https-listener-port=443
+          - -ready-status=true
+          - -ready-status-port=8081
+          - -enable-latency-metrics=false
+          - -ssl-dynamic-reload=true
+          - -enable-telemetry-reporting=false
+      - name: wcli
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
+        env:
+        - name: WALLARM_API_HOST
+          value: "us1.api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+          value: ":9004"
+        ports:
+        - name: wcli-ctrl-mtrc
+          containerPort: 9004
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+
+      - name: api-firewall
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: ["api-firewall"]
+        env:
+          - name: APIFW_SPECIFICATION_UPDATE_PERIOD
+            value: "1m"
+          - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
+            value: "true"
+          - name: APIFW_URL
+            value: "http://0.0.0.0:18081"
+          - name: APIFW_HEALTH_HOST
+            value: "0.0.0.0:18082"
+          - name: APIFW_LOG_LEVEL
+            value: "INFO"
+          - name: APIFW_LOG_FORMAT
+            value: "TEXT"
+          - name: APIFW_MODE
+            value: api
+          - name: APIFW_READ_TIMEOUT
+            value: 5s
+          - name: APIFW_WRITE_TIMEOUT
+            value: 5s
+          - name: APIFW_READ_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_WRITE_BUFFER_SIZE
+            value: "8192"
+          - name: APIFW_MAX_REQUEST_BODY_SIZE
+            value: "4194304"
+          - name: APIFW_DISABLE_KEEPALIVE
+            value: "false"
+          - name: APIFW_MAX_CONNS_PER_IP
+            value: "0"
+          - name: APIFW_MAX_REQUESTS_PER_CONN
+            value: "0"
+          - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
+            value: "3"
+          - name: APIFW_API_MODE_DEBUG_PATH_DB
+            value: "/opt/wallarm/var/lib/wallarm-api/2/wallarm_api.db"
+          - name: APIFW_METRICS_ENABLED
+            value: "false"
+        ports:
+        - name: apifw-health
+          containerPort: 18082
+          protocol: TCP
+        volumeMounts:
+        - name: wallarm-apifw
+          mountPath: /opt/wallarm/var/lib/wallarm-api
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      initContainers:
+      
+      - name: wallarm-init
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "filtering" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "us1.api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=us-production"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+/-/-/-/
+# Source: wallarm-ingress-new/templates/postanalytics-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-wallarm-postanalytics
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: wallarm-postanalytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallarm-ingress-new
+      app.kubernetes.io/instance: wallarm-us-cloud
+      app.kubernetes.io/component: wallarm-postanalytics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallarm-ingress-new
+        app.kubernetes.io/instance: wallarm-us-cloud
+        app.kubernetes.io/component: wallarm-postanalytics
+      annotations:
+        wallarm-enabled: "true"
+        checksum/token: 1126ecb99c9b230e17ce9f6119f8f588caf406b06796a39af9a90795c2438500
+    spec:
+      serviceAccountName: wallarm-us-cloud-wallarm-ingress-new
+      terminationGracePeriodSeconds: 30
+      initContainers:
+      
+      - name: wallarm-init
+        image: docker.io/wallarm/node-helpers:6.7.5
+        imagePullPolicy: IfNotPresent
+        args: [ "register", "post_analytic" ]
+        env:
+        - name: WALLARM_API_HOST
+          value: "us1.api.wallarm.com"
+        - name: WALLARM_API_PORT
+          value: "443"
+        - name: WALLARM_API_USE_SSL
+          value: "true"
+        - name: WALLARM_API_TOKEN_PATH
+          value: "/secrets/wallarm/token"
+        - name: WALLARM_COMPONENT_NAME
+          value: wallarm-new-ingress-controller
+        - name: WALLARM_COMPONENT_VERSION
+          value: "7.0.0"
+        - name: WALLARM_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: WALLARM_SYNCNODE_OWNER
+          value: www-data
+        - name: WALLARM_SYNCNODE_GROUP
+          value: www-data
+        - name: WALLARM_LABELS
+          value: "group=us-production"
+        volumeMounts:
+        - mountPath: /opt/wallarm/etc/wallarm
+          name: wallarm
+        - mountPath: /opt/wallarm/var/lib/wallarm-acl
+          name: wallarm-acl
+        - mountPath: /opt/wallarm/var/lib/wallarm-api
+          name: wallarm-apifw
+        - mountPath: /secrets/wallarm/token
+          name: wallarm-token
+          subPath: token
+          readOnly: true
+        
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 101 #nginx
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+      containers:
+        
+        - name: wcli
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
+          env:
+          - name: WALLARM_API_HOST
+            value: "us1.api.wallarm.com"
+          - name: WALLARM_API_PORT
+            value: "443"
+          - name: WALLARM_API_USE_SSL
+            value: "true"
+          - name: WALLARM_API_TOKEN_PATH
+            value: "/secrets/wallarm/token"
+          - name: WALLARM_COMPONENT_NAME
+            value: wallarm-new-ingress-controller
+          - name: WALLARM_COMPONENT_VERSION
+            value: "7.0.0"
+          - name: WALLARM_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
+            value: ":9003"
+          ports:
+          - name: wcli-post-mtrc
+            containerPort: 9003
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /opt/wallarm/etc/wallarm
+            name: wallarm
+          - mountPath: /opt/wallarm/var/lib/wallarm-acl
+            name: wallarm-acl
+          - mountPath: /secrets/wallarm/token
+            name: wallarm-token
+            subPath: token
+            readOnly: true
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wstore
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["wstore"]
+          env:
+            
+            - name: SLAB_ALLOC_ARENA
+              value: "2.0"
+            - name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
+              value: "127.0.0.1:9001"
+            - name: WALLARM_WSTORE__METRICS__PROTOCOL
+              value: "tcp4"
+            - name: WALLARM_WSTORE__SERVICE__ADDRESS
+              value: "0.0.0.0:3313"
+            - name: WALLARM_WSTORE__SERVICE__PROTOCOL
+              value: "tcp4"
+          ports:
+          - name: wstore
+            containerPort: 3313
+            protocol: TCP
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+        - name: wallarm-appstructure
+          image: docker.io/wallarm/node-helpers:6.7.5
+          imagePullPolicy: IfNotPresent
+          args: ["appstructure"]
+          volumeMounts:
+          - name: wallarm
+            mountPath: /opt/wallarm/etc/wallarm
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 101 #nginx
+            runAsNonRoot: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - NET_BIND_SERVICE
+      volumes:
+      - name: wallarm
+        emptyDir: {}
+      - name: wallarm-acl
+        emptyDir: {}
+      - name: wallarm-apifw
+        emptyDir: {}
+      - name: wallarm-token
+        secret:
+          secretName: wallarm-us-cloud-wallarm-ingress-new-wallarm-token
+          items:
+            - key: token
+              path: token
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-ingress-class.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  controller: nginx.org/ingress-controller
+/-/-/-/
+# Source: wallarm-ingress-new/templates/controller-lease.yaml
+apiVersion: coordination.k8s.io/v1
+kind: Lease
+metadata:
+  name: wallarm-us-cloud-wallarm-ingress-new-leader-election
+  namespace: default
+  labels:
+    helm.sh/chart: wallarm-ingress-new-7.0.0
+    app.kubernetes.io/name: wallarm-ingress-new
+    app.kubernetes.io/instance: wallarm-us-cloud
+    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/managed-by: Helm
+---

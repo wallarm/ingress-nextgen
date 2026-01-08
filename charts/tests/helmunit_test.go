@@ -156,6 +156,26 @@ func TestHelmNICTemplate(t *testing.T) {
 			releaseName: "startupstatus",
 			namespace:   "default",
 		},
+		"wallarmEnabled": {
+			valuesFile:  "testdata/wallarm-enabled.yaml",
+			releaseName: "wallarm-enabled",
+			namespace:   "default",
+		},
+		"wallarmExistingSecret": {
+			valuesFile:  "testdata/wallarm-existing-secret.yaml",
+			releaseName: "wallarm-existing-secret",
+			namespace:   "default",
+		},
+		"wallarmUSCloud": {
+			valuesFile:  "testdata/wallarm-us-cloud.yaml",
+			releaseName: "wallarm-us-cloud",
+			namespace:   "default",
+		},
+		"wallarmFull": {
+			valuesFile:  "testdata/wallarm-full.yaml",
+			releaseName: "wallarm-full",
+			namespace:   "wallarm",
+		},
 	}
 
 	// Path to the helm chart we will test
@@ -215,6 +235,12 @@ func TestHelmNICTemplateNegative(t *testing.T) {
 			releaseName:       "global-config-empty-name",
 			namespace:         "default",
 			expectedErrorMsgs: []string{"globalConfiguration.customName namespace and name parts cannot be empty (e.g., \"my-namespace/my-global-config\")"},
+		},
+		"wallarmMissingToken": {
+			valuesFile:        "testdata/wallarm-missing-token.yaml",
+			releaseName:       "wallarm-missing-token",
+			namespace:         "default",
+			expectedErrorMsgs: []string{"config.wallarm.api.token is required"},
 		},
 	}
 
