@@ -1,0 +1,230 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workload
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes  3;
+    error_log  /var/log/nginx/error.log;
+    events {
+      worker_connections 10240;
+    }
+    http {
+      log_format main '$remote_addr - $remote_user [$time_local] '
+                      '"$request" $status $bytes_sent '
+                      '"$http_referer" "$http_user_agent" "$gzip_ratio"';
+      access_log /var/log/nginx/access.log main;
+      server {
+        listen 80;
+        server_name  _;
+        location / {
+          return 200;
+        }
+        # Location for API discovery test
+        location /api-discovery-test {
+            add_header Api-Discovery-Header "Hello, I am header!";
+            return 200 '{"json_response": "Hello, I am json"}';
+            default_type application/json;
+        }
+        # Location for Blocking Tor Source Type
+        location /blocking-by-tor-test {
+              add_header Block-by-Tor "Hello, I am header!";
+              return 200 '{"json_response": "Hello, I am json"}';
+              default_type application/json;
+        }
+        # Some mocks for test_api_abuse_prevention.py
+        location /.git {
+            if ($http_custom_id) {
+                return 400;
+            }
+            return 200;
+        }
+        location /wallarm-application/admin {
+            return 401;
+        }
+        location /api/v2 {
+            if ($http_custom_id) {
+                return 502;
+            }
+            return 200;
+        }
+        location /smoke-auto-forced-browsing/ {
+            return 404;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workload
+spec:
+  selector:
+    matchLabels:
+      app: workload
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: workload
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
+      containers:
+        - name: nginx
+          image: nginx:stable-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: workload
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workload
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: workload
+
+
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wallarm-workload-master
+  annotations:
+    nginx.org/mergeable-ingress-type: "master"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: testnewic-wallarm-ingress-controller.ingress.svc
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/wallarm-mode: block
+  name: wallarm-workload
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: testnewic-wallarm-ingress-controller.ingress.svc
+      http:
+        paths:
+          - backend:
+              service:
+                name: workload
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/wallarm-mode: block
+    nginx.org/location-snippets: |
+      rewrite ^/wallarm-application(/.*)$ $1 break;
+      wallarm_application $http_custom_id;
+  name: wallarm-api-abuse
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: testnewic-wallarm-ingress-controller.ingress.svc
+      http:
+        paths:
+          - backend:
+              service:
+                name: workload
+                port:
+                  number: 80
+            path: /wallarm-application
+            pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/wallarm-mode: block
+    nginx.org/location-snippets: |
+      wallarm_application $http_custom_id;
+  name: wallarm-api-discovery
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: testnewic-wallarm-ingress-controller.ingress.svc
+      http:
+        paths:
+          - backend:
+              service:
+                name: workload
+                port:
+                  number: 80
+            path: /api-discovery-test
+            pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/wallarm-mode: block
+    nginx.org/location-snippets: |
+      wallarm_application $http_custom_id;
+  name: block-by-tor-ip
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: testnewic-wallarm-ingress-controller.ingress.svc
+      http:
+        paths:
+          - backend:
+              service:
+                name: workload
+                port:
+                  number: 80
+            path: /blocking-by-tor-test
+            pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/wallarm-mode: monitoring
+  name: wallarm-mode-monitoring
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: testnewic-wallarm-ingress-controller.ingress.svc
+      http:
+        paths:
+          - backend:
+              service:
+                name: workload
+                port:
+                  number: 80
+            path: /wallarm-mode/monitoring
+            pathType: Prefix

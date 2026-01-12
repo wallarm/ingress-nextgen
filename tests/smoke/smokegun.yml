@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodevars
+data:
+  NODE_BASE_URL: "http://testnewic-wallarm-ingress-controller.ingress.svc"
+  NODE_VERSION: "6.7.5"
+
+  WALLARM_API_HOST: "${WALLARM_API_HOST}"
+  WALLARM_API_PRESET: "${WALLARM_API_PRESET}"
+  API_CA_VERIFY: "True"
+
+  CLIENT_ID: "${CLIENT_ID}"
+  USER_TOKEN: "${USER_TOKEN}"
+  HOSTNAME_OLD_NODE: "smoke-tests-old-node"
+  WEBHOOK_UUID: "${WEBHOOK_UUID}"
+  WEBHOOK_API_KEY: "${WEBHOOK_API_KEY}"
+  NODE_GROUP_NAME: "${NODE_GROUP_NAME}"
+
+  PYTEST_PROCESSES: "${PYTEST_PROCESSES}"
+  PYTEST_PARAMS: "${PYTEST_PARAMS}"
+
+  DIST: "loadgroup"
+  RUN_TESTS_RC_FILE: "run_tests_rc"
+  CI: "true"
+
+  ALLURE_ENDPOINT: "https://allure.wallarm.com"
+  ALLURE_PROJECT_ID: "${ALLURE_PROJECT_ID}"
+  ALLURE_TOKEN: "${ALLURE_TOKEN}"
+  ALLURE_RESULTS: "allure-results"
+  ALLURE_TESTPLAN_PATH: "./testplan.json"
+  ALLURE_LAUNCH_NAME: "${CI_COMMIT_REF_NAME} #${CI_COMMIT_SHORT_SHA} on ${WALLARM_API_PRESET} ${CI_PIPELINE_ID}"
+  ALLURE_LAUNCH_TAGS: "PYTEST_PROCESSES:${PYTEST_PROCESSES}, PYTEST_PARAMS:${PYTEST_PARAMS}, USR:${GITLAB_USER_NAME}, SRC:${CI_PIPELINE_SOURCE}, GITLAB_REPO:${CI_PROJECT_NAME}"
+  ALLURE_GENERATE_REPORT: "False"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pytest
+spec:
+  containers:
+  - name: pytest
+    image: dkr.wallarm.com/tests/smoke-tests:latest
+    imagePullPolicy: IfNotPresent
+    command: ["sleep", "infinity"]
+    envFrom:
+    - configMapRef:
+        name: nodevars
+    volumeMounts:
+      - {mountPath: /tests/_out/allure_report, name: allure-report, readOnly: false}
+  terminationGracePeriodSeconds: 0
+  restartPolicy: Never
+  volumes:
+  - name: allure-report
+    hostPath: {path: /allure_report, type: DirectoryOrCreate}
