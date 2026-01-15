@@ -6,6 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
       {{- if .Values.prometheus.service.labels -}}
         {{- toYaml .Values.prometheus.service.labels | nindent 4 }}
     {{- end }}
@@ -18,4 +19,5 @@ spec:
     targetPort: {{ .Values.prometheus.port }}
   selector:
     {{- include "nginx-ingress.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
 {{- end }}

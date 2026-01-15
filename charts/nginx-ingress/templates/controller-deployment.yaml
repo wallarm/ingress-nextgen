@@ -103,6 +103,10 @@ spec:
         - name: startup-port
           containerPort: {{ .Values.controller.startupStatus.port }}
 {{- end }}
+{{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.metrics.enabled }}
+        - name: {{ .Values.controller.wallarm.metrics.portName }}
+          containerPort: {{ .Values.controller.wallarm.metrics.port }}
+{{- end }}
 {{- if .Values.controller.readyStatus.enable }}
         readinessProbe:
           httpGet:

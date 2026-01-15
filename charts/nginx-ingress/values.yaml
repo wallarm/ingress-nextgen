@@ -149,10 +149,38 @@ controller:
   wallarm:
     ## Wallarm metrics endpoint configuration
     metrics:
+      ## Enable Wallarm metrics
+      enabled: false
       ## Port for Wallarm metrics (separate from NGINX metrics)
       port: 18080
-      ## Enable Wallarm metrics
-      enabled: true
+      ## Port name for metrics endpoint
+      portName: wallarm-metrics
+      ## Path at which the metrics endpoint is exposed
+      endpointPath: "/wallarm-metrics"
+      service:
+        annotations: {}
+        # prometheus.io/scrape: "true"
+        # prometheus.io/port: "18080"
+        labels: {}
+        # clusterIP: ""
+        externalIPs: []
+        # loadBalancerIP: ""
+        loadBalancerSourceRanges: []
+        servicePort: 18080
+        type: ClusterIP
+        # externalTrafficPolicy: ""
+        # nodePort: ""
+      serviceMonitor:
+        enabled: false
+        additionalLabels: {}
+        annotations: {}
+        namespace: ""
+        namespaceSelector: {}
+        scrapeInterval: 30s
+        # honorLabels: true
+        targetLabels: []
+        relabelings: []
+        metricRelabelings: []
 
     ## Init container for node registration
     initContainer:
