@@ -9,6 +9,10 @@ import (
 	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 )
 
+func split(s string, delim string) []string {
+	return strings.Split(s, delim)
+}
+
 type protocol int
 
 const (
@@ -274,6 +278,7 @@ func isServerOkForWallarmAPIFW(server Server) bool {
 }
 
 var helperFunctions = template.FuncMap{
+	"split":                 split,
 	"headerListToCIMap":     headerListToCIMap,
 	"hasCIKey":              hasCIKey,
 	"contains":              strings.Contains,

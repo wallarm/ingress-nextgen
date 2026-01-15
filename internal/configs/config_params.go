@@ -164,9 +164,9 @@ type ConfigParams struct {
 	MainWallarmACLExportEnable              string
 	MainWallarmACLExportShmSize             string
 	MainWallarmACLExportSampleLimit         int
-	MainWallarmACLExportSampleGroupLifetime string
-	MainWallarmACLExportStatsBucketInterval string
-	MainWallarmACLExportStatsBucketLifetime string
+	MainWallarmACLExportSampleGroupLifetime int
+	MainWallarmACLExportStatsBucketInterval int
+	MainWallarmACLExportStatsBucketLifetime int
 	MainWallarmAPIFwEnabled                 bool
 	MainWallarmAPIFwPort                    int
 }
@@ -318,16 +318,21 @@ func NewDefaultConfigParams(ctx context.Context, isPlus bool) *ConfigParams {
 		WallarmUnpackResponse:    "on",
 
 		// Wallarm default values for main config (nginx.conf level)
-		MainWallarmEnabled:                   false,
-		MainWallarmUpstreamConnectAttempts:   10,
-		MainWallarmUpstreamReconnectInterval: "15s",
-		MainWallarmProcessTimeLimit:          1000,
-		MainWallarmProcessTimeLimitBlock:     "attack",
-		MainWallarmRequestMemoryLimit:        "0",
-		MainWallarmWorkerRlimitVmem:          "1g",
-		MainWallarmMetricsPort:               18080,
-		MainWallarmACLExportEnable:           "on",
-		MainWallarmAPIFwPort:                 8088,
+		MainWallarmEnabled:                      false,
+		MainWallarmUpstreamConnectAttempts:      10,
+		MainWallarmUpstreamReconnectInterval:    "15s",
+		MainWallarmProcessTimeLimit:             1000,
+		MainWallarmProcessTimeLimitBlock:        "attack",
+		MainWallarmRequestMemoryLimit:           "0",
+		MainWallarmWorkerRlimitVmem:             "1g",
+		MainWallarmMetricsPort:                  18080,
+		MainWallarmAPIFwPort:                    8088,
+		MainWallarmACLExportEnable:              "on",
+		MainWallarmACLExportShmSize:             "64M",
+		MainWallarmACLExportSampleLimit:         10,
+		MainWallarmACLExportSampleGroupLifetime: 3600,
+		MainWallarmACLExportStatsBucketInterval: 60,
+		MainWallarmACLExportStatsBucketLifetime: 1800,
 	}
 }
 

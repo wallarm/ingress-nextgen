@@ -498,12 +498,8 @@ server {
         {{- if $.WallarmEnabled }}
             {{- with $l.Wallarm }}
         # Wallarm WAF location-level configuration
-                {{- if .Mode }}
         wallarm_mode {{ .Mode }};
-                {{- end }}
-                {{- if .ModeAllowOverride }}
         wallarm_mode_allow_override {{ .ModeAllowOverride }};
-                {{- end }}
                 {{- if .Fallback }}
         wallarm_fallback {{ .Fallback }};
                 {{- end }}
@@ -514,17 +510,12 @@ server {
         wallarm_partner_client_uuid {{ .PartnerClientUUID }};
                 {{- end }}
                 {{- if .BlockPage }}
-        wallarm_block_page {{ .BlockPage }};
+        {{ range (split .BlockPage ";") }}wallarm_block_page {{ . }};
                 {{- end }}
-                {{- if .ParseResponse }}
+                {{- end }}
         wallarm_parse_response {{ .ParseResponse }};
-                {{- end }}
-                {{- if .ParseWebsocket }}
         wallarm_parse_websocket {{ .ParseWebsocket }};
-                {{- end }}
-                {{- if .UnpackResponse }}
         wallarm_unpack_response {{ .UnpackResponse }};
-                {{- end }}
                 {{- range $parser := .ParserDisable }}
         wallarm_parser_disable {{ $parser }};
                 {{- end }}

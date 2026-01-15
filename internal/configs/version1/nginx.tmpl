@@ -77,39 +77,23 @@ http {
     wallarm_upstream_reconnect_interval {{.WallarmUpstreamReconnectInterval}};
     wallarm_process_time_limit {{.WallarmProcessTimeLimit}};
     wallarm_process_time_limit_block {{.WallarmProcessTimeLimitBlock}};
-    {{- if .WallarmRequestMemoryLimit}}
     wallarm_request_memory_limit {{.WallarmRequestMemoryLimit}};
-    {{- end}}
-    {{- if .WallarmWorkerRlimitVmem}}
     wallarm_general_ruleset_memory_limit {{.WallarmWorkerRlimitVmem}};
-    {{- end}}
     wallarm_acl_export_enable {{.WallarmACLExportEnable}};
-    {{- if .WallarmACLExportShmSize}}
     wallarm_acl_export_shm_size {{.WallarmACLExportShmSize}};
-    {{- end}}
-    {{- if gt .WallarmACLExportSampleLimit 0}}
     wallarm_acl_export_sample_limit {{.WallarmACLExportSampleLimit}};
-    {{- end}}
-    {{- if .WallarmACLExportSampleGroupLifetime}}
     wallarm_acl_export_sample_group_lifetime {{.WallarmACLExportSampleGroupLifetime}};
-    {{- end}}
-    {{- if .WallarmACLExportStatsBucketInterval}}
     wallarm_acl_export_stats_bucket_interval {{.WallarmACLExportStatsBucketInterval}};
-    {{- end}}
-    {{- if .WallarmACLExportStatsBucketLifetime}}
     wallarm_acl_export_stats_bucket_lifetime {{.WallarmACLExportStatsBucketLifetime}};
-    {{- end}}
     wallarm_fallback {{.WallarmFallback}};
 
     # Wallarm upstream for postanalytics (wstore)
-    {{- if .WallarmEnabled}}
     upstream wallarm_wstore {
         server {{.WallarmUpstreamService}}:3313 max_fails=0 fail_timeout=0 max_conns=16;
         keepalive 16;
         keepalive_requests 100;
     }
     wallarm_wstore_upstream wallarm_wstore;
-    {{- end}}
     {{- end}}
 
     sendfile        on;
@@ -237,6 +221,10 @@ http {
         deny all;
         location /stub_status {
             stub_status;
+
+            {{- if .WallarmEnabled }}
+            disable_acl "on";
+            {{- end }}
         }
 
         {{ if .WallarmEnabled }}
@@ -260,6 +248,10 @@ http {
 
         location /stub_status {
             stub_status;
+
+            {{- if .WallarmEnabled }}
+            disable_acl "on";
+            {{- end }}
         }
     }
     {{- end}}

@@ -793,16 +793,34 @@ func ParseConfigMap(ctx context.Context, cfgm *v1.ConfigMap, nginxPlus bool, has
 		}
 	}
 
-	if wallarmACLExportSampleGroupLifetime, exists := cfgm.Data["wallarm-acl-export-sample-group-lifetime"]; exists {
-		cfgParams.MainWallarmACLExportSampleGroupLifetime = wallarmACLExportSampleGroupLifetime
+	if wallarmACLExportSampleGroupLifetime, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-acl-export-sample-group-lifetime", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmACLExportSampleGroupLifetime = wallarmACLExportSampleGroupLifetime
+		}
 	}
 
-	if wallarmACLExportStatsBucketInterval, exists := cfgm.Data["wallarm-acl-export-stats-bucket-interval"]; exists {
-		cfgParams.MainWallarmACLExportStatsBucketInterval = wallarmACLExportStatsBucketInterval
+	if wallarmACLExportStatsBucketInterval, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-acl-export-stats-bucket-interval", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmACLExportStatsBucketInterval = wallarmACLExportStatsBucketInterval
+		}
 	}
 
-	if wallarmACLExportStatsBucketLifetime, exists := cfgm.Data["wallarm-acl-export-stats-bucket-lifetime"]; exists {
-		cfgParams.MainWallarmACLExportStatsBucketLifetime = wallarmACLExportStatsBucketLifetime
+	if wallarmACLExportStatsBucketLifetime, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-acl-export-stats-bucket-lifetime", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmACLExportStatsBucketLifetime = wallarmACLExportStatsBucketLifetime
+		}
 	}
 
 	if wallarmAPIFwEnabled, exists, err := GetMapKeyAsBool(cfgm.Data, "wallarm-apifw-enabled", cfgm); exists {

@@ -334,9 +334,9 @@ type MainConfig struct {
 	WallarmACLExportEnable              string
 	WallarmACLExportShmSize             string
 	WallarmACLExportSampleLimit         int
-	WallarmACLExportSampleGroupLifetime string
-	WallarmACLExportStatsBucketInterval string
-	WallarmACLExportStatsBucketLifetime string
+	WallarmACLExportSampleGroupLifetime int
+	WallarmACLExportStatsBucketInterval int
+	WallarmACLExportStatsBucketLifetime int
 }
 
 // NewUpstreamWithDefaultServer creates an upstream with the default server.
