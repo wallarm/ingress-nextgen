@@ -35,7 +35,7 @@ config:
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"
-      tag: "6.7.5"
+      tag: "6.9.0"
       pullPolicy: IfNotPresent
 
   ## Wallarm CLI postanalytics configuration (runs in postanalytics pod)

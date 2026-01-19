@@ -11,7 +11,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -24,7 +24,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -38,7 +38,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -50,7 +50,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -164,7 +164,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -184,7 +184,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: appprotect-dos
 rules:
@@ -244,7 +244,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: appprotect-dos
 roleRef:
@@ -266,7 +266,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -298,7 +298,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -416,7 +416,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -431,7 +431,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-dos
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -447,7 +447,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -460,7 +460,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -474,7 +474,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -486,7 +486,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -600,7 +600,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -620,7 +620,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: appprotect-waf
 rules:
@@ -680,7 +680,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: appprotect-waf
 roleRef:
@@ -702,7 +702,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -734,7 +734,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -852,7 +852,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -867,7 +867,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-waf
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -883,7 +883,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -896,7 +896,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -910,7 +910,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -922,7 +922,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -1036,7 +1036,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -1056,7 +1056,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -1116,7 +1116,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -1138,7 +1138,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -1170,7 +1170,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -1288,7 +1288,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -1303,7 +1303,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-waf-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -1319,7 +1319,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -1332,7 +1332,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -1346,7 +1346,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -1358,7 +1358,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -1472,7 +1472,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -1492,7 +1492,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: appprotect-wafv5
 rules:
@@ -1552,7 +1552,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: appprotect-wafv5
 roleRef:
@@ -1574,7 +1574,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -1606,7 +1606,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -1724,7 +1724,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -1739,7 +1739,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: appprotect-wafv5
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -1755,7 +1755,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -1768,7 +1768,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -1782,7 +1782,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -1794,7 +1794,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -1908,7 +1908,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -1928,7 +1928,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -1988,7 +1988,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -2010,7 +2010,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -2042,7 +2042,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -2160,7 +2160,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -2175,7 +2175,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: app-protect-wafv5-agentv2
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -2191,7 +2191,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -2204,7 +2204,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -2218,7 +2218,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -2230,7 +2230,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -2323,7 +2323,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -2343,7 +2343,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: custom-resources
 rules:
@@ -2403,7 +2403,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: custom-resources
 roleRef:
@@ -2425,7 +2425,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -2457,7 +2457,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -2570,7 +2570,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -2585,7 +2585,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: custom-resources
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -2601,7 +2601,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -2614,7 +2614,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -2628,7 +2628,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -2640,7 +2640,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -2754,7 +2754,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -2774,7 +2774,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -2834,7 +2834,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -2856,7 +2856,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -2888,7 +2888,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -3006,7 +3006,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -3021,7 +3021,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -3037,7 +3037,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -3050,7 +3050,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -3064,7 +3064,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -3076,7 +3076,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -3190,7 +3190,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -3210,7 +3210,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -3270,7 +3270,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -3292,7 +3292,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -3324,7 +3324,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -3484,7 +3484,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -3499,7 +3499,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: daemonset-readonly
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -3515,7 +3515,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -3528,7 +3528,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -3542,7 +3542,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -3554,7 +3554,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -3668,7 +3668,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -3688,7 +3688,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -3748,7 +3748,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -3770,7 +3770,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -3802,7 +3802,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -3920,7 +3920,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -3935,7 +3935,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: default
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -3951,7 +3951,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -3964,7 +3964,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -3978,7 +3978,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -3990,7 +3990,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -4104,7 +4104,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -4124,7 +4124,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -4184,7 +4184,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -4206,7 +4206,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -4238,7 +4238,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -4356,7 +4356,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   scaleTargetRef:
@@ -4388,7 +4388,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -4403,7 +4403,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -4419,7 +4419,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -4432,7 +4432,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -4446,7 +4446,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -4458,7 +4458,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -4572,7 +4572,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -4592,7 +4592,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -4652,7 +4652,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -4674,7 +4674,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -4706,7 +4706,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -4823,7 +4823,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -4838,7 +4838,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: deployment-hpa-no-create
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -4854,7 +4854,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -4867,7 +4867,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -4881,7 +4881,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -4893,7 +4893,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -5007,7 +5007,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -5027,7 +5027,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: gc
 rules:
@@ -5087,7 +5087,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: gc
 roleRef:
@@ -5109,7 +5109,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -5141,7 +5141,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -5260,7 +5260,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -5275,7 +5275,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   listeners:
@@ -5296,7 +5296,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-configuration
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -5312,7 +5312,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -5325,7 +5325,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -5339,7 +5339,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -5351,7 +5351,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -5465,7 +5465,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -5485,7 +5485,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -5545,7 +5545,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -5567,7 +5567,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -5599,7 +5599,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -5718,7 +5718,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -5733,7 +5733,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   listeners:
@@ -5751,7 +5751,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: global-config-custom-name
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -5767,7 +5767,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -5780,7 +5780,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -5794,7 +5794,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -5806,7 +5806,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -5920,7 +5920,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -5940,7 +5940,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -6000,7 +6000,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -6022,7 +6022,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -6054,7 +6054,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -6172,7 +6172,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   annotations:
     ingressclass.kubernetes.io/is-default-class: "true"
@@ -6189,7 +6189,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: ingress-class
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -6205,7 +6205,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -6218,7 +6218,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -6232,7 +6232,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -6244,7 +6244,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -6358,7 +6358,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -6378,7 +6378,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: nginx-ingress
 rules:
@@ -6438,7 +6438,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: nginx-ingress
 roleRef:
@@ -6460,7 +6460,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -6492,7 +6492,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -6610,7 +6610,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -6625,7 +6625,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: namespace
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -6641,7 +6641,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -6654,7 +6654,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -6668,7 +6668,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -6680,7 +6680,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -6794,7 +6794,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -6814,7 +6814,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -6874,7 +6874,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -6896,7 +6896,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -6928,7 +6928,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -7046,7 +7046,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -7061,7 +7061,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: oss-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -7077,7 +7077,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -7090,7 +7090,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -7104,7 +7104,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -7116,7 +7116,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -7230,7 +7230,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -7250,7 +7250,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -7310,7 +7310,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -7332,7 +7332,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -7364,7 +7364,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -7482,7 +7482,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -7497,7 +7497,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -7513,7 +7513,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -7526,7 +7526,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -7540,7 +7540,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -7552,7 +7552,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -7666,7 +7666,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -7686,7 +7686,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -7746,7 +7746,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -7768,7 +7768,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -7800,7 +7800,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -7928,7 +7928,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -7943,7 +7943,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-debug
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -7959,7 +7959,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -7972,7 +7972,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -7986,7 +7986,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -7998,7 +7998,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -8112,7 +8112,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -8132,7 +8132,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -8192,7 +8192,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -8214,7 +8214,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -8246,7 +8246,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -8364,7 +8364,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -8379,7 +8379,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -8395,7 +8395,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -8408,7 +8408,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -8422,7 +8422,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -8434,7 +8434,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -8548,7 +8548,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -8568,7 +8568,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -8628,7 +8628,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -8650,7 +8650,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -8682,7 +8682,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -8800,7 +8800,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -8815,7 +8815,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-custom-endpoint
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -8831,7 +8831,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -8844,7 +8844,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -8858,7 +8858,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -8870,7 +8870,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -8984,7 +8984,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -9004,7 +9004,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -9064,7 +9064,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -9086,7 +9086,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -9118,7 +9118,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -9236,7 +9236,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -9251,7 +9251,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -9267,7 +9267,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -9280,7 +9280,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -9294,7 +9294,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -9306,7 +9306,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -9420,7 +9420,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -9440,7 +9440,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -9500,7 +9500,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -9522,7 +9522,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -9554,7 +9554,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -9672,7 +9672,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -9687,7 +9687,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-mgmt-proxy-host-auth
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -9703,7 +9703,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -9716,7 +9716,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -9730,7 +9730,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -9742,7 +9742,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -9856,7 +9856,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -9876,7 +9876,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -9936,7 +9936,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -9958,7 +9958,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -9990,7 +9990,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -10108,7 +10108,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -10123,7 +10123,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -10139,7 +10139,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -10152,7 +10152,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -10166,7 +10166,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -10178,7 +10178,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -10292,7 +10292,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -10312,7 +10312,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: custom
 rules:
@@ -10372,7 +10372,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: custom
 roleRef:
@@ -10394,7 +10394,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -10426,7 +10426,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -10544,7 +10544,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -10559,7 +10559,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: plus-agent-all
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -10575,7 +10575,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -10588,7 +10588,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
 /-/-/-/
@@ -10602,7 +10602,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -10614,7 +10614,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -10728,7 +10728,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -10748,7 +10748,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -10808,7 +10808,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -10830,7 +10830,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -10862,7 +10862,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -10991,7 +10991,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -11006,7 +11006,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: startupstatus
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -11022,7 +11022,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-wallarm-secret.yaml
@@ -11035,7 +11035,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 type: Opaque
 data:
@@ -11051,7 +11051,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
   enable-wallarm: "true"
@@ -11071,7 +11071,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -11083,7 +11083,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -11197,7 +11197,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -11217,7 +11217,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -11277,7 +11277,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -11299,7 +11299,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -11329,7 +11329,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
   name: wallarm-enabled-wallarm-ingress-wcli-metrics
@@ -11356,7 +11356,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -11379,7 +11379,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
   name: wallarm-enabled-wallarm-ingress-wcli-post-metrics
@@ -11406,7 +11406,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -11541,7 +11541,7 @@ spec:
           - -ssl-dynamic-reload=true
           - -enable-telemetry-reporting=false
       - name: wcli
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
         env:
@@ -11591,7 +11591,7 @@ spec:
             - NET_BIND_SERVICE
 
       - name: api-firewall
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: ["api-firewall"]
         env:
@@ -11652,7 +11652,7 @@ spec:
       initContainers:
       
       - name: wallarm-init
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: [ "register", "filtering", "fallback" ]
         env:
@@ -11711,7 +11711,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -11736,7 +11736,7 @@ spec:
       initContainers:
       
       - name: wallarm-init
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: [ "register", "post_analytic", "fallback" ]
         env:
@@ -11787,7 +11787,7 @@ spec:
       containers:
         
         - name: wcli
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
           env:
@@ -11834,7 +11834,7 @@ spec:
               add:
               - NET_BIND_SERVICE
         - name: wstore
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["wstore"]
           env:
@@ -11886,7 +11886,7 @@ spec:
               add:
               - NET_BIND_SERVICE
         - name: wallarm-appstructure
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["appstructure"]
           volumeMounts:
@@ -11926,7 +11926,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -11941,7 +11941,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-enabled
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -11957,7 +11957,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-configmap.yaml
@@ -11970,7 +11970,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
   enable-wallarm: "true"
@@ -11990,7 +11990,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -12002,7 +12002,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -12116,7 +12116,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -12136,7 +12136,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -12196,7 +12196,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -12218,7 +12218,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -12248,7 +12248,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
   name: wallarm-existing-secret-wallarm-ingress-wcli-metrics
@@ -12275,7 +12275,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -12298,7 +12298,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
   name: wallarm-existing-secret-wallarm-ingress-wcli-post-metrics
@@ -12325,7 +12325,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -12459,7 +12459,7 @@ spec:
           - -ssl-dynamic-reload=true
           - -enable-telemetry-reporting=false
       - name: wcli
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
         env:
@@ -12509,7 +12509,7 @@ spec:
             - NET_BIND_SERVICE
 
       - name: api-firewall
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: ["api-firewall"]
         env:
@@ -12570,7 +12570,7 @@ spec:
       initContainers:
       
       - name: wallarm-init
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: [ "register", "filtering", "fallback" ]
         env:
@@ -12629,7 +12629,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -12653,7 +12653,7 @@ spec:
       initContainers:
       
       - name: wallarm-init
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: [ "register", "post_analytic", "fallback" ]
         env:
@@ -12704,7 +12704,7 @@ spec:
       containers:
         
         - name: wcli
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
           env:
@@ -12751,7 +12751,7 @@ spec:
               add:
               - NET_BIND_SERVICE
         - name: wstore
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["wstore"]
           env:
@@ -12803,7 +12803,7 @@ spec:
               add:
               - NET_BIND_SERVICE
         - name: wallarm-appstructure
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["appstructure"]
           volumeMounts:
@@ -12843,7 +12843,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -12858,7 +12858,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-existing-secret
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -12874,7 +12874,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-wallarm-secret.yaml
@@ -12887,7 +12887,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 type: Opaque
 data:
@@ -12903,7 +12903,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
   enable-wallarm: "true"
@@ -12923,7 +12923,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -12935,7 +12935,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -13049,7 +13049,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -13069,7 +13069,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: wallarm
 rules:
@@ -13129,7 +13129,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: wallarm
 roleRef:
@@ -13151,7 +13151,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -13181,7 +13181,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
   name: wallarm-full-wallarm-ingress-wcli-metrics
@@ -13208,7 +13208,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -13231,7 +13231,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
   name: wallarm-full-wallarm-ingress-wcli-post-metrics
@@ -13258,7 +13258,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -13563,7 +13563,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -13778,7 +13778,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -13793,7 +13793,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-full
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
 
@@ -13809,7 +13809,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/controller-wallarm-secret.yaml
@@ -13822,7 +13822,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 type: Opaque
 data:
@@ -13838,7 +13838,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
   enable-wallarm: "true"
@@ -13858,7 +13858,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 /-/-/-/
 # Source: wallarm-ingress/templates/clusterrole.yaml
@@ -13870,7 +13870,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 rules:
 - apiGroups:
@@ -13984,7 +13984,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
 - kind: ServiceAccount
@@ -14004,7 +14004,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 rules:
@@ -14064,7 +14064,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
   namespace: default
 roleRef:
@@ -14086,7 +14086,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -14116,7 +14116,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
   name: wallarm-us-cloud-wallarm-ingress-wcli-metrics
@@ -14143,7 +14143,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -14166,7 +14166,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
   name: wallarm-us-cloud-wallarm-ingress-wcli-post-metrics
@@ -14193,7 +14193,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: controller
 spec:
@@ -14328,7 +14328,7 @@ spec:
           - -ssl-dynamic-reload=true
           - -enable-telemetry-reporting=false
       - name: wcli
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: ["wcli", "run", "-log-level", "WARN", "job:apispec", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:ipfeed", "-log-level", "INFO", "job:iplist", "-log-level", "INFO", "job:metricsexp", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:syncnode", "-log-level", "INFO"]
         env:
@@ -14378,7 +14378,7 @@ spec:
             - NET_BIND_SERVICE
 
       - name: api-firewall
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: ["api-firewall"]
         env:
@@ -14439,7 +14439,7 @@ spec:
       initContainers:
       
       - name: wallarm-init
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: [ "register", "filtering" ]
         env:
@@ -14498,7 +14498,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: wallarm-postanalytics
 spec:
@@ -14523,7 +14523,7 @@ spec:
       initContainers:
       
       - name: wallarm-init
-        image: docker.io/wallarm/node-helpers:6.7.5
+        image: docker.io/wallarm/node-helpers:6.9.0
         imagePullPolicy: IfNotPresent
         args: [ "register", "post_analytic" ]
         env:
@@ -14574,7 +14574,7 @@ spec:
       containers:
         
         - name: wcli
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["wcli", "run", "-log-level", "WARN", "job:blkexp", "-log-level", "INFO", "job:botexp", "-log-level", "WARN", "job:cntexp", "-log-level", "ERROR", "job:cntsync", "-log-level", "INFO", "job:credstuff", "-log-level", "INFO", "job:envexp", "-log-level", "INFO", "job:jwtexp", "-log-level", "INFO", "job:mrksync", "-log-level", "INFO", "job:register", "-log-level", "INFO", "job:reqexp", "-log-level", "INFO"]
           env:
@@ -14621,7 +14621,7 @@ spec:
               add:
               - NET_BIND_SERVICE
         - name: wstore
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["wstore"]
           env:
@@ -14673,7 +14673,7 @@ spec:
               add:
               - NET_BIND_SERVICE
         - name: wallarm-appstructure
-          image: docker.io/wallarm/node-helpers:6.7.5
+          image: docker.io/wallarm/node-helpers:6.9.0
           imagePullPolicy: IfNotPresent
           args: ["appstructure"]
           volumeMounts:
@@ -14713,7 +14713,7 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   controller: nginx.org/ingress-controller
@@ -14728,6 +14728,6 @@ metadata:
     helm.sh/chart: wallarm-ingress-7.0.0
     app.kubernetes.io/name: wallarm-ingress
     app.kubernetes.io/instance: wallarm-us-cloud
-    app.kubernetes.io/version: "6.7.5"
+    app.kubernetes.io/version: "6.9.0"
     app.kubernetes.io/managed-by: Helm
 ---
