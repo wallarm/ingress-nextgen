@@ -600,6 +600,8 @@ func ParseConfigMap(ctx context.Context, cfgm *v1.ConfigMap, nginxPlus bool, has
 		configOk = false
 	}
 
+	parseConfigMapVts(cfgm, cfgParams)
+
 	if hasAppProtect {
 		if appProtectFailureModeAction, exists := cfgm.Data["app-protect-failure-mode-action"]; exists {
 			if appProtectFailureModeAction == "pass" || appProtectFailureModeAction == "drop" {
@@ -1091,6 +1093,21 @@ func parseConfigMapOpenTelemetry(l *slog.Logger, cfgm *v1.ConfigMap, cfgParams *
 	return cfgParams, nil
 }
 
+func parseConfigMapVts(cfgm *v1.ConfigMap, cfgParams *ConfigParams) {
+	if vtsEnabled, exists, err := GetMapKeyAsBool(cfgm.Data, "enable-vts", cfgm); exists && err == nil {
+		cfgParams.MainVtsLoadModule = vtsEnabled
+	}
+	if vtsPort, exists, err := GetMapKeyAsInt(cfgm.Data, "vts-metrics-port", cfgm); exists && err == nil {
+		cfgParams.MainVtsMetricsPort = vtsPort
+	}
+	if vtsDetailedCodes, exists := cfgm.Data["vts-detailed-codes"]; exists {
+		vtsDetailedCodes = strings.TrimSpace(vtsDetailedCodes)
+		if vtsDetailedCodes != "" {
+			cfgParams.MainVtsDetailedCodes = vtsDetailedCodes
+		}
+	}
+}
+
 // ParseMGMTConfigMap parses the mgmt block ConfigMap into MGMTConfigParams.
 //
 //nolint:gocyclo
@@ -1276,6 +1293,9 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		NginxStatusAllowCIDRs:              staticCfgParams.NginxStatusAllowCIDRs,
 		NginxStatusPort:                    staticCfgParams.NginxStatusPort,
 		MainOtelLoadModule:                 config.MainOtelLoadModule,
+		MainVtsLoadModule:                  config.MainVtsLoadModule,
+		VtsMetricsPort:                     config.MainVtsMetricsPort,
+		MainVtsDetailedCodes:               config.MainVtsDetailedCodes,
 		MainOtelGlobalTraceEnabled:         config.MainOtelTraceInHTTP,
 		MainOtelExporterEndpoint:           config.MainOtelExporterEndpoint,
 		MainOtelExporterHeaderName:         config.MainOtelExporterHeaderName,

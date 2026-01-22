@@ -35,7 +35,7 @@ config:
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"
-      tag: "6.9.0"
+      tag: "6.10.0"
       pullPolicy: IfNotPresent
 
   ## Wallarm CLI postanalytics configuration (runs in postanalytics pod)
@@ -1064,3 +1064,35 @@ prometheus:
     ## Matches on the name of a Service port.
     endpoints:
       - port: prometheus
+
+prometheusExtended:
+  ## Enable extended Prometheus metrics via VTS module / Experimental
+  enabled: false
+  ## Port for extended metrics
+  port: 10113
+  ## Port name for metrics endpoint
+  portName: prom-ext
+  ## Path at which the metrics endpoint is exposed
+  endpointPath: "/vts-status"
+  ## Detailed status codes to measure (e.g. "all", or "200 301 302 400 403 404 500 502 503")
+  # detailedCodes: ""
+  service:
+    ## Creates a ClusterIP Service to expose extended Prometheus metrics
+    create: false
+    annotations: {}
+    labels: {}
+    externalIPs: []
+    loadBalancerSourceRanges: []
+    servicePort: 10113
+    type: ClusterIP
+  serviceMonitor:
+    ## Creates a ServiceMonitor for extended Prometheus metrics
+    enabled: false
+    additionalLabels: {}
+    annotations: {}
+    namespace: ""
+    namespaceSelector: {}
+    scrapeInterval: 30s
+    targetLabels: []
+    relabelings: []
+    metricRelabelings: []

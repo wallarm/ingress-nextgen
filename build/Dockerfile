@@ -124,6 +124,50 @@ RUN --mount=type=bind,from=nginx-files,src=nginx_signing.rsa.pub,target=/etc/apk
 	&& sed -i -e '/nginx.org/d' /etc/apk/repositories
 
 
+##################################### Build VTS module for Alpine #####################################
+FROM alpine AS vts-files
+ARG VTS_VERSION=0.2.5-fixed
+
+# Uses NGINX_VERSION env var inherited from base nginx image
+RUN --mount=type=secret,id=ci_job_token,env=CI_JOB_TOKEN \
+	set -x \
+	&& apk add --no-cache --virtual .build-deps \
+		gcc \
+		libc-dev \
+		make \
+		openssl-dev \
+		pcre2-dev \
+		zlib-dev \
+		linux-headers \
+		libxslt-dev \
+		gd-dev \
+		geoip-dev \
+		perl-dev \
+		curl \
+		git \
+	&& tempDir="$(mktemp -d)" \
+	&& cd ${tempDir} \
+	# Download nginx source matching the installed version
+	&& curl -fSL https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -o nginx.tar.gz \
+	&& tar -zxf nginx.tar.gz \
+	# Clone nginx-module-vts at specific version
+	&& git clone --branch v${VTS_VERSION} --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@gl.wallarm.com/wallarm-node/nginx-module-vts.git \
+	# Extract configure arguments from existing nginx binary and build VTS module
+	&& cd nginx-${NGINX_VERSION} \
+	&& NGINX_CONFIGURE_ARGS=$(nginx -V 2>&1 | grep -oP '(?<=configure arguments: ).*') \
+	&& eval "./configure ${NGINX_CONFIGURE_ARGS} --add-dynamic-module=${tempDir}/nginx-module-vts" \
+	&& make modules \
+	&& mkdir -p /tmp/vts \
+	&& cp objs/ngx_http_vhost_traffic_status_module.so /tmp/vts/
+
+
+##################################### Base image for Alpine with VTS module #####################################
+FROM alpine AS alpine-vts
+
+RUN --mount=type=bind,from=vts-files,src=/tmp/vts/,target=/tmp/vts/ \
+	cp /tmp/vts/ngx_http_vhost_traffic_status_module.so /usr/lib/nginx/modules/
+
+
 ############################################# Base image for Debian #############################################
 FROM nginx:1.29.3@sha256:553f64aecdc31b5bf944521731cd70e35da4faed96b2b7548a3d8e2598c52a42 AS debian
 ARG NGINX_OSS_VERSION

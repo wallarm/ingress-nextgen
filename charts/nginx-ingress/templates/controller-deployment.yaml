@@ -107,6 +107,10 @@ spec:
         - name: {{ .Values.controller.wallarm.metrics.portName }}
           containerPort: {{ .Values.controller.wallarm.metrics.port }}
 {{- end }}
+{{- if .Values.prometheusExtended.enabled }}
+        - name: {{ .Values.prometheusExtended.portName }}
+          containerPort: {{ .Values.prometheusExtended.port }}
+{{- end }}
 {{- if .Values.controller.readyStatus.enable }}
         readinessProbe:
           httpGet:
