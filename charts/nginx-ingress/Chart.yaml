@@ -1,17 +1,18 @@
 apiVersion: v2
-name: nginx-ingress
-version: 2.4.0
-appVersion: 5.3.0
+name: wallarm-ingress
+version: 7.0.0
+appVersion: 6.9.0
 kubeVersion: ">= 1.25.0-0"
 type: application
-description: NGINX Ingress Controller
-icon: https://raw.githubusercontent.com/nginx/kubernetes-ingress/v5.2.1/charts/nginx-ingress/chart-icon.png
-home: https://github.com/nginx/kubernetes-ingress
+description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer with Wallarm module (new)
+icon: https://static.wallarm.com/wallarm-logo.svg
+home: https://www.wallarm.com
 sources:
-  - https://github.com/nginx/kubernetes-ingress/tree/v5.2.1/charts/nginx-ingress
+  - https://github.com/wallarm/ingress2 # TODO: fix
 keywords:
   - ingress
   - nginx
+  - wallarm
 maintainers:
-  - name: nginx
-    email: kubernetes@nginx.com
+  - name: Wallarm Support Team
+    email: support@wallarm.com

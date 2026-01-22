@@ -1,0 +1,23 @@
+config:
+  wallarm:
+    enabled: true
+    api:
+      host: "api.wallarm.com"
+      token: "full-test-token"
+      nodeGroup: "full-test-group"
+  images:
+    controller:
+      repository: "custom-registry/nginx-node-ic"
+      tag: "1.0.0"
+    helper:
+      repository: "custom-registry/node-helpers"
+      tag: "1.0.0"
+  apiFirewall:
+    enabled: true
+    maxRequestBodySize: 8388608
+    config:
+      logLevel: "DEBUG"
+
+postanalytics:
+  replicaCount: 2
+  arena: "4.0"

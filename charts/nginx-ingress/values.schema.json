@@ -6,9 +6,7 @@
   "required": [
     "controller",
     "rbac",
-    "prometheus",
-    "serviceInsight",
-    "nginxServiceMesh"
+    "prometheus"
   ],
   "properties": {
     "controller": {
@@ -17,8 +15,7 @@
       "title": "The Ingress Controller Helm Schema",
       "required": [
         "name",
-        "kind",
-        "image"
+        "kind"
       ],
       "properties": {
         "name": {
@@ -35,13 +32,11 @@
           "title": "The kind of the Ingress Controller",
           "enum": [
             "deployment",
-            "daemonset",
-            "statefulset"
+            "daemonset"
           ],
           "examples": [
             "deployment",
-            "daemonset",
-            "statefulset"
+            "daemonset"
           ]
         },
         "selectorLabels": {
@@ -53,15 +48,6 @@
           "default": {},
           "title": "The annotations Schema",
           "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
-        },
-        "nginxplus": {
-          "type": "boolean",
-          "default": false,
-          "title": "Deploys the Ingress Controller for NGINX Plus",
-          "examples": [
-            false,
-            true
-          ]
         },
         "debug": {
           "type": "object",
@@ -94,461 +80,12 @@
             }
           ]
         },
-        "mgmt": {
-          "type": "object",
-          "default": {},
-          "title": "The mgmt block Schema",
-          "properties": {
-            "licenseTokenSecretName": {
-              "type": "string",
-              "default": "",
-              "title": "The licenseTokenSecretName Schema",
-              "examples": [
-                "nginx-plus-secret",
-                "license-token",
-                "license"
-              ]
-            },
-            "sslCertificateSecretName": {
-              "type": "string",
-              "default": "",
-              "title": "The sslCertificateSecretName Schema",
-              "examples": [
-                "ssl-certificate"
-              ]
-            },
-            "usageReport": {
-              "type": "object",
-              "default": {},
-              "title": "The usageReport Schema",
-              "properties": {
-                "endpoint": {
-                  "type": "string",
-                  "title": "The endpoint of the usageReport",
-                  "default": "",
-                  "examples": [
-                    "",
-                    "product.connect.nginx.com",
-                    "nginx-mgmt.local"
-                  ]
-                },
-                "interval": {
-                  "type": "string",
-                  "pattern": "^[0-9]+[smh]$",
-                  "default": "1h",
-                  "title": "The usage report interval Schema",
-                  "examples": [
-                    "60s",
-                    "1m",
-                    "1h",
-                    "24h"
-                  ]
-                },
-                "proxyHost": {
-                  "type": "string",
-                  "title": "The proxy hostname with optional port",
-                  "default": "",
-                  "examples": [
-                    "proxy.example.com",
-                    "proxy.local",
-                    "proxy",
-                    "192.168.1.254",
-                    "proxy.example.com:3128",
-                    "proxy.local:3128",
-                    "proxy:3128",
-                    "192.168.1.254:3128"
-                  ]
-                },
-                "proxyCredentialsSecretName": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The secret containing the proxy username/password combination.  Must contain a `username` and `password` field",
-                  "examples": [
-                    "proxy-credentials"
-                  ]
-                }
-              }
-            },
-            "enforceInitialReport": {
-              "type": "boolean",
-              "default": false,
-              "title": "The enforceInitialReport Schema",
-              "examples": [
-                true,
-                false
-              ]
-            },
-            "sslVerify": {
-              "type": "boolean",
-              "default": true,
-              "title": "The sslVerify Schema",
-              "examples": [
-                true,
-                false
-              ]
-            },
-            "resolver": {
-              "type": "object",
-              "default": {},
-              "title": "The resolver Schema",
-              "properties": {
-                "addresses": {
-                  "type": "array",
-                  "default": [],
-                  "title": "List of resolver addresses/fqdns"
-                },
-                "valid": {
-                  "type": "string",
-                  "pattern": "^[0-9]+[smhdwMy]$",
-                  "title": "A valid nginx time",
-                  "examples": [
-                    "1m",
-                    "5d"
-                  ]
-                },
-                "ipv6": {
-                  "type": "boolean",
-                  "title": "turn on or off ipv6 support",
-                  "default": false
-                }
-              }
-            },
-            "sslTrustedCertificateSecretName": {
-              "type": "string",
-              "default": "ssl-trusted-cert",
-              "title": "The sslTrustedCertificateSecretName Schema",
-              "examples": [
-                "ssl-trusted-cert",
-                "certificate-secret"
-              ]
-            },
-            "configMapName": {
-              "type": "string",
-              "default": "",
-              "title": "The configMap Schema",
-              "examples": [
-                ""
-              ]
-            }
-          },
-          "examples": [
-            {
-              "licenseTokenSecretName": "license-token"
-            }
-          ]
-        },
         "nginxReloadTimeout": {
           "type": "integer",
           "default": 0,
           "title": "Timeout in milliseconds which the Ingress Controller will wait for a successful NGINX reload after a change or at the initial start",
           "examples": [
             60000
-          ]
-        },
-        "appprotect": {
-          "type": "object",
-          "default": {},
-          "title": "The App Protect WAF Schema",
-          "required": [
-            "enable"
-          ],
-          "properties": {
-            "enable": {
-              "type": "boolean",
-              "default": false,
-              "title": "Enable the App Protect WAF module in the Ingress Controller",
-              "examples": [
-                false,
-                true
-              ]
-            },
-            "v5": {
-              "type": "boolean",
-              "default": false,
-              "title": "Enables App Protect WAF v5.",
-              "examples": [
-                false,
-                true
-              ]
-            },
-            "logLevel": {
-              "type": "string",
-              "default": "",
-              "title": "The logLevel for App Protect WAF",
-              "enum": [
-                "fatal",
-                "error",
-                "warn",
-                "info",
-                "debug",
-                "trace"
-              ],
-              "examples": [
-                "fatal",
-                "error",
-                "warn",
-                "info",
-                "debug",
-                "trace"
-              ]
-            },
-            "volumes": {
-              "type": "array",
-              "default": [
-                {
-                  "name": "app-protect-bd-config",
-                  "emptyDir": {}
-                },
-                {
-                  "name": "app-protect-config",
-                  "emptyDir": {}
-                },
-                {
-                  "name": "app-protect-bundles",
-                  "emptyDir": {}
-                }
-              ],
-              "title": "Volumes for App Protect WAF v5",
-              "items": {
-                "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Volume"
-              }
-            },
-            "enforcer": {
-              "type": "object",
-              "properties": {
-                "host": {
-                  "type": "string",
-                  "default": "127.0.0.1",
-                  "title": "Port which the App Protect WAF v5 Enforcer process runs on",
-                  "examples": [
-                    "127.0.0.1"
-                  ]
-                },
-                "port": {
-                  "type": "integer",
-                  "default": 50000,
-                  "title": "Port which the App Protect WAF v5 Enforcer process runs on",
-                  "examples": [
-                    50000
-                  ]
-                },
-                "image": {
-                  "type": "object",
-                  "default": {},
-                  "title": "The image Schema",
-                  "required": [
-                    "repository"
-                  ],
-                  "properties": {
-                    "repository": {
-                      "type": "string",
-                      "default": "private-registry.nginx.com/nap/waf-enforcer",
-                      "title": "The repository of the App Protect WAF v5 Enforcer image",
-                      "examples": [
-                        "private-registry.nginx.com/nap/waf-enforcer"
-                      ]
-                    },
-                    "tag": {
-                      "type": "string",
-                      "default": "5.9.0",
-                      "title": "The tag of the  App Protect WAF v5 Enforcer image",
-                      "examples": [
-                        "5.9.0"
-                      ]
-                    },
-                    "digest": {
-                      "type": "string",
-                      "default": "",
-                      "title": "The digest of the  App Protect WAF v5 Enforcer image",
-                      "examples": [
-                        "sha256:2710c264e8eaeb663cee63db37b75a1ac1709f63a130fb091c843a6c3a4dc572"
-                      ]
-                    },
-                    "pullPolicy": {
-                      "default": "IfNotPresent",
-                      "title": "The pullPolicy for the  App Protect WAF v5 Enforcer image",
-                      "allOf": [
-                        {
-                          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/imagePullPolicy"
-                        },
-                        {
-                          "enum": [
-                            "Always",
-                            "IfNotPresent",
-                            "Never"
-                          ]
-                        }
-                      ],
-                      "examples": [
-                        "Always",
-                        "IfNotPresent",
-                        "Never"
-                      ]
-                    }
-                  },
-                  "examples": [
-                    {
-                      "repository": "private-registry.nginx.com/nap/waf-enforcer",
-                      "tag": "5.9.0",
-                      "pullPolicy": "IfNotPresent"
-                    }
-                  ]
-                },
-                "securityContext": {
-                  "default": {},
-                  "title": "The securityContext Schema",
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
-                }
-              }
-            },
-            "configManager": {
-              "type": "object",
-              "properties": {
-                "image": {
-                  "type": "object",
-                  "default": {},
-                  "title": "The image Schema",
-                  "required": [
-                    "repository"
-                  ],
-                  "properties": {
-                    "repository": {
-                      "type": "string",
-                      "default": "private-registry.nginx.com/nap/waf-config-mgr",
-                      "title": "The repository of the App Protect WAF v5 Config Manager image",
-                      "examples": [
-                        "private-registry.nginx.com/nap/waf-config-mgr"
-                      ]
-                    },
-                    "tag": {
-                      "type": "string",
-                      "default": "5.9.0",
-                      "title": "The tag of the  App Protect WAF v5 Config Manager image",
-                      "examples": [
-                        "5.9.0"
-                      ]
-                    },
-                    "digest": {
-                      "type": "string",
-                      "default": "",
-                      "title": "The digest of the  App Protect WAF v5 Config Manager image",
-                      "examples": [
-                        "sha256:2710c264e8eaeb663cee63db37b75a1ac1709f63a130fb091c843a6c3a4dc572"
-                      ]
-                    },
-                    "pullPolicy": {
-                      "default": "IfNotPresent",
-                      "title": "The pullPolicy for the  App Protect WAF v5 Config Manager image",
-                      "allOf": [
-                        {
-                          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/imagePullPolicy"
-                        },
-                        {
-                          "enum": [
-                            "Always",
-                            "IfNotPresent",
-                            "Never"
-                          ]
-                        }
-                      ],
-                      "examples": [
-                        "Always",
-                        "IfNotPresent",
-                        "Never"
-                      ]
-                    }
-                  },
-                  "examples": [
-                    {
-                      "repository": "private-registry.nginx.com/nap/waf-config-mgr",
-                      "tag": "5.9.0",
-                      "pullPolicy": "IfNotPresent"
-                    }
-                  ]
-                },
-                "securityContext": {
-                  "default": {
-                    "allowPrivilegeEscalation": false,
-                    "runAsUser": 101,
-                    "runAsNonRoot": true,
-                    "capabilities": {
-                      "drop": [
-                        "all"
-                      ]
-                    }
-                  },
-                  "title": "The securityContext Schema",
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
-                }
-              }
-            }
-          },
-          "examples": [
-            {
-              "enable": true,
-              "logLevel": "fatal"
-            }
-          ]
-        },
-        "appprotectdos": {
-          "type": "object",
-          "default": {},
-          "title": "The  App Protect DoS Schema",
-          "required": [
-            "enable"
-          ],
-          "properties": {
-            "enable": {
-              "type": "boolean",
-              "default": false,
-              "title": "Enable the App Protect DoS module in the Ingress Controller",
-              "examples": [
-                false,
-                true
-              ]
-            },
-            "debug": {
-              "type": "boolean",
-              "default": false,
-              "title": "debugging for App Protect DoS",
-              "examples": [
-                false,
-                true
-              ]
-            },
-            "maxWorkers": {
-              "type": "integer",
-              "default": 0,
-              "title": "Max number of nginx processes to support",
-              "examples": [
-                0
-              ]
-            },
-            "maxDaemons": {
-              "type": "integer",
-              "default": 0,
-              "title": "Max number of ADMD instances",
-              "examples": [
-                0
-              ]
-            },
-            "memory": {
-              "type": "integer",
-              "default": 0,
-              "title": "RAM memory size to consume in MB",
-              "examples": [
-                0
-              ]
-            }
-          },
-          "examples": [
-            {
-              "enable": true,
-              "debug": false,
-              "maxWorkers": 0,
-              "maxDaemons": 0,
-              "memory": 0
-            }
           ]
         },
         "hostNetwork": {
@@ -681,68 +218,6 @@
                 "protocol": "TCP"
               }
             ]
-          ]
-        },
-        "image": {
-          "type": "object",
-          "default": {},
-          "title": "The image Schema",
-          "required": [
-            "repository"
-          ],
-          "properties": {
-            "repository": {
-              "type": "string",
-              "default": "nginx/nginx-ingress",
-              "title": "The repository of the Ingress Controller",
-              "examples": [
-                "nginx/nginx-ingress"
-              ]
-            },
-            "tag": {
-              "type": "string",
-              "default": "5.2.1",
-              "title": "The tag of the Ingress Controller image",
-              "examples": [
-                "5.2.1"
-              ]
-            },
-            "digest": {
-              "type": "string",
-              "default": "",
-              "title": "The digest of the Ingress Controller image",
-              "examples": [
-                "sha256:2710c264e8eaeb663cee63db37b75a1ac1709f63a130fb091c843a6c3a4dc572"
-              ]
-            },
-            "pullPolicy": {
-              "default": "IfNotPresent",
-              "title": "The pullPolicy for the Ingress Controller image",
-              "allOf": [
-                {
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/imagePullPolicy"
-                },
-                {
-                  "enum": [
-                    "Always",
-                    "IfNotPresent",
-                    "Never"
-                  ]
-                }
-              ],
-              "examples": [
-                "Always",
-                "IfNotPresent",
-                "Never"
-              ]
-            }
-          },
-          "examples": [
-            {
-              "repository": "nginx/nginx-ingress",
-              "tag": "5.2.1",
-              "pullPolicy": "IfNotPresent"
-            }
           ]
         },
         "lifecycle": {
@@ -972,51 +447,6 @@
             }
           ]
         },
-        "statefulset": {
-          "type": "object",
-          "default": {},
-          "title": "The StatefulSet configuration Schema",
-          "properties": {
-            "podManagementPolicy": {
-              "type": "string",
-              "default": "OrderedReady",
-              "title": "The pod management policy",
-              "enum": [
-                "OrderedReady",
-                "Parallel"
-              ]
-            },
-            "persistentVolumeClaimRetentionPolicy": {
-              "default": {},
-              "title": "The persistentVolumeClaimRetentionPolicy Schema",
-              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.apps.v1.StatefulSetPersistentVolumeClaimRetentionPolicy"
-            },
-            "nginxCachePVC": {
-              "type": "object",
-              "default": {},
-              "title": "The nginxCachePVC Schema",
-              "properties": {
-                "size": {
-                  "default": "256Mi",
-                  "title": "The size Schema",
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.api.resource.Quantity"
-                },
-                "storageClass": {
-                  "title": "The storageClass Schema",
-                  "default": "",
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.PersistentVolumeClaimSpec/properties/storageClassName"
-                },
-                "accessModes": {
-                  "default": [
-                    "ReadWriteOnce"
-                  ],
-                  "title": "The accessModes Schema",
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.PersistentVolumeClaimSpec/properties/accessModes"
-                }
-              }
-            }
-          }
-        },
         "extraContainers": {
           "type": "array",
           "default": [],
@@ -1087,14 +517,6 @@
           "title": "The enableCustomResources",
           "examples": [
             true
-          ]
-        },
-        "enableOIDC": {
-          "type": "boolean",
-          "default": false,
-          "title": "The enableOIDC",
-          "examples": [
-            false
           ]
         },
         "enableTLSPassthrough": {
@@ -1982,74 +1404,252 @@
             }
           }
         },
-        "enableWeightChangesDynamicReload": {
-          "type": "boolean",
-          "default": false,
-          "title": "Enables weight changes without reloading for NGINX Plus",
-          "examples": [
-            false
-          ]
+        "wallarm": {
+          "type": "object",
+          "default": {},
+          "title": "Wallarm containers configuration inside controller pod",
+          "properties": {
+            "metrics": {
+              "type": "object",
+              "default": {},
+              "title": "Wallarm metrics endpoint configuration",
+              "properties": {
+                "port": {
+                  "type": "integer",
+                  "default": 18080,
+                  "title": "Port for Wallarm metrics"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Enable Wallarm metrics"
+                }
+              }
+            },
+            "initContainer": {
+              "type": "object",
+              "default": {},
+              "title": "Init container for node registration",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+                },
+                "securityContext": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
+                },
+                "extraEnvs": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+                  }
+                }
+              }
+            },
+            "wcli": {
+              "type": "object",
+              "default": {},
+              "title": "Wallarm CLI controller configuration",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+                },
+                "securityContext": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
+                },
+                "metrics": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "enabled": { "type": "boolean", "default": true },
+                    "port": { "type": "integer", "default": 9004 },
+                    "portName": { "type": "string", "default": "wcli-ctrl-mtrc" },
+                    "endpointPath": { "type": "string", "default": "" },
+                    "host": { "type": "string", "default": ":9004" },
+                    "service": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "annotations": { "type": "object", "default": {} },
+                        "labels": { "type": "object", "default": {} },
+                        "externalIPs": { "type": "array", "default": [] },
+                        "loadBalancerSourceRanges": { "type": "array", "default": [] },
+                        "servicePort": { "type": "integer", "default": 9004 },
+                        "type": { "type": "string", "default": "ClusterIP" }
+                      }
+                    },
+                    "serviceMonitor": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "enabled": { "type": "boolean", "default": false },
+                        "additionalLabels": { "type": "object", "default": {} },
+                        "annotations": { "type": "object", "default": {} },
+                        "namespace": { "type": "string", "default": "" },
+                        "namespaceSelector": { "type": "object", "default": {} },
+                        "scrapeInterval": { "type": "string", "default": "30s" },
+                        "targetLabels": { "type": "array", "default": [] },
+                        "relabelings": { "type": "array", "default": [] },
+                        "metricRelabelings": { "type": "array", "default": [] }
+                      }
+                    }
+                  }
+                },
+                "extraEnvs": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+                  }
+                }
+              }
+            },
+            "apiFirewall": {
+              "type": "object",
+              "default": {},
+              "title": "API Firewall container configuration",
+              "properties": {
+                "resources": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+                },
+                "securityContext": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
+                },
+                "livenessProbeEnabled": { "type": "boolean", "default": false },
+                "livenessProbe": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
+                },
+                "readinessProbeEnabled": { "type": "boolean", "default": false },
+                "readinessProbe": {
+                  "type": "object",
+                  "default": {},
+                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
+                },
+                "metrics": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "enabled": { "type": "boolean", "default": false },
+                    "port": { "type": "integer", "default": 9010 },
+                    "portName": { "type": "string", "default": "apifw-metrics" },
+                    "endpointPath": { "type": "string", "default": "/metrics" },
+                    "host": { "type": "string", "default": ":9010" },
+                    "service": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "annotations": { "type": "object", "default": {} },
+                        "labels": { "type": "object", "default": {} },
+                        "externalIPs": { "type": "array", "default": [] },
+                        "loadBalancerSourceRanges": { "type": "array", "default": [] },
+                        "servicePort": { "type": "integer", "default": 9010 },
+                        "type": { "type": "string", "default": "ClusterIP" }
+                      }
+                    },
+                    "serviceMonitor": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "enabled": { "type": "boolean", "default": false },
+                        "additionalLabels": { "type": "object", "default": {} },
+                        "annotations": { "type": "object", "default": {} },
+                        "namespace": { "type": "string", "default": "" },
+                        "namespaceSelector": { "type": "object", "default": {} },
+                        "scrapeInterval": { "type": "string", "default": "30s" },
+                        "targetLabels": { "type": "array", "default": [] },
+                        "relabelings": { "type": "array", "default": [] },
+                        "metricRelabelings": { "type": "array", "default": [] }
+                      }
+                    }
+                  }
+                },
+                "extraEnvs": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+                  }
+                }
+              }
+            },
+            "extraVolumes": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Volume"
+              }
+            },
+            "extraVolumeMounts": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount"
+              }
+            }
+          }
+        },
+        "networkPolicy": {
+          "type": "object",
+          "default": {},
+          "title": "Network policy for the Ingress Controller pods",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "title": "Enable NetworkPolicy for the controller"
+            },
+            "annotations": {
+              "type": "object",
+              "default": {},
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+            },
+            "allowIngressFrom": {
+              "type": "array",
+              "default": [],
+              "title": "Custom source selectors to allow ingress traffic from"
+            },
+            "allowMetricsFrom": {
+              "type": "array",
+              "default": [],
+              "title": "Custom source selectors to allow metrics scraping from"
+            },
+            "allowEgressTo": {
+              "type": "array",
+              "default": [],
+              "title": "Custom destination selectors to allow egress traffic to"
+            },
+            "ingressRules": {
+              "type": "array",
+              "default": [],
+              "title": "Additional custom ingress rules"
+            },
+            "egressRules": {
+              "type": "array",
+              "default": [],
+              "title": "Additional custom egress rules"
+            }
+          }
         }
       },
       "examples": [
         {
           "name": "controller",
           "kind": "deployment",
-          "nginxplus": false,
           "nginxReloadTimeout": 60000,
-          "appprotect": {
-            "enable": false,
-            "v5": false,
-            "logLevel": "fatal",
-            "volumes": [
-              {
-                "name": "app-protect-bd-config",
-                "emptyDir": {}
-              },
-              {
-                "name": "app-protect-config",
-                "emptyDir": {}
-              },
-              {
-                "name": "app-protect-bundles",
-                "emptyDir": {}
-              }
-            ],
-            "enforcer": {
-              "host": "127.0.0.1",
-              "port": 50000,
-              "image": {
-                "repository": "private-registry.nginx.com/nap/waf-enforcer",
-                "tag": "5.9.0",
-                "pullPolicy": "IfNotPresent"
-              },
-              "securityContext": {}
-            },
-            "configManager": {
-              "image": {
-                "repository": "private-registry.nginx.com/nap/waf-config-mgr",
-                "tag": "5.9.0",
-                "pullPolicy": "IfNotPresent"
-              },
-              "securityContext": {
-                "allowPrivilegeEscalation": false,
-                "runAsUser": 101,
-                "runAsNonRoot": true,
-                "capabilities": {
-                  "drop": [
-                    "all"
-                  ]
-                }
-              }
-            }
-          },
-          "appprotectdos": {
-            "enable": false,
-            "debug": false,
-            "maxWorkers": 0,
-            "maxDaemons": 0,
-            "memory": 0
-          },
           "hostNetwork": false,
           "hostPort": {
             "enable": false,
@@ -2066,12 +1666,6 @@
           "logLevel": "info",
           "logFormat": "glog",
           "customPorts": [],
-          "image": {
-            "repository": "nginx/nginx-ingress",
-            "tag": "5.2.1",
-            "digest": "",
-            "pullPolicy": "IfNotPresent"
-          },
           "lifecycle": {},
           "customConfigMap": "",
           "config": {
@@ -2143,7 +1737,6 @@
           },
           "watchNamespace": "",
           "enableCustomResources": true,
-          "enableOIDC": false,
           "enableTLSPassthrough": false,
           "tlsPassthroughPort": 443,
           "enableCertManager": false,
@@ -2219,8 +1812,7 @@
           "enableSSLDynamicReload": true,
           "telemetryReporting": {
             "enable": true
-          },
-          "enableWeightChangesDynamicReload": false
+          }
         }
       ]
     },
@@ -2357,276 +1949,515 @@
         }
       ]
     },
-    "serviceInsight": {
+    "config": {
       "type": "object",
       "default": {},
-      "title": "The Service Insight Schema",
-      "required": [
-        "create"
-      ],
+      "title": "Global configuration including Wallarm WAF settings",
       "properties": {
-        "create": {
-          "type": "boolean",
-          "default": false,
-          "title": "The create",
-          "examples": [
-            true
-          ]
-        },
-        "port": {
-          "type": "integer",
-          "default": 9114,
-          "title": "The port",
-          "examples": [
-            9114
-          ]
-        },
-        "secret": {
-          "type": "string",
-          "default": "",
-          "title": "The secret",
-          "examples": [
-            ""
-          ]
-        },
-        "scheme": {
-          "type": "string",
-          "default": "http",
-          "title": "The scheme",
-          "examples": [
-            "http"
-          ]
-        }
-      },
-      "examples": [
-        {
-          "create": true,
-          "port": 9114,
-          "secret": "",
-          "scheme": "http"
-        }
-      ]
-    },
-    "nginxServiceMesh": {
-      "type": "object",
-      "default": {},
-      "title": "The nginxServiceMesh Schema",
-      "required": [
-        "enable"
-      ],
-      "properties": {
-        "enable": {
-          "type": "boolean",
-          "default": false,
-          "title": "The enable",
-          "examples": [
-            false
-          ]
-        },
-        "enableEgress": {
-          "type": "boolean",
-          "default": false,
-          "title": "The enableEgress",
-          "examples": [
-            false
-          ]
-        }
-      },
-      "examples": [
-        {
-          "enable": false,
-          "enableEgress": false
-        }
-      ]
-    },
-    "nginxAgent": {
-      "type": "object",
-      "default": {
-        "enable": false
-      },
-      "title": "Configuration for NGINX Agent.",
-      "required": [
-        "enable"
-      ],
-      "properties": {
-        "enable": {
-          "type": "boolean",
-          "default": false,
-          "title": "Enable NGINX Agent",
-          "examples": [
-            false
-          ]
-        },
-        "instanceGroup": {
-          "type": "string",
-          "default": "",
-          "title": "Set the --instance-group argument for NGINX Agent",
-          "examples": [
-            "my-instance-group"
-          ]
-        },
-        "logLevel": {
-          "type": "string",
-          "default": "info",
-          "title": "Log level for NGINX Agent",
-          "enum": [
-            "panic",
-            "fatal",
-            "error",
-            "info",
-            "debug",
-            "trace"
-          ],
-          "examples": [
-            "error"
-          ]
-        },
-        "dataplaneKeySecretName": {
-          "type": "string",
-          "default": "",
-          "title": "The Dataplane key is required to authenticate NGINX Agent with NGINX One Console",
-          "examples": [
-            "dataplane-key"
-          ]
-        },
-        "endpointHost": {
-          "type": "string",
-          "default": "agent.connect.nginx.com",
-          "title": "FQDN or IP for connecting to NGINX One Console",
-          "examples": [
-            "agent.connect.nginx.com"
-          ]
-        },
-        "endpointPort": {
-          "type": "integer",
-          "title": "Port for connecting to NGINX One SaaS Console",
-          "default": 443,
-          "examples": [
-            443
-          ]
-        },
-        "tlsSkipVerify": {
-          "type": "boolean",
-          "default": "false",
-          "title": "skip certificate verification"
-        },
-        "instanceManager": {
+        "wallarm": {
           "type": "object",
           "default": {},
-          "title": "Configuration for the connection to NGINX Instance Manager",
-          "examples": [],
-          "required": [
-            "host"
-          ],
+          "title": "Wallarm WAF configuration",
           "properties": {
-            "host": {
-              "type": "string",
-              "title": "FQDN or IP for connecting to NGINX Instance Manager",
-              "examples": [
-                "nim.example.com"
-              ]
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "title": "Enable Wallarm WAF integration"
             },
-            "grpcPort": {
-              "type": "integer",
-              "title": "Port for connecting to NGINX Instance Manager",
-              "default": 443,
-              "examples": [
-                443
-              ]
-            },
-            "sni": {
-              "type": "string",
-              "title": "Server Name Indication for NGINX Instance Manager",
-              "default": "",
-              "examples": [
-                "nim.example.com"
-              ]
-            },
-            "tls": {
+            "api": {
               "type": "object",
               "default": {},
-              "title": "TLS configuration for connection between NGINX Agent and NGINX Instance Manager",
+              "title": "Wallarm API configuration",
               "properties": {
-                "enable": {
-                  "type": "boolean",
-                  "default": "true",
-                  "title": "enable TLS for NGINX Instance Manager connection"
+                "host": {
+                  "type": "string",
+                  "default": "api.wallarm.com",
+                  "title": "Wallarm API host"
                 },
-                "secret": {
+                "port": {
+                  "type": "integer",
+                  "default": 443,
+                  "title": "Wallarm API port"
+                },
+                "ssl": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Enable SSL for Wallarm API"
+                },
+                "token": {
                   "type": "string",
                   "default": "",
-                  "title": "kubernetes.io/tls secret with a TLS certificate and key for using mTLS between NGINX Agent and NGINX Instance Manager"
+                  "title": "Wallarm API token"
                 },
-                "caSecret": {
+                "nodeGroup": {
+                  "type": "string",
+                  "default": "defaultIngressGroup",
+                  "title": "Wallarm node group name"
+                },
+                "existingSecret": {
+                  "type": "object",
+                  "default": {},
+                  "title": "Use existing secret for Wallarm API token",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "title": "Enable using existing secret"
+                    },
+                    "secretName": {
+                      "type": "string",
+                      "default": "",
+                      "title": "Name of the existing secret"
+                    },
+                    "secretKey": {
+                      "type": "string",
+                      "default": "token",
+                      "title": "Key in the secret containing the token"
+                    }
+                  }
+                }
+              }
+            },
+            "fallback": {
+              "type": "string",
+              "default": "on",
+              "title": "Wallarm fallback mode",
+              "enum": ["on", "off"]
+            }
+          }
+        },
+        "images": {
+          "type": "object",
+          "default": {},
+          "title": "Container images configuration",
+          "properties": {
+            "controller": {
+              "type": "object",
+              "default": {},
+              "title": "Controller image configuration",
+              "properties": {
+                "repository": {
                   "type": "string",
                   "default": "",
-                  "title": "nginx.org/ca secret for verification of Instance Manager TLS"
+                  "title": "Controller image repository"
                 },
-                "skipVerify": {
-                  "type": "boolean",
-                  "default": "false",
-                  "title": "skip certificate verification"
+                "tag": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Controller image tag"
+                },
+                "pullPolicy": {
+                  "type": "string",
+                  "default": "IfNotPresent",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "title": "Image pull policy"
+                }
+              }
+            },
+            "helper": {
+              "type": "object",
+              "default": {},
+              "title": "Helper image configuration",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Helper image repository"
+                },
+                "tag": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Helper image tag"
+                },
+                "pullPolicy": {
+                  "type": "string",
+                  "default": "IfNotPresent",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "title": "Image pull policy"
                 }
               }
             }
           }
         },
-        "syslog": {
-          "type": "object",
-          "default": {
-            "host": "127.0.0.1",
-            "port": 1514
-          },
-          "title": "Syslog listener which NGINX Agent uses to accept messages from App Protect WAF",
-          "properties": {
-            "host": {
-              "type": "string",
-              "title": "Address for NGINX Agent to run syslog listener",
-              "default": "127.0.0.1",
-              "examples": [
-                "127.0.0.1"
-              ]
-            },
-            "port": {
-              "type": "integer",
-              "title": "Port for NGINX Agent to run syslog listener",
-              "default": 1514,
-              "examples": [
-                1514
-              ]
-            }
-          }
-        },
-        "napMonitoring": {
+        "wcliPostanalytics": {
           "type": "object",
           "default": {},
-          "title": "NGINX App Protect Monitoring config",
+          "title": "WCLI configuration for postanalytics pod",
           "properties": {
-            "collectorBufferSize": {
-              "type": "integer",
-              "default": 50000,
-              "title": "Buffer size for collector. Will contain log lines and parsed log lines",
-              "examples": [
-                50000
-              ]
+            "logLevel": {
+              "type": "string",
+              "default": "WARN",
+              "title": "Log level for WCLI"
             },
-            "processorBufferSize": {
-              "type": "integer",
-              "default": 50000,
-              "title": "Buffer size for processor. Will contain log lines and parsed log lines",
-              "examples": [
-                50000
-              ]
+            "commands": {
+              "type": "object",
+              "default": {},
+              "title": "Per-job log levels"
             }
           }
         },
-        "customConfigMap": {
+        "wcliController": {
+          "type": "object",
+          "default": {},
+          "title": "WCLI configuration for controller pod",
+          "properties": {
+            "logLevel": {
+              "type": "string",
+              "default": "WARN",
+              "title": "Log level for WCLI"
+            },
+            "commands": {
+              "type": "object",
+              "default": {},
+              "title": "Per-job log levels"
+            }
+          }
+        },
+        "apiFirewall": {
+          "type": "object",
+          "default": {},
+          "title": "API Firewall configuration",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "title": "Enable API Firewall"
+            },
+            "readBufferSize": {
+              "type": "integer",
+              "default": 8192,
+              "title": "Per-connection buffer size for requests reading"
+            },
+            "writeBufferSize": {
+              "type": "integer",
+              "default": 8192,
+              "title": "Per-connection buffer size for responses writing"
+            },
+            "maxRequestBodySize": {
+              "type": "integer",
+              "default": 4194304,
+              "title": "Maximum request body size in bytes"
+            },
+            "disableKeepalive": {
+              "type": "boolean",
+              "default": false,
+              "title": "Disable keep-alive connections"
+            },
+            "maxConnectionsPerIp": {
+              "type": "integer",
+              "default": 0,
+              "title": "Maximum concurrent client connections per IP"
+            },
+            "maxRequestsPerConnection": {
+              "type": "integer",
+              "default": 0,
+              "title": "Maximum requests per connection"
+            },
+            "maxErrorsInResponse": {
+              "type": "integer",
+              "default": 3,
+              "title": "Maximum errors in response"
+            },
+            "config": {
+              "type": "object",
+              "default": {},
+              "title": "API Firewall internal configuration",
+              "properties": {
+                "mainPort": {
+                  "type": "integer",
+                  "default": 18081,
+                  "title": "Main port"
+                },
+                "healthPort": {
+                  "type": "integer",
+                  "default": 18082,
+                  "title": "Health check port"
+                },
+                "specificationUpdatePeriod": {
+                  "type": "string",
+                  "default": "1m",
+                  "title": "Specification update period"
+                },
+                "unknownParametersDetection": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Enable unknown parameters detection"
+                },
+                "logLevel": {
+                  "type": "string",
+                  "default": "INFO",
+                  "title": "Log level",
+                  "enum": ["RACE", "DEBUG", "INFO", "WARNING", "ERROR"]
+                },
+                "logFormat": {
+                  "type": "string",
+                  "default": "TEXT",
+                  "title": "Log format",
+                  "enum": ["TEXT", "JSON"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "postanalytics": {
+      "type": "object",
+      "default": {},
+      "title": "Wallarm postanalytics component configuration",
+      "properties": {
+        "kind": {
           "type": "string",
-          "title": "The name of a custom ConfigMap to use instead of the one provided by default",
-          "default": "",
-          "examples": [
-            "my-custom-configmap"
-          ]
+          "default": "Deployment",
+          "title": "Workload kind for postanalytics",
+          "enum": ["Deployment", "DaemonSet"]
+        },
+        "replicaCount": {
+          "type": "integer",
+          "default": 1,
+          "title": "Number of postanalytics replicas",
+          "minimum": 1
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "default": [],
+          "title": "List of image pull secrets",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Secret name"
+              }
+            },
+            "required": ["name"]
+          }
+        },
+        "arena": {
+          "type": "string",
+          "default": "2.0",
+          "title": "Wstore arena size in GB"
+        },
+        "serviceAddress": {
+          "type": "string",
+          "default": "0.0.0.0:3313",
+          "title": "Service address for wstore"
+        },
+        "serviceProtocol": {
+          "type": "string",
+          "default": "tcp4",
+          "title": "Protocol for wstore service",
+          "enum": ["tcp", "tcp4", "tcp6"]
+        },
+        "resources": {
+          "type": "object",
+          "default": {},
+          "title": "Resource requests and limits",
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+        },
+        "securityContext": {
+          "type": "object",
+          "default": {},
+          "title": "Security context",
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
+        },
+        "livenessProbe": {
+          "type": "object",
+          "default": {},
+          "title": "Liveness probe configuration",
+          "properties": {
+            "failureThreshold": { "type": "integer", "default": 3 },
+            "initialDelaySeconds": { "type": "integer", "default": 5 },
+            "periodSeconds": { "type": "integer", "default": 10 },
+            "successThreshold": { "type": "integer", "default": 1 },
+            "timeoutSeconds": { "type": "integer", "default": 1 }
+          }
+        },
+        "readinessProbe": {
+          "type": "object",
+          "default": {},
+          "title": "Readiness probe configuration",
+          "properties": {
+            "failureThreshold": { "type": "integer", "default": 3 },
+            "initialDelaySeconds": { "type": "integer", "default": 5 },
+            "periodSeconds": { "type": "integer", "default": 10 },
+            "successThreshold": { "type": "integer", "default": 1 },
+            "timeoutSeconds": { "type": "integer", "default": 1 }
+          }
+        },
+        "extraEnvs": {
+          "type": "array",
+          "default": [],
+          "title": "Additional environment variables",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+          }
+        },
+        "extraVolumes": {
+          "type": "array",
+          "default": [],
+          "title": "Additional volumes",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Volume"
+          }
+        },
+        "extraVolumeMounts": {
+          "type": "array",
+          "default": [],
+          "title": "Additional volume mounts",
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount"
+          }
+        },
+        "service": {
+          "type": "object",
+          "default": {},
+          "title": "Service configuration",
+          "properties": {
+            "annotations": {
+              "type": "object",
+              "default": {},
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+            },
+            "labels": {
+              "type": "object",
+              "default": {},
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+            }
+          }
+        },
+        "podAnnotations": {
+          "type": "object",
+          "default": {},
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+        },
+        "podLabels": {
+          "type": "object",
+          "default": {},
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+        },
+        "nodeSelector": {
+          "type": "object",
+          "default": {},
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/nodeSelector"
+        },
+        "tolerations": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Toleration"
+          }
+        },
+        "affinity": {
+          "type": "object",
+          "default": {},
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Affinity"
+        },
+        "topologySpreadConstraints": {
+          "type": "array",
+          "default": [],
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/topologySpreadConstraints"
+        },
+        "annotations": {
+          "type": "object",
+          "default": {},
+          "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+        },
+        "networkPolicy": {
+          "type": "object",
+          "default": {},
+          "title": "Network policy configuration",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "annotations": { "type": "object", "default": {} },
+            "allowHealthCheckFrom": { "type": "array", "default": [] },
+            "allowMetricsFrom": { "type": "array", "default": [] },
+            "ingressRules": { "type": "array", "default": [] },
+            "egressRules": { "type": "array", "default": [] }
+          }
+        },
+        "podDisruptionBudget": {
+          "type": "object",
+          "default": {},
+          "title": "Pod disruption budget",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "annotations": { "type": "object", "default": {} },
+            "minAvailable": {
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.policy.v1.PodDisruptionBudgetSpec/properties/minAvailable"
+            },
+            "maxUnavailable": {
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.policy.v1.PodDisruptionBudgetSpec/properties/maxUnavailable"
+            }
+          }
+        },
+        "terminationGracePeriodSeconds": {
+          "type": "integer",
+          "default": 30,
+          "minimum": 0
+        },
+        "tls": {
+          "type": "object",
+          "default": {},
+          "title": "TLS configuration",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "certFile": { "type": "string", "default": "" },
+            "keyFile": { "type": "string", "default": "" },
+            "caCertFile": { "type": "string", "default": "" },
+            "mutualTLS": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false },
+                "clientCACertFile": { "type": "string", "default": "" }
+              }
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "default": {},
+          "title": "Metrics configuration",
+          "properties": {
+            "listenAddress": { "type": "string", "default": "127.0.0.1:9001" },
+            "protocol": { "type": "string", "default": "tcp4" }
+          }
+        },
+        "initContainer": {
+          "type": "object",
+          "default": {},
+          "properties": {
+            "resources": { "type": "object", "default": {} },
+            "securityContext": { "type": "object", "default": {} },
+            "extraEnvs": { "type": "array", "default": [] }
+          }
+        },
+        "wcli": {
+          "type": "object",
+          "default": {},
+          "title": "WCLI container configuration",
+          "properties": {
+            "resources": { "type": "object", "default": {} },
+            "securityContext": { "type": "object", "default": {} },
+            "metrics": {
+              "type": "object",
+              "default": {},
+              "properties": {
+                "enabled": { "type": "boolean", "default": true },
+                "port": { "type": "integer", "default": 9003 },
+                "portName": { "type": "string", "default": "wcli-post-mtrc" }
+              }
+            }
+          }
+        },
+        "appstructure": {
+          "type": "object",
+          "default": {},
+          "properties": {
+            "resources": { "type": "object", "default": {} },
+            "securityContext": { "type": "object", "default": {} },
+            "extraEnvs": { "type": "array", "default": [] }
+          }
         }
       }
     }
@@ -2636,61 +2467,7 @@
       "controller": {
         "name": "controller",
         "kind": "deployment",
-        "nginxplus": false,
         "nginxReloadTimeout": 60000,
-        "appprotect": {
-          "enable": false,
-          "v5": false,
-          "logLevel": "fatal",
-          "volumes": [
-            {
-              "name": "app-protect-bd-config",
-              "emptyDir": {}
-            },
-            {
-              "name": "app-protect-config",
-              "emptyDir": {}
-            },
-            {
-              "name": "app-protect-bundles",
-              "emptyDir": {}
-            }
-          ],
-          "enforcer": {
-            "host": "127.0.0.1",
-            "port": 50000,
-            "image": {
-              "repository": "private-registry.nginx.com/nap/waf-enforcer",
-              "tag": "5.9.0",
-              "pullPolicy": "IfNotPresent"
-            },
-            "securityContext": {}
-          },
-          "configManager": {
-            "image": {
-              "repository": "private-registry.nginx.com/nap/waf-config-mgr",
-              "tag": "5.9.0",
-              "pullPolicy": "IfNotPresent"
-            },
-            "securityContext": {
-              "allowPrivilegeEscalation": false,
-              "runAsUser": 101,
-              "runAsNonRoot": true,
-              "capabilities": {
-                "drop": [
-                  "all"
-                ]
-              }
-            }
-          }
-        },
-        "appprotectdos": {
-          "enable": false,
-          "debug": false,
-          "maxWorkers": 0,
-          "maxDaemons": 0,
-          "memory": 0
-        },
         "hostNetwork": false,
         "hostPort": {
           "enable": false,
@@ -2707,12 +2484,6 @@
         "logLevel": "info",
         "logFormat": "glog",
         "customPorts": [],
-        "image": {
-          "repository": "nginx/nginx-ingress",
-          "tag": "5.2.1",
-          "digest": "",
-          "pullPolicy": "IfNotPresent"
-        },
         "lifecycle": {},
         "customConfigMap": "",
         "config": {
@@ -2784,7 +2555,6 @@
         },
         "watchNamespace": "",
         "enableCustomResources": true,
-        "enableOIDC": false,
         "enableTLSPassthrough": false,
         "tlsPassthroughPort": 443,
         "enableCertManager": false,
@@ -2860,8 +2630,7 @@
         "enableSSLDynamicReload": true,
         "telemetryReporting": {
           "enable": true
-        },
-        "enableWeightChangesDynamicReload": false
+        }
       },
       "rbac": {
         "create": true,
@@ -2892,41 +2661,6 @@
             }
           ]
         }
-      },
-      "serviceInsight": {
-        "create": false,
-        "port": 9114,
-        "secret": "",
-        "scheme": "http"
-      },
-      "nginxServiceMesh": {
-        "enable": false,
-        "enableEgress": false
-      },
-      "nginxAgent": {
-        "enable": false,
-        "instanceGroup": "",
-        "logLevel": "error",
-        "syslog": {
-          "host": "127.0.0.1",
-          "port": 1514
-        },
-        "napMonitoring": {
-          "collectorBufferSize": 50000,
-          "processorBufferSize": 50000
-        },
-        "instanceManager": {
-          "host": "",
-          "grpcPort": 443,
-          "sni": "",
-          "tls": {
-            "enabled": true,
-            "skipVerify": false,
-            "secret": "",
-            "caSecret": ""
-          }
-        },
-        "customConfigMap": ""
       }
     }
   ]

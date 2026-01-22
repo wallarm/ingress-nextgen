@@ -6,6 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
 {{- if .Values.controller.service.extraLabels }}
 {{ toYaml .Values.controller.service.extraLabels | indent 4 }}
 {{- end }}
@@ -65,6 +66,7 @@ spec:
 {{- end }}
   selector:
     {{- include "nginx-ingress.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
   {{- if .Values.controller.service.sessionAffinity.enable }}
   sessionAffinity: {{ .Values.controller.service.sessionAffinity.type }}
   {{- if eq .Values.controller.service.sessionAffinity.type "ClientIP" }}

@@ -92,13 +92,18 @@ func validatePolicySpec(spec *v1.PolicySpec, fieldPath *field.Path, isPlus, enab
 		fieldCount++
 	}
 
+	if spec.Wallarm != nil {
+		allErrs = append(allErrs, validateWallarm(spec.Wallarm, fieldPath.Child("wallarm"))...)
+		fieldCount++
+	}
+
 	if spec.Cache != nil {
 		allErrs = append(allErrs, validateCache(spec.Cache, fieldPath.Child("cache"), isPlus)...)
 		fieldCount++
 	}
 
 	if fieldCount != 1 {
-		msg := "must specify exactly one of: `accessControl`, `rateLimit`, `ingressMTLS`, `egressMTLS`, `basicAuth`, `apiKey`, `cache`"
+		msg := "must specify exactly one of: `accessControl`, `rateLimit`, `ingressMTLS`, `egressMTLS`, `basicAuth`, `apiKey`, `cache`, `wallarm`"
 		if isPlus {
 			msg = fmt.Sprint(msg, ", `jwt`, `oidc`, `waf`")
 		}
@@ -419,6 +424,110 @@ func validateWAF(waf *v1.WAF, fieldPath *field.Path) field.ErrorList {
 	if waf.SecurityLogs != nil {
 		allErrs = append(allErrs, validateLogConfs(waf.SecurityLogs, fieldPath.Child("securityLogs"), bundleMode)...)
 	}
+	return allErrs
+}
+
+// validWallarmParsers contains valid parser names for Wallarm
+var validWallarmParsers = map[string]bool{
+	"cookie":    true,
+	"zlib":      true,
+	"htmljs":    true,
+	"json":      true,
+	"multipart": true,
+	"base64":    true,
+	"percent":   true,
+	"urlenc":    true,
+	"xml":       true,
+	"jwt":       true,
+}
+
+func validateWallarm(wallarm *v1.Wallarm, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	// Mode is required
+	if wallarm.Mode == "" {
+		allErrs = append(allErrs, field.Required(fieldPath.Child("mode"), "mode is required"))
+	}
+
+	// Validate parserDisable values
+	for i, parser := range wallarm.ParserDisable {
+		if !validWallarmParsers[strings.ToLower(parser)] {
+			allErrs = append(allErrs, field.Invalid(
+				fieldPath.Child("parserDisable").Index(i),
+				parser,
+				fmt.Sprintf("invalid parser name. Allowed values: %s", mapToPrettyString(validWallarmParsers)),
+			))
+		}
+	}
+
+	// Validate blockPage format if provided
+	if wallarm.BlockPage != "" {
+		allErrs = append(allErrs, validateWallarmBlockPage(wallarm.BlockPage, fieldPath.Child("blockPage"))...)
+	}
+
+	return allErrs
+}
+
+// validateWallarmBlockPage validates Wallarm block page configuration format
+// https://docs.wallarm.com/admin-en/configuration-guides/configure-block-page-and-code/
+func validateWallarmBlockPage(blockPage string, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	if blockPage == "" {
+		return allErrs
+	}
+
+	for _, value := range strings.Split(blockPage, ";") {
+		value = strings.TrimSpace(value)
+		if value == "" {
+			continue
+		}
+
+		valueSplit := strings.Split(value, " ")
+		page := valueSplit[0]
+
+		// Block page must start with /, &, @, or $
+		if len(page) == 0 || (page[0] != '/' && page[0] != '&' && page[0] != '@' && page[0] != '$') {
+			allErrs = append(allErrs, field.Invalid(fieldPath, page, "block page must start with /, &, @, or $"))
+			continue
+		}
+
+		// Validate optional parameters
+		for _, optional := range valueSplit[1:] {
+			optional = strings.TrimSpace(optional)
+			if optional == "" {
+				continue
+			}
+
+			optionalSplit := strings.Split(optional, "=")
+			if len(optionalSplit) != 2 {
+				allErrs = append(allErrs, field.Invalid(fieldPath, optional, "invalid block page parameter format, expected key=value"))
+				continue
+			}
+
+			optionalKey := optionalSplit[0]
+			optionalValue := optionalSplit[1]
+
+			switch optionalKey {
+			case "response_code":
+				if _, err := strconv.Atoi(optionalValue); err != nil {
+					allErrs = append(allErrs, field.Invalid(fieldPath, optionalValue, "response_code must be a valid integer"))
+				}
+			case "type":
+				for _, typeValue := range strings.Split(optionalValue, ",") {
+					switch typeValue {
+					case "acl_ip", "acl_source", "attack":
+						// valid
+					default:
+						allErrs = append(allErrs, field.Invalid(fieldPath, typeValue, "invalid type value. Allowed values: acl_ip, acl_source, attack"))
+					}
+				}
+			default:
+				allErrs = append(allErrs, field.Invalid(fieldPath, optionalKey, "invalid block page parameter. Allowed parameters: response_code, type"))
+			}
+		}
+	}
+
 	return allErrs
 }
 

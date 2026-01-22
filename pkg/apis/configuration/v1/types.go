@@ -796,6 +796,8 @@ type PolicySpec struct {
 	OIDC *OIDC `json:"oidc"`
 	// The WAF policy configures WAF and log configuration policies for NGINX AppProtect
 	WAF *WAF `json:"waf"`
+	// The Wallarm policy configures Wallarm WAF protection settings.
+	Wallarm *Wallarm `json:"wallarm"`
 	// The API Key policy configures NGINX to authorize requests which provide a valid API Key in a specified header or query param.
 	APIKey *APIKey `json:"apiKey"`
 	// The Cache Key defines a cache policy for proxy caching
@@ -1006,6 +1008,41 @@ type WAF struct {
 	SecurityLog *SecurityLog `json:"securityLog"`
 	//
 	SecurityLogs []*SecurityLog `json:"securityLogs"`
+}
+
+// Wallarm defines Wallarm WAF configuration for a Policy.
+type Wallarm struct {
+	// The Wallarm WAF mode. Allowed values: off, monitoring, safe_blocking, block.
+	// +kubebuilder:validation:Enum=off;monitoring;safe_blocking;block
+	Mode string `json:"mode"`
+	// Controls whether the wallarm_mode can be overridden via Wallarm filtering rules.
+	// Allowed values: on, off, strict. Default is on.
+	// +kubebuilder:validation:Enum=on;off;strict
+	ModeAllowOverride string `json:"modeAllowOverride"`
+	// Enables fallback mode when Wallarm proton.db or custom ruleset cannot be loaded.
+	// Allowed values: on, off. Default is on.
+	// +kubebuilder:validation:Enum=on;off
+	Fallback string `json:"fallback"`
+	// The unique application identifier used in the Wallarm Cloud to distinguish data from different applications.
+	// Must be a positive integer. Maps to wallarm_application directive.
+	// +kubebuilder:validation:Minimum=1
+	Application *int `json:"application"`
+	// The UUID of the Wallarm partner client for multi-tenant setups.
+	// +kubebuilder:validation:Pattern=`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`
+	PartnerClientUUID string `json:"partnerClientUUID"`
+	// Custom block page configuration. Supports file path, named location, URL, or variable.
+	BlockPage string `json:"blockPage"`
+	// Enables analysis of responses from the application. Allowed values: on, off.
+	// +kubebuilder:validation:Enum=on;off
+	ParseResponse string `json:"parseResponse"`
+	// Enables analysis of WebSocket messages. Allowed values: on, off.
+	// +kubebuilder:validation:Enum=on;off
+	ParseWebsocket string `json:"parseWebsocket"`
+	// Enables decompression of compressed responses before analysis. Allowed values: on, off.
+	// +kubebuilder:validation:Enum=on;off
+	UnpackResponse string `json:"unpackResponse"`
+	// List of parsers to disable. Allowed values: cookie, zlib, htmljs, json, multipart, base64, percent, urlenc, xml, jwt.
+	ParserDisable []string `json:"parserDisable"`
 }
 
 // SecurityLog defines the security log of a WAF policy.

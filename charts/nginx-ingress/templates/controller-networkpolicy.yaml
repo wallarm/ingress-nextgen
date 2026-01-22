@@ -1,0 +1,156 @@
+{{- if .Values.controller.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "nginx-ingress.controller.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
+  {{- with .Values.controller.networkPolicy.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "nginx-ingress.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: controller
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow HTTP/HTTPS traffic from anywhere (ingress controller purpose)
+    {{- if .Values.controller.networkPolicy.allowIngressFrom }}
+    - from:
+        {{- toYaml .Values.controller.networkPolicy.allowIngressFrom | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.controller.containerPort.http }}
+        - protocol: TCP
+          port: {{ .Values.controller.containerPort.https }}
+    {{- else }}
+    # Default: allow from anywhere for ingress traffic
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.controller.containerPort.http }}
+        - protocol: TCP
+          port: {{ .Values.controller.containerPort.https }}
+    {{- end }}
+    # Allow Prometheus metrics scraping
+    {{- if .Values.prometheus.create }}
+    {{- if .Values.controller.networkPolicy.allowMetricsFrom }}
+    - from:
+        {{- toYaml .Values.controller.networkPolicy.allowMetricsFrom | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.prometheus.port }}
+    {{- else }}
+    # Default: allow metrics from same namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.prometheus.port }}
+    {{- end }}
+    {{- end }}
+    # Allow readiness probe
+    {{- if .Values.controller.readyStatus.enable }}
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.controller.readyStatus.port }}
+    {{- end }}
+    # Wallarm metrics port
+    {{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.metrics.enabled }}
+    {{- if .Values.controller.networkPolicy.allowMetricsFrom }}
+    - from:
+        {{- toYaml .Values.controller.networkPolicy.allowMetricsFrom | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.controller.wallarm.metrics.port }}
+    {{- else }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.controller.wallarm.metrics.port }}
+    {{- end }}
+    {{- end }}
+    # Wallarm wcli metrics
+    {{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.wcli.metrics.enabled }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.controller.wallarm.wcli.metrics.port }}
+    {{- end }}
+    # API Firewall metrics
+    {{- if and .Values.config.wallarm.enabled .Values.config.apiFirewall.enabled .Values.controller.wallarm.apiFirewall.metrics.enabled }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.controller.wallarm.apiFirewall.metrics.port }}
+    {{- end }}
+    # Additional custom ingress rules
+    {{- with .Values.controller.networkPolicy.ingressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow communication to Kubernetes API server
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 6443
+    # Allow communication to upstream services (backends)
+    {{- if .Values.controller.networkPolicy.allowEgressTo }}
+    - to:
+        {{- toYaml .Values.controller.networkPolicy.allowEgressTo | nindent 8 }}
+    {{- else }}
+    # Default: allow to any pod in the cluster
+    - to:
+        - namespaceSelector: {}
+    {{- end }}
+    {{- if .Values.config.wallarm.enabled }}
+    # Allow communication to postanalytics service
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- include "nginx-ingress.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: wallarm-postanalytics
+      ports:
+        - protocol: TCP
+          port: {{ include "ingress-nginx.wallarmPostanalyticsPort" . }}
+    # Allow communication to Wallarm API cloud
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: {{ .Values.config.wallarm.api.port }}
+    {{- end }}
+    # Additional custom egress rules
+    {{- with .Values.controller.networkPolicy.egressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

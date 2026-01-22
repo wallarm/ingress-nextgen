@@ -1,0 +1,159 @@
+default:
+  id_tokens:
+    VAULT_ID_TOKEN:
+      aud: https://gl.wallarm.com
+  image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/common:v0.5.0
+  tags: [node-c05r1-stable-amd]
+
+stages:
+  - build
+  - test
+  - sign
+  - publish
+
+variables:
+  X_CI_BUILD_KIND:
+    description: "What we want to run, usually 'develop' or 'smokeonly' flow"
+    value: 'develop'
+    options:
+      - 'develop'
+      - 'production-local'
+  WALLARM_API_PRESET:
+    description: "Wallarm api preset"
+    value: audit
+    options:
+      - audit
+      - eu1
+      - us1
+  ### For doc purposes only ###
+  ## Variables used implicitly, only in upstream-triggered pipelines (KINDs production|release-candidate)
+  # AIO_VERSION:
+  #   description: AIO version to extract the nginx module from, and is also used as appVersion in chart; do not confuse with TAG, which in dynamically calculated
+
+
+workflow:
+  rules:
+    - if: $AIO_VERSION =~ /^([0-9]+.[0-9]+.[0-9]+-rc).*$/
+      variables:
+        PREFIX: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
+        HELM_ARGS: --set controller.wallarm.helpers.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
+        CHART_TYPE: "release-candidate"
+    - if: $AIO_VERSION
+      variables:
+        PREFIX: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
+        HELM_ARGS: --set controller.wallarm.helpers.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
+        CHART_TYPE: "release"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^stable\/.*$/
+      changes:
+        - TAG
+      variables:
+        X_CI_BUILD_KIND: "production-local"
+        PREFIX: docker.io/wallarm
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^stable\/.*$/ || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+      variables:
+        X_CI_BUILD_KIND: "develop"
+        PREFIX: $CI_REGISTRY_IMAGE
+        TAG: "$CI_COMMIT_SHORT_SHA"
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+.x-docker-login-private: &x_docker_login_private
+  - | # GitLab Container Registry
+    docker login "${CI_REGISTRY}" \
+        -u "${CI_REGISTRY_USER}" \
+        -p "${CI_REGISTRY_PASSWORD}"
+  - | # GitLab Dependency Proxy
+    docker login "${CI_DEPENDENCY_PROXY_SERVER}" \
+        -u "${CI_DEPENDENCY_PROXY_USER}" \
+        -p "${CI_DEPENDENCY_PROXY_PASSWORD}"
+
+.before-build:
+  before_script:
+    - *x_docker_login_private
+
+.before-test:
+  before_script:
+    - *x_docker_login_private
+  variables:
+    CLIENT_ID: $CLIENT_ID_${WALLARM_API_PRESET} # because fetching as vault secret leads to masking all id-like numbers in logs
+  secrets:
+    WALLARM_API_HOST: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/api_host@node-team", file: false}
+    WALLARM_API_TOKEN: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/user_token@node-team", file: false}
+
+    USER_TOKEN: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/user_token@node-team", file: false}
+    USER_UUID: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/user_uuid@node-team", file: false}
+
+    ALLURE_TOKEN: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/allure_server_token@node-team", file: false}
+    WEBHOOK_UUID: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/webhook_uuid@node-team", file: false}
+    WEBHOOK_API_KEY: {vault: "pipelines/common/smoke-test/${WALLARM_API_PRESET}/webhook_api_key@node-team", file: false}
+
+UNIT_TEST_IC:
+  stage: build
+  image: golang:1.25-alpine
+  tags: [node-c2r4-stable-dind-amd]
+  rules:
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
+  script:
+    - apk add --no-cache make helm
+    - make test
+
+IMAGE_BUILD_IC:
+  stage: build
+  image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/tests-k8s:v0.5.0
+  tags: [node-c2r4-stable-dind-amd]
+  rules:
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
+  extends:
+    - .before-build
+  script: |
+    if [[ ! -z $AIO_VERSION ]]; then
+      .gitlab/calculate-version.sh
+      source version.env && export TAG
+    fi
+    echo "Calculated node version: ${TAG:-from TAG}"
+    echo "Building for registry: $REGISTRY"
+
+    echo "Enabling docker buildx..."
+    docker buildx create --name multi-arch --platform linux/amd64,linux/arm64 --driver docker-container --use
+
+    echo "Building ingress and ingress-chroot images (multi-platform)..."
+    PLATFORM=linux/arm64,linux/amd64 TARGET=container make alpine-image
+  artifacts:
+    reports:
+      dotenv: version.env
+
+SMOKE:
+  stage: test
+  image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/tests-k8s:v0.5.0
+  tags: [node-c2r4-stable-dind-amd]
+  rules:
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
+  extends:
+    - .before-test
+  script: |
+    export KIND_CLUSTER_NAME=wallarm
+    export NODE_GROUP_NAME=nnedv-${CI_COMMIT_SHORT_SHA}
+
+    export PYTEST_PROCESSES=10
+    export PYTEST_PARAMS="--allure-features=Node --deselect=tests/mitigation_controls/test_llm_mitigations.py"
+
+    echo "Pull controller image"
+    docker pull "${PREFIX}:${TAG}"
+    docker pull dkr.wallarm.com/tests/smoke-tests:latest
+
+    echo "Create kind cluster"
+    kind create cluster --name ${KIND_CLUSTER_NAME}
+    kind load docker-image --name="${KIND_CLUSTER_NAME}" "${PREFIX}:${TAG}"
+    kind load docker-image --name="${KIND_CLUSTER_NAME}" dkr.wallarm.com/tests/smoke-tests:latest
+
+    echo "Install ingress chart"
+    kubectl create ns ingress
+    helm -n ingress install testnewic charts/nginx-ingress -f ./tests/smoke/values.yaml --set config.wallarm.api.token=$WALLARM_API_TOKEN --set config.wallarm.api.host=$WALLARM_API_HOST --set config.wallarm.api.nodeGroup=$NODE_GROUP_NAME --set config.images.controller.repository=${PREFIX} --set-string config.images.controller.tag=${TAG}
+    kubectl -n ingress wait --for=condition=Ready pods --all --timeout=90s
+
+    echo "Deploy workload and gun"
+    envsubst < ./tests/smoke/smokegun.yml | kubectl -n default apply -f -
+    kubectl -n default apply -f ./tests/smoke/workload.yml
+    kubectl -n default wait --for=condition=Ready pods --all --timeout=90s
+
+    echo "Start tests"
+    kubectl -n default exec pytest -- /usr/local/bin/test-entrypoint.sh ci

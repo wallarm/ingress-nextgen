@@ -9,6 +9,10 @@ import (
 	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 )
 
+func split(s string, delim string) []string {
+	return strings.Split(s, delim)
+}
+
 type protocol int
 
 const (
@@ -248,7 +252,33 @@ func boolToInteger(b bool) int {
 	return i
 }
 
+
+// Location is suitable for Wallarm APIFW if wallarm_mode is not "off" and
+// backend protocol is supported
+// Basically, we only support HTTP(s) but there is no straightforward way
+// to identify other protocols so...
+func isLocationOkForWallarmAPIFW(location Location) bool {
+	if location.Wallarm == nil || location.Wallarm.Mode == "off" {
+		return false
+	}
+	if location.GRPCPass != "" {
+		return false
+	}
+	return true
+}
+
+// Server is suitable for Wallarm APIFW if at least one of its location is.
+func isServerOkForWallarmAPIFW(server Server) bool {
+	for _, location := range server.Locations {
+		if isLocationOkForWallarmAPIFW(location) {
+			return true
+		}
+	}
+	return false
+}
+
 var helperFunctions = template.FuncMap{
+	"split":                 split,
 	"headerListToCIMap":     headerListToCIMap,
 	"hasCIKey":              hasCIKey,
 	"contains":              strings.Contains,
@@ -264,4 +294,6 @@ var helperFunctions = template.FuncMap{
 	"makeTransportListener": makeTransportListener,
 	"makeServerName":        makeServerName,
 	"boolToInteger":         boolToInteger,
+	"isLocationOkForWallarmAPIFW": isLocationOkForWallarmAPIFW,
+	"isServerOkForWallarmAPIFW":   isServerOkForWallarmAPIFW,
 }

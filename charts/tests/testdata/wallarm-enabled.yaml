@@ -1,0 +1,7 @@
+config:
+  wallarm:
+    enabled: true
+    api:
+      host: "api.wallarm.com"
+      token: "test-token-123"
+      nodeGroup: "test-group"

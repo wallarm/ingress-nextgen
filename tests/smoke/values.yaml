@@ -1,0 +1,10 @@
+controller:
+  enableSnippets: true
+  config:
+    entries:
+      real-ip-header: "X-Real-IP"
+      real-ip-recursive: "True"
+      set-real-ip-from: "0.0.0.0/0"
+config:
+  wallarm:
+    enabled: true

@@ -1,0 +1,69 @@
+{{- if and .Values.config.wallarm.enabled .Values.postanalytics.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "nginx-ingress.fullname" . }}-wallarm-postanalytics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: wallarm-postanalytics
+  {{- with .Values.postanalytics.networkPolicy.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "nginx-ingress.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: wallarm-postanalytics
+  policyTypes:
+    - Ingress
+    {{- if .Values.postanalytics.networkPolicy.egressRules }}
+    - Egress
+    {{- end }}
+  ingress:
+    # Allow traffic from controller pods to wstore port
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "nginx-ingress.selectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: controller
+      ports:
+        - protocol: TCP
+          port: {{ include "ingress-nginx.wallarmPostanalyticsPort" . }}
+    # Allow health check traffic (if needed from external probes)
+    {{- if .Values.postanalytics.networkPolicy.allowHealthCheckFrom }}
+    - from:
+        {{- toYaml .Values.postanalytics.networkPolicy.allowHealthCheckFrom | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ include "ingress-nginx.wallarmPostanalyticsHealthPort" . }}
+    {{- end }}
+    # Allow metrics scraping (if enabled)
+    {{- if .Values.postanalytics.wcli.metrics.enabled }}
+    {{- if .Values.postanalytics.networkPolicy.allowMetricsFrom }}
+    - from:
+        {{- toYaml .Values.postanalytics.networkPolicy.allowMetricsFrom | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.postanalytics.wcli.metrics.port }}
+    {{- else }}
+    # Default: allow metrics from same namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.postanalytics.wcli.metrics.port }}
+    {{- end }}
+    {{- end }}
+    # Additional custom ingress rules
+    {{- with .Values.postanalytics.networkPolicy.ingressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if .Values.postanalytics.networkPolicy.egressRules }}
+  egress:
+    {{- toYaml .Values.postanalytics.networkPolicy.egressRules | nindent 4 }}
+  {{- end }}
+{{- end }}

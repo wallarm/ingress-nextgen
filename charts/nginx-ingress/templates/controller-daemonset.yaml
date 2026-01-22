@@ -6,6 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
 {{- if .Values.controller.annotations }}
   annotations: {{ toYaml .Values.controller.annotations | nindent 4 }}
 {{- end }}
@@ -13,12 +14,20 @@ spec:
   selector:
     matchLabels:
       {{- include "nginx-ingress.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: controller
   template:
     metadata:
       labels:
         {{- include "nginx-ingress.podLabels" . | nindent 8 }}
-{{- if or .Values.prometheus.create .Values.controller.pod.annotations }}
+        app.kubernetes.io/component: controller
+{{- if or .Values.prometheus.create .Values.controller.pod.annotations (and .Values.config.wallarm.enabled (not .Values.config.wallarm.api.existingSecret.enabled)) }}
       annotations:
+{{- if .Values.config.wallarm.enabled }}
+        wallarm-enabled: "true"
+{{- if not .Values.config.wallarm.api.existingSecret.enabled }}
+        checksum/token: {{ .Values.config.wallarm.api.token | sha256sum }}
+{{- end }}
+{{- end }}
 {{- if .Values.prometheus.create }}
         prometheus.io/scrape: "true"
         prometheus.io/port: "{{ .Values.prometheus.port }}"
@@ -58,7 +67,7 @@ spec:
       containers:
       - name: {{ include "nginx-ingress.name" . }}
         image: {{ include "nginx-ingress.image" . }}
-        imagePullPolicy: "{{ .Values.controller.image.pullPolicy }}"
+        imagePullPolicy: "{{ .Values.config.images.controller.pullPolicy }}"
 {{- if .Values.controller.lifecycle }}
         lifecycle:
 {{ toYaml .Values.controller.lifecycle | indent 10 }}
@@ -79,10 +88,6 @@ spec:
         - name: prometheus
           containerPort: {{ .Values.prometheus.port }}
 {{- end }}
-{{- if .Values.serviceInsight.create }}
-        - name: service-insight
-          containerPort: {{ .Values.serviceInsight.port }}
-{{- end }}
 {{- if .Values.controller.readyStatus.enable }}
         - name: readiness-port
           containerPort: {{ .Values.controller.readyStatus.port }}
@@ -90,6 +95,10 @@ spec:
 {{- if .Values.controller.startupStatus.enable }}
         - name: startup-port
           containerPort: {{ .Values.controller.startupStatus.port }}
+{{- end }}
+{{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.metrics.enabled }}
+        - name: {{ .Values.controller.wallarm.metrics.portName }}
+          containerPort: {{ .Values.controller.wallarm.metrics.port }}
 {{- end }}
 {{- if .Values.controller.readyStatus.enable }}
         readinessProbe:
@@ -138,29 +147,6 @@ spec:
 {{- if .Values.controller.env }}
 {{ toYaml .Values.controller.env | indent 8 }}
 {{- end }}
-{{- if .Values.nginxServiceMesh.enable }}
-        - name: POD_SERVICEACCOUNT
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.serviceAccountName
-{{- end }}
-{{- if hasKey .Values.controller.mgmt "usageReport" -}}
-{{- if hasKey .Values.controller.mgmt.usageReport "proxyCredentialsSecretName" }}
-{{- if not (hasKey .Values.controller.mgmt.usageReport "proxyHost") -}}
-{{- fail "Error: 'controller.mgmt.usageReport.proxyHost' must be set when using 'controller.mgmt.usageReport.proxyCredentialsSecretName'." }}
-{{- end }}
-        - name: PROXY_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.controller.mgmt.usageReport.proxyCredentialsSecretName }}
-              key: username
-        - name: PROXY_PASS
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.controller.mgmt.usageReport.proxyCredentialsSecretName }}
-              key: password
-{{- end }}
-{{- end }}
         resources:
 {{ toYaml .Values.controller.resources | indent 10 }}
         args:
@@ -169,15 +155,21 @@ spec:
       {{ toYaml .Values.controller.extraContainers | nindent 6 }}
 {{- end }}
 
-{{- include "nginx-ingress.appprotect.v5" . | nindent 6 }}
+{{- /* Wallarm containers */ -}}
+{{- if .Values.config.wallarm.enabled }}
+{{ include "nginx-ingress.wallarm.wcliContainer" (dict "context" . "wcliConfig" .Values.controller.wallarm.wcli "wcliArgsConfig" .Values.config.wcliController "volumeMountsType" "controller") | indent 6 }}
+{{- if .Values.config.apiFirewall.enabled }}
+{{ include "nginx-ingress.wallarm.apiFirewallContainer" . | indent 6 }}
+{{- end }}
+{{- end }}
 
-{{- if or (eq (include "nginx-ingress.readOnlyRootFilesystem" .) "true" ) .Values.controller.initContainers }}
+{{- if or ( eq (include "nginx-ingress.readOnlyRootFilesystem" .) "true" ) .Values.controller.initContainers .Values.config.wallarm.enabled }}
       initContainers:
 {{- end }}
 {{- if eq (include "nginx-ingress.readOnlyRootFilesystem" .) "true" }}
       - name: init-{{ include "nginx-ingress.name" . }}
         image: {{ include "nginx-ingress.image" . }}
-        imagePullPolicy: "{{ .Values.controller.image.pullPolicy }}"
+        imagePullPolicy: "{{ .Values.config.images.controller.pullPolicy }}"
         command: ['cp', '-vdR', '/etc/nginx/.', '/mnt/etc']
 {{- if .Values.controller.initContainerResources }}
         resources:
@@ -202,6 +194,10 @@ spec:
 {{- end }}
 {{- if .Values.controller.initContainers }}
 {{ toYaml .Values.controller.initContainers | indent 6 }}
+{{- end }}
+{{- /* Wallarm's init container */ -}}
+{{- if .Values.config.wallarm.enabled }}
+      {{ include "nginx-ingress.wallarm.initContainer" (dict "context" . "registerMode" "filtering" "initContainerConfig" .Values.controller.wallarm.initContainer) | nindent 6 }}
 {{- end }}
 {{- if .Values.controller.strategy }}
   updateStrategy:

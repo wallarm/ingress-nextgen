@@ -1,0 +1,10 @@
+config:
+  wallarm:
+    enabled: true
+    api:
+      host: "us1.api.wallarm.com"
+      port: 443
+      ssl: true
+      token: "us-test-token"
+      nodeGroup: "us-production"
+    fallback: "off"

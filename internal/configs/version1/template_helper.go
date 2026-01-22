@@ -272,6 +272,30 @@ func extractOriginalPath(processedPath string) string {
 	return processedPath
 }
 
+// Location is suitable for Wallarm APIFW if wallarm_mode is not "off" and
+// backend protocol is supported
+// Basically, we only support HTTP(s) but there is no straightforward way
+// to identify other protocols so...
+func isLocationOkForWallarmAPIFW(location Location) bool {
+	if location.Wallarm == nil || location.Wallarm.Mode == "off" {
+		return false
+	}
+	if location.GRPC {
+		return false
+	}
+	return true
+}
+
+// Server is suitable for Wallarm APIFW if at least one of its location is.
+func isServerOkForWallarmAPIFW(server Server) bool {
+	for _, location := range server.Locations {
+		if isLocationOkForWallarmAPIFW(location) {
+			return true
+		}
+	}
+	return false
+}
+
 var helperFunctions = template.FuncMap{
 	"split":                   split,
 	"trim":                    trim,
@@ -288,4 +312,6 @@ var helperFunctions = template.FuncMap{
 	"generateProxySetHeaders": generateProxySetHeaders,
 	"boolToPointerBool":       commonhelpers.BoolToPointerBool,
 	"makeResolver":            makeResolver,
+	"isLocationOkForWallarmAPIFW": isLocationOkForWallarmAPIFW,
+	"isServerOkForWallarmAPIFW":   isServerOkForWallarmAPIFW,
 }

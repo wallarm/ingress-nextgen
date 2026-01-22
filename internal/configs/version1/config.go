@@ -1,6 +1,7 @@
 package version1
 
 import (
+	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 	"github.com/nginx/kubernetes-ingress/internal/configs/version2"
 	"github.com/nginx/kubernetes-ingress/internal/nginx"
 )
@@ -23,6 +24,9 @@ type IngressNginxConfig struct {
 	DynamicSSLReloadEnabled bool
 	StaticSSLPath           string
 	LimitReqZones           []LimitReqZone
+	WallarmEnabled          bool
+	WallarmAPIFwEnabled     bool
+	WallarmAPIFwPort        int
 }
 
 // Ingress holds information about an Ingress resource.
@@ -191,6 +195,7 @@ type Location struct {
 	BasicAuth            *BasicAuth
 	ServiceName          string
 	LimitReq             *LimitReq
+	Wallarm              *commonhelpers.Wallarm
 
 	MinionIngress *Ingress
 }
@@ -314,6 +319,24 @@ type MainConfig struct {
 	DynamicSSLReloadEnabled            bool
 	StaticSSLPath                      string
 	NginxVersion                       nginx.Version
+
+	// Wallarm WAF static configuration
+	WallarmEnabled                      bool
+	WallarmUpstreamService              string
+	WallarmUpstreamConnectAttempts      int
+	WallarmUpstreamReconnectInterval    string
+	WallarmProcessTimeLimit             int
+	WallarmProcessTimeLimitBlock        string
+	WallarmRequestMemoryLimit           string
+	WallarmWorkerRlimitVmem             string
+	WallarmMetricsPort                  int
+	WallarmFallback                     string
+	WallarmACLExportEnable              string
+	WallarmACLExportShmSize             string
+	WallarmACLExportSampleLimit         int
+	WallarmACLExportSampleGroupLifetime int
+	WallarmACLExportStatsBucketInterval int
+	WallarmACLExportStatsBucketLifetime int
 }
 
 // NewUpstreamWithDefaultServer creates an upstream with the default server.

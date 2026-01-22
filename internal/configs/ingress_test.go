@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/nginx/kubernetes-ingress/internal/configs/commonhelpers"
 	"github.com/nginx/kubernetes-ingress/internal/configs/version1"
 	"github.com/nginx/kubernetes-ingress/internal/k8s/secrets"
 	v1 "k8s.io/api/core/v1"
@@ -16,6 +17,17 @@ import (
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
+
+var defaultWallarmConfig = &commonhelpers.Wallarm{
+	Mode:              "off",
+	ModeAllowOverride: "on",
+	Fallback:          "on",
+	ParseResponse:     "on",
+	ParseWebsocket:    "off",
+	UnpackResponse:    "on",
+}
+
+var defaultWallarmApifwPort = 8088
 
 func TestGenerateNginxCfg(t *testing.T) {
 	t.Parallel()
@@ -358,6 +370,7 @@ func createExpectedConfigForCafeIngressEx(isPlus bool) version1.IngressNginxConf
 						ClientMaxBodySize:   "1m",
 						ProxyBuffering:      true,
 						ProxySSLName:        "coffee-svc.default.svc",
+						Wallarm:             defaultWallarmConfig,
 					},
 					{
 						Path:                "/tea",
@@ -369,6 +382,7 @@ func createExpectedConfigForCafeIngressEx(isPlus bool) version1.IngressNginxConf
 						ClientMaxBodySize:   "1m",
 						ProxyBuffering:      true,
 						ProxySSLName:        "tea-svc.default.svc",
+						Wallarm:             defaultWallarmConfig,
 					},
 				},
 				SSL:               true,
@@ -389,6 +403,9 @@ func createExpectedConfigForCafeIngressEx(isPlus bool) version1.IngressNginxConf
 				"kubernetes.io/ingress.class": "nginx",
 			},
 		},
+		WallarmEnabled:      false,
+		WallarmAPIFwEnabled: false,
+		WallarmAPIFwPort:    defaultWallarmApifwPort,
 	}
 	return expected
 }
@@ -751,6 +768,7 @@ func createExpectedConfigForMergeableCafeIngressWithUseClusterIP() version1.Ingr
 							},
 						},
 						ProxySSLName: "coffee-svc.default.svc",
+						Wallarm:      defaultWallarmConfig,
 					},
 					{
 						Path:                "/tea",
@@ -770,6 +788,7 @@ func createExpectedConfigForMergeableCafeIngressWithUseClusterIP() version1.Ingr
 							},
 						},
 						ProxySSLName: "tea-svc.default.svc",
+						Wallarm:      defaultWallarmConfig,
 					},
 				},
 				SSL:               true,
@@ -791,6 +810,9 @@ func createExpectedConfigForMergeableCafeIngressWithUseClusterIP() version1.Ingr
 				"nginx.org/mergeable-ingress-type": "master",
 			},
 		},
+		WallarmEnabled:      false,
+		WallarmAPIFwEnabled: false,
+		WallarmAPIFwPort:    defaultWallarmApifwPort,
 	}
 
 	return expected
@@ -847,6 +869,7 @@ func createExpectedConfigForCafeIngressWithUseClusterIPNamedPorts() version1.Ing
 						ClientMaxBodySize:   "1m",
 						ProxyBuffering:      true,
 						ProxySSLName:        "coffee-svc.default.svc",
+						Wallarm:             defaultWallarmConfig,
 					},
 					{
 						Path:                "/tea",
@@ -858,6 +881,7 @@ func createExpectedConfigForCafeIngressWithUseClusterIPNamedPorts() version1.Ing
 						ClientMaxBodySize:   "1m",
 						ProxyBuffering:      true,
 						ProxySSLName:        "tea-svc.default.svc",
+						Wallarm:             defaultWallarmConfig,
 					},
 				},
 				SSL:               true,
@@ -879,6 +903,9 @@ func createExpectedConfigForCafeIngressWithUseClusterIPNamedPorts() version1.Ing
 				"nginx.org/use-cluster-ip":    "true",
 			},
 		},
+		WallarmEnabled:      false,
+		WallarmAPIFwEnabled: false,
+		WallarmAPIFwPort:    defaultWallarmApifwPort,
 	}
 	return expected
 }
@@ -934,6 +961,7 @@ func createExpectedConfigForCafeIngressWithUseClusterIP() version1.IngressNginxC
 						ClientMaxBodySize:   "1m",
 						ProxyBuffering:      true,
 						ProxySSLName:        "coffee-svc.default.svc",
+						Wallarm:             defaultWallarmConfig,
 					},
 					{
 						Path:                "/tea",
@@ -945,6 +973,7 @@ func createExpectedConfigForCafeIngressWithUseClusterIP() version1.IngressNginxC
 						ClientMaxBodySize:   "1m",
 						ProxyBuffering:      true,
 						ProxySSLName:        "tea-svc.default.svc",
+						Wallarm:             defaultWallarmConfig,
 					},
 				},
 				SSL:               true,
@@ -966,6 +995,9 @@ func createExpectedConfigForCafeIngressWithUseClusterIP() version1.IngressNginxC
 				"nginx.org/use-cluster-ip":    "true",
 			},
 		},
+		WallarmEnabled:      false,
+		WallarmAPIFwEnabled: false,
+		WallarmAPIFwPort:    defaultWallarmApifwPort,
 	}
 	return expected
 }
@@ -1664,6 +1696,7 @@ func createExpectedConfigForMergeableCafeIngress(isPlus bool) version1.IngressNg
 							},
 						},
 						ProxySSLName: "coffee-svc.default.svc",
+						Wallarm:      defaultWallarmConfig,
 					},
 					{
 						Path:                "/tea",
@@ -1683,6 +1716,7 @@ func createExpectedConfigForMergeableCafeIngress(isPlus bool) version1.IngressNg
 							},
 						},
 						ProxySSLName: "tea-svc.default.svc",
+						Wallarm:      defaultWallarmConfig,
 					},
 				},
 				SSL:               true,
@@ -1704,6 +1738,9 @@ func createExpectedConfigForMergeableCafeIngress(isPlus bool) version1.IngressNg
 				"nginx.org/mergeable-ingress-type": "master",
 			},
 		},
+		WallarmEnabled:      false,
+		WallarmAPIFwEnabled: false,
+		WallarmAPIFwPort:    defaultWallarmApifwPort,
 	}
 
 	return expected
@@ -1764,6 +1801,7 @@ func createExpectedConfigForCrossNamespaceMergeableCafeIngress() version1.Ingres
 							},
 						},
 						ProxySSLName: "coffee-svc.coffee.svc",
+						Wallarm:      defaultWallarmConfig,
 					},
 					{
 						Path:                "/tea",
@@ -1783,6 +1821,7 @@ func createExpectedConfigForCrossNamespaceMergeableCafeIngress() version1.Ingres
 							},
 						},
 						ProxySSLName: "tea-svc.tea.svc",
+						Wallarm:      defaultWallarmConfig,
 					},
 				},
 				SSL:               true,
@@ -1804,6 +1843,9 @@ func createExpectedConfigForCrossNamespaceMergeableCafeIngress() version1.Ingres
 				"nginx.org/mergeable-ingress-type": "master",
 			},
 		},
+		WallarmEnabled:      false,
+		WallarmAPIFwEnabled: false,
+		WallarmAPIFwPort:    defaultWallarmApifwPort,
 	}
 
 	return expected
