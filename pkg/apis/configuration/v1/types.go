@@ -1018,10 +1018,12 @@ type Wallarm struct {
 	// Controls whether the wallarm_mode can be overridden via Wallarm filtering rules.
 	// Allowed values: on, off, strict. Default is on.
 	// +kubebuilder:validation:Enum=on;off;strict
+	// +kubebuilder:default="on"
 	ModeAllowOverride string `json:"modeAllowOverride"`
 	// Enables fallback mode when Wallarm proton.db or custom ruleset cannot be loaded.
 	// Allowed values: on, off. Default is on.
 	// +kubebuilder:validation:Enum=on;off
+	// +kubebuilder:default="on"
 	Fallback string `json:"fallback"`
 	// The unique application identifier used in the Wallarm Cloud to distinguish data from different applications.
 	// Must be a positive integer. Maps to wallarm_application directive.
@@ -1032,14 +1034,17 @@ type Wallarm struct {
 	PartnerClientUUID string `json:"partnerClientUUID"`
 	// Custom block page configuration. Supports file path, named location, URL, or variable.
 	BlockPage string `json:"blockPage"`
-	// Enables analysis of responses from the application. Allowed values: on, off.
+	// Enables analysis of responses from the application. Allowed values: on, off. Default is on.
 	// +kubebuilder:validation:Enum=on;off
+	// +kubebuilder:default="on"
 	ParseResponse string `json:"parseResponse"`
-	// Enables analysis of WebSocket messages. Allowed values: on, off.
+	// Enables analysis of WebSocket messages. Allowed values: on, off. Default is off.
 	// +kubebuilder:validation:Enum=on;off
+	// +kubebuilder:default="off"
 	ParseWebsocket string `json:"parseWebsocket"`
-	// Enables decompression of compressed responses before analysis. Allowed values: on, off.
+	// Enables decompression of compressed responses before analysis. Allowed values: on, off. Default is on.
 	// +kubebuilder:validation:Enum=on;off
+	// +kubebuilder:default="on"
 	UnpackResponse string `json:"unpackResponse"`
 	// List of parsers to disable. Allowed values: cookie, zlib, htmljs, json, multipart, base64, percent, urlenc, xml, jwt.
 	ParserDisable []string `json:"parserDisable"`
