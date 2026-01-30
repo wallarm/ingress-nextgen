@@ -600,6 +600,7 @@ spec:
                       named location, URL, or variable.
                     type: string
                   fallback:
+                    default: "on"
                     description: |-
                       Enables fallback mode when Wallarm proton.db or custom ruleset cannot be loaded.
                       Allowed values: on, off. Default is on.
@@ -617,6 +618,7 @@ spec:
                     - block
                     type: string
                   modeAllowOverride:
+                    default: "on"
                     description: |-
                       Controls whether the wallarm_mode can be overridden via Wallarm filtering rules.
                       Allowed values: on, off, strict. Default is on.
@@ -626,15 +628,17 @@ spec:
                     - strict
                     type: string
                   parseResponse:
+                    default: "on"
                     description: 'Enables analysis of responses from the application.
-                      Allowed values: on, off.'
+                      Allowed values: on, off. Default is on.'
                     enum:
                     - "on"
                     - "off"
                     type: string
                   parseWebsocket:
+                    default: "off"
                     description: 'Enables analysis of WebSocket messages. Allowed
-                      values: on, off.'
+                      values: on, off. Default is off.'
                     enum:
                     - "on"
                     - "off"
@@ -652,8 +656,9 @@ spec:
                     pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
                     type: string
                   unpackResponse:
+                    default: "on"
                     description: 'Enables decompression of compressed responses before
-                      analysis. Allowed values: on, off.'
+                      analysis. Allowed values: on, off. Default is on.'
                     enum:
                     - "on"
                     - "off"
