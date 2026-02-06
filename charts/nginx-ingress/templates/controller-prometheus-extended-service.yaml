@@ -1,0 +1,3 @@
+{{- if and .Values.prometheusExtended.enabled .Values.prometheusExtended.service.create }}
+{{- include "nginx-ingress.wallarm.metricsService" (dict "metricsConfig" .Values.prometheusExtended "serviceSuffix" "prometheus-extended" "componentSelector" "controller" "context" .) -}}
+{{- end -}}

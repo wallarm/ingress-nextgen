@@ -17,6 +17,9 @@ load_module modules/ngx_otel_module.so;
 {{- if .WallarmEnabled}}
 load_module modules/ngx_http_wallarm_module.so;
 {{- end}}
+{{- if .MainVtsLoadModule}}
+load_module modules/ngx_http_vhost_traffic_status_module.so;
+{{- end}}
 
 {{- range $value := .MainSnippets}}
 {{$value}}{{- end}}
@@ -30,6 +33,12 @@ events {
 http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
+    {{- if .MainVtsLoadModule}}
+    vhost_traffic_status_zone;
+    {{- if .MainVtsDetailedCodes}}
+    vhost_traffic_status_measure_status_codes {{ .MainVtsDetailedCodes }};
+    {{- end}}
+    {{- end}}
     map_hash_max_size {{.MapHashMaxSize}};
     map_hash_bucket_size {{.MapHashBucketSize}};
 
@@ -301,6 +310,32 @@ http {
         location ~ ^/(wallarm-metrics|metrics) {
             disable_acl "on";
             wallarm_status on format=prometheus;
+        }
+    }
+    {{- end}}
+
+    {{- if .MainVtsLoadModule }}
+    # VTS metrics server
+    server {
+        listen {{ .VtsMetricsPort }};
+        {{if not .DisableIPV6}}listen [::]:{{ .VtsMetricsPort }};{{end}}
+        server_name "vts-metrics";
+
+        {{ if .WallarmEnabled }}
+        wallarm_mode off;
+        {{ end }}
+
+        access_log off;
+
+        location /vts-status {
+            vhost_traffic_status_bypass_limit on;
+            vhost_traffic_status_bypass_stats on;
+            vhost_traffic_status_display;
+            vhost_traffic_status_display_format prometheus;
+
+            {{- if .WallarmEnabled }}
+            disable_acl "on";
+            {{- end }}
         }
     }
     {{- end}}

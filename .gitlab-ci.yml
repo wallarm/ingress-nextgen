@@ -116,7 +116,7 @@ IMAGE_BUILD_IC:
     docker buildx create --name multi-arch --platform linux/amd64,linux/arm64 --driver docker-container --use
 
     echo "Building ingress and ingress-chroot images (multi-platform)..."
-    PLATFORM=linux/arm64,linux/amd64 TARGET=container make alpine-image
+    PLATFORM=linux/arm64,linux/amd64 TARGET=container make alpine-vts-image
   artifacts:
     reports:
       dotenv: version.env

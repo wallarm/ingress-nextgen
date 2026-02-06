@@ -261,6 +261,9 @@ type MainConfig struct {
 	NginxStatusAllowCIDRs              []string
 	NginxStatusPort                    int
 	MainOtelLoadModule                 bool
+	MainVtsLoadModule                  bool
+	VtsMetricsPort                     int
+	MainVtsDetailedCodes               string
 	MainOtelGlobalTraceEnabled         bool
 	MainOtelExporterEndpoint           string
 	MainOtelExporterHeaderName         string

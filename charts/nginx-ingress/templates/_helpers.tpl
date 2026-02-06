@@ -631,7 +631,7 @@ Wallarm API Firewall container for controller pod
     - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
       value: "{{ .Values.config.apiFirewall.maxErrorsInResponse }}"
     - name: APIFW_API_MODE_DEBUG_PATH_DB
-      value: "{{ include "wallarm-apifw.path" . }}/2/wallarm_api.db"
+      value: "{{ include "wallarm-apifw.path" . }}/3/wallarm_api.db"
 {{- if .Values.controller.wallarm.apiFirewall.metrics.enabled }}
     - name: APIFW_METRICS_ENABLED
       value: "true"

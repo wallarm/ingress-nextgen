@@ -21,6 +21,13 @@ data:
   wallarm-fallback: "{{ .Values.config.wallarm.fallback }}"
 {{- end }}
 {{- end }}
+{{- if .Values.prometheusExtended.enabled }}
+  enable-vts: "true"
+  vts-metrics-port: "{{ .Values.prometheusExtended.port }}"
+{{- if .Values.prometheusExtended.detailedCodes }}
+  vts-detailed-codes: "{{ .Values.prometheusExtended.detailedCodes }}"
+{{- end }}
+{{- end }}
 {{- range $key, $value := .Values.controller.config.entries }}
   {{- $key | nindent 2 }}: {{ tpl (toString $value) $ | quote }}
 {{- end }}

@@ -161,6 +161,10 @@ debian-image: build ## Create Docker image for Ingress Controller (Debian)
 alpine-image: build ## Create Docker image for Ingress Controller (Alpine)
 	$(DOCKER_CMD) --build-arg BUILD_OS=alpine --build-arg NGINX_OSS_VERSION=$(NGINX_OSS_VERSION) --build-arg NGINX_AGENT_VERSION=$(NGINX_AGENT_VERSION)
 
+.PHONY: alpine-vts-image
+alpine-vts-image: build ## Create Docker image for Ingress Controller (Alpine with VTS module)
+	$(DOCKER_CMD) --secret id=ci_job_token,env=CI_JOB_TOKEN --build-arg BUILD_OS=alpine-vts --build-arg NGINX_OSS_VERSION=$(NGINX_OSS_VERSION) --build-arg NGINX_AGENT_VERSION=$(NGINX_AGENT_VERSION)
+
 .PHONY: alpine-image-plus
 alpine-image-plus: build ## Create Docker image for Ingress Controller (Alpine with NGINX Plus)
 	$(DOCKER_CMD) $(PLUS_ARGS) --build-arg BUILD_OS=alpine-plus --build-arg NGINX_AGENT_VERSION=$(NGINX_AGENT_VERSION)

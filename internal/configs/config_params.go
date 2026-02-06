@@ -36,6 +36,9 @@ type ConfigParams struct {
 	MainLogFormatEscaping                  string
 	MainMainSnippets                       []string
 	MainOtelLoadModule                     bool
+	MainVtsLoadModule                      bool
+	MainVtsMetricsPort                     int
+	MainVtsDetailedCodes                   string
 	MainOtelTraceInHTTP                    bool
 	MainOtelExporterEndpoint               string
 	MainOtelExporterHeaderName             string
@@ -309,6 +312,9 @@ func NewDefaultConfigParams(ctx context.Context, isPlus bool) *ConfigParams {
 			RefreshTimeout: "8h",
 			SIDSTimeout:    "8h",
 		},
+		// VTS metrics default port
+		MainVtsMetricsPort: 10113,
+
 		// Wallarm default values for server/location level
 		WallarmMode:              "off",
 		WallarmModeAllowOverride: "on",
