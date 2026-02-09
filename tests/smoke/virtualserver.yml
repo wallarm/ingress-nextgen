@@ -1,0 +1,128 @@
+---
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: wallarm-monitoring
+spec:
+  wallarm:
+    mode: monitoring
+---
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: wallarm-block
+spec:
+  wallarm:
+    mode: block
+
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServer
+metadata:
+  name: wallarm-workload-root
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  routes:
+    - path: /
+      route: default/wallarm-workload
+    - path: /wallarm-application
+      route: default/wallarm-api-abuse
+    - path: /api-discovery-test
+      route: default/wallarm-api-discovery
+    - path: /blocking-by-tor-test
+      route: default/block-by-tor-ip
+    - path: /wallarm-mode/monitoring
+      route: default/wallarm-mode-monitoring
+
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: wallarm-workload
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  upstreams:
+  - name: workload
+    service: workload
+    port: 80
+  subroutes:
+  - path: /
+    policies:
+      - name: wallarm-block
+    action:
+      pass: workload
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: wallarm-api-abuse
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  upstreams:
+  - name: workload
+    service: workload
+    port: 80
+  subroutes:
+  - path: /wallarm-application
+    location-snippets: |
+        rewrite ^/wallarm-application(/.*)$ $1 break;
+        wallarm_application $http_custom_id;
+    policies:
+      - name: wallarm-block
+    action:
+      pass: workload
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: wallarm-api-discovery
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  upstreams:
+  - name: workload
+    service: workload
+    port: 80
+  subroutes:
+  - path: /api-discovery-test
+    location-snippets: |
+        wallarm_application $http_custom_id;
+    policies:
+      - name: wallarm-block
+    action:
+      pass: workload
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: block-by-tor-ip
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  upstreams:
+  - name: workload
+    service: workload
+    port: 80
+  subroutes:
+  - path: /blocking-by-tor-test
+    policies:
+      - name: wallarm-block
+    location-snippets: |
+        wallarm_application $http_custom_id;
+    action:
+      pass: workload
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: wallarm-mode-monitoring
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  upstreams:
+  - name: workload
+    service: workload
+    port: 80
+  subroutes:
+  - path: /wallarm-mode/monitoring
+    policies:
+      - name: wallarm-monitoring
+    action:
+      pass: workload

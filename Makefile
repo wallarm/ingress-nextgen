@@ -1,7 +1,8 @@
+-include .env
 # variables that should not be overridden by the user
-VER = $(shell grep IC_VERSION .github/data/version.txt | cut -d '=' -f 2)
+# setting version; will be used to set the binary verson and derive image version from it later
 GIT_TAG = $(shell git describe --exact-match --tags || echo untagged)
-VERSION = $(VER)
+VERSION = $(shell cat TAG)
 # renovate: datasource=docker depName=nginx/nginx
 NGINX_OSS_VERSION             ?= 1.29.3
 NGINX_PLUS_VERSION            ?= R35
@@ -13,9 +14,9 @@ NGINX_AGENT_VERSION           ?= 3.5
 PLUS_ARGS = --build-arg NGINX_PLUS_VERSION=$(NGINX_PLUS_VERSION) --secret id=nginx-repo.crt,src=nginx-repo.crt --secret id=nginx-repo.key,src=nginx-repo.key
 
 # Variables that can be overridden
-REGISTRY                      ?= ## The registry where the image is located.
-PREFIX                        ?= wallarm/nginx-ic-new ## The name of the image. For example, wallarm/nginx-ic-new
-TAG                           ?= $(VERSION:v%=%) ## The tag of the image. For example, 2.0.0
+REGISTRY                      ?= docker.io/wallarm ## The registry where the image is located.
+PREFIX                        ?= ingress-controller ## The name of the image. For example, wallarm/ingress-controller
+TAG                           ?= $(VERSION) ## The tag of the image. For example, 2.0.0
 TARGET                        ?= local ## The target of the build. Possible values: local, container and download
 PLUS_REPO                     ?= "pkgs.nginx.com" ## The package repo to install nginx-plus from
 override DOCKER_BUILD_OPTIONS += --build-arg IC_VERSION=$(VERSION) --build-arg PACKAGE_REPO=$(PLUS_REPO) ## The options for the docker build command. For example, --pull
@@ -91,7 +92,7 @@ staticcheck: ## Run staticcheck linter
 
 .PHONY: test
 test: ## Run GoLang tests
-	go test -tags=aws,helmunit -shuffle=on ./...
+	go test -tags=aws -shuffle=on ./...
 
 .PHONY: test-update-snaps
 test-update-snaps:
@@ -279,3 +280,14 @@ update-crd-docs: ## Update CRD markdown documentation from YAML definitions
 	@echo "Generating CRD documentation..."
 	@go run hack/generate-crd-docs.go -crd-dir config/crd/bases -output-dir docs/crd
 	@echo "CRD documentation updated successfully!"
+
+sign:
+	.gitlab/image-sign.sh
+
+.PHONY: smoke-test
+smoke-test:
+	@tests/smoke/smoke.sh
+
+.PHONY: kind-smoke-test
+kind-smoke-test:
+	@tests/smoke/run.sh

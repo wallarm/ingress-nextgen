@@ -30,8 +30,8 @@ config:
   ### Image settings
   images:
     controller:
-      repository: "docker.io/wallarm/nginx-node-ic"
-      tag: "0.0.1"
+      repository: "docker.io/wallarm/ingress-controller"
+      tag: "7.0.0-rc0"
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"

@@ -64,3 +64,8 @@ package.json
 # kind kube-config
 kube-local
 venv/
+
+# smoke tests
+allure_report/
+logs/
+kind_logs.tar.gz
