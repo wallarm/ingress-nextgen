@@ -1414,15 +1414,52 @@
               "default": {},
               "title": "Wallarm metrics endpoint configuration",
               "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "title": "Enable Wallarm metrics"
+                },
                 "port": {
                   "type": "integer",
                   "default": 18080,
                   "title": "Port for Wallarm metrics"
                 },
-                "enabled": {
-                  "type": "boolean",
-                  "default": true,
-                  "title": "Enable Wallarm metrics"
+                "portName": {
+                  "type": "string",
+                  "default": "wallarm-metrics",
+                  "title": "Port name for metrics endpoint"
+                },
+                "endpointPath": {
+                  "type": "string",
+                  "default": "/wallarm-metrics",
+                  "title": "Path at which the metrics endpoint is exposed"
+                },
+                "service": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "annotations": { "type": "object", "default": {} },
+                    "labels": { "type": "object", "default": {} },
+                    "externalIPs": { "type": "array", "default": [] },
+                    "loadBalancerSourceRanges": { "type": "array", "default": [] },
+                    "servicePort": { "type": "integer", "default": 18080 },
+                    "type": { "type": "string", "default": "ClusterIP" }
+                  }
+                },
+                "serviceMonitor": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "enabled": { "type": "boolean", "default": false },
+                    "additionalLabels": { "type": "object", "default": {} },
+                    "annotations": { "type": "object", "default": {} },
+                    "namespace": { "type": "string", "default": "" },
+                    "namespaceSelector": { "type": "object", "default": {} },
+                    "scrapeInterval": { "type": "string", "default": "30s" },
+                    "targetLabels": { "type": "array", "default": [] },
+                    "relabelings": { "type": "array", "default": [] },
+                    "metricRelabelings": { "type": "array", "default": [] }
+                  }
                 }
               }
             },
@@ -1948,6 +1985,66 @@
           "scheme": "http"
         }
       ]
+    },
+    "prometheusExtended": {
+      "type": "object",
+      "default": {},
+      "title": "Extended Prometheus metrics via VTS module",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "title": "Enable extended Prometheus metrics"
+        },
+        "port": {
+          "type": "integer",
+          "default": 10113,
+          "title": "Port for extended metrics"
+        },
+        "portName": {
+          "type": "string",
+          "default": "prom-ext",
+          "title": "Port name for metrics endpoint"
+        },
+        "endpointPath": {
+          "type": "string",
+          "default": "/vts-status",
+          "title": "Path at which the metrics endpoint is exposed"
+        },
+        "detailedCodes": {
+          "type": "string",
+          "default": "",
+          "title": "Detailed status codes to measure"
+        },
+        "service": {
+          "type": "object",
+          "default": {},
+          "properties": {
+            "create": { "type": "boolean", "default": false },
+            "annotations": { "type": "object", "default": {} },
+            "labels": { "type": "object", "default": {} },
+            "externalIPs": { "type": "array", "default": [] },
+            "loadBalancerSourceRanges": { "type": "array", "default": [] },
+            "servicePort": { "type": "integer", "default": 10113 },
+            "type": { "type": "string", "default": "ClusterIP" }
+          }
+        },
+        "serviceMonitor": {
+          "type": "object",
+          "default": {},
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "additionalLabels": { "type": "object", "default": {} },
+            "annotations": { "type": "object", "default": {} },
+            "namespace": { "type": "string", "default": "" },
+            "namespaceSelector": { "type": "object", "default": {} },
+            "scrapeInterval": { "type": "string", "default": "30s" },
+            "targetLabels": { "type": "array", "default": [] },
+            "relabelings": { "type": "array", "default": [] },
+            "metricRelabelings": { "type": "array", "default": [] }
+          }
+        }
+      }
     },
     "config": {
       "type": "object",

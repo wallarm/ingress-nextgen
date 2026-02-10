@@ -1,4 +1,4 @@
-NGINX Ingress Controller {{ .Chart.AppVersion }} has been installed.
+NGINX Ingress Controller {{ .Chart.Version }} (Wallarm AIO {{ .Chart.AppVersion }}) has been installed.
 
 For release notes, see: https://docs.nginx.com/nginx-ingress-controller/changelog/
 
