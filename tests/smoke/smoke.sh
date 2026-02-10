@@ -35,7 +35,7 @@ PYTEST_PROCESSES="${PYTEST_PROCESSES:-10}"
 HOSTNAME_OLD_NODE="smoke-tests-old-node"
 
 # unique name for group, also handle local runs
-export NODE_GROUP_NAME="${NODE_GROUP_NAME:-gitlab-ingress-${CI_PIPELINE_ID:-local-$(id -un)}"}
+export NODE_GROUP_NAME="${NODE_GROUP_NAME:-gitlab-ingress-${CI_PIPELINE_ID:-local-$(id -un)}}"
 
 AIO_BASE=$(cat AIO_BASE)
 AIO_VERSION=${AIO_VERSION:-$AIO_BASE}
