@@ -4,7 +4,7 @@ metadata:
   name: nodevars
 data:
   NODE_BASE_URL: "http://testnewic-wallarm-ingress-controller.ingress.svc"
-  NODE_VERSION: "6.10.0"
+  NODE_VERSION: "6.10.3"
 
   WALLARM_API_HOST: "${WALLARM_API_HOST}"
   WALLARM_API_PRESET: "${WALLARM_API_PRESET}"

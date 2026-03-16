@@ -31,11 +31,11 @@ config:
   images:
     controller:
       repository: "docker.io/wallarm/ingress-controller"
-      tag: "7.0.0-rc1"
+      tag: "7.0.0-rc2"
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"
-      tag: "6.10.0"
+      tag: "6.10.3"
       pullPolicy: IfNotPresent
 
   ## Wallarm CLI postanalytics configuration (runs in postanalytics pod)
