@@ -113,7 +113,7 @@ workflow:
 
 UNIT_TEST_IC:
   stage: build
-  image: golang:1.25-alpine
+  image: golang:1.26-alpine
   tags: [node-c2r4-stable-dind-amd]
   rules:
     - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
