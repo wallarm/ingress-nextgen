@@ -317,8 +317,8 @@ http {
     {{- if .MainVtsLoadModule }}
     # VTS metrics server
     server {
-        listen {{ .VtsMetricsPort }};
-        {{if not .DisableIPV6}}listen [::]:{{ .VtsMetricsPort }};{{end}}
+        listen {{ .MainVtsMetricsPort }};
+        {{if not .DisableIPV6}}listen [::]:{{ .MainVtsMetricsPort }};{{end}}
         server_name "vts-metrics";
 
         {{ if .WallarmEnabled }}

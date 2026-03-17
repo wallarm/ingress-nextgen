@@ -262,7 +262,7 @@ type MainConfig struct {
 	NginxStatusPort                    int
 	MainOtelLoadModule                 bool
 	MainVtsLoadModule                  bool
-	VtsMetricsPort                     int
+	MainVtsMetricsPort                 int
 	MainVtsDetailedCodes               string
 	MainVtsShmSize                     string
 	MainOtelGlobalTraceEnabled         bool

@@ -1300,7 +1300,7 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		NginxStatusPort:                    staticCfgParams.NginxStatusPort,
 		MainOtelLoadModule:                 config.MainOtelLoadModule,
 		MainVtsLoadModule:                  config.MainVtsLoadModule,
-		VtsMetricsPort:                     config.MainVtsMetricsPort,
+		MainVtsMetricsPort:                 config.MainVtsMetricsPort,
 		MainVtsDetailedCodes:               config.MainVtsDetailedCodes,
 		MainVtsShmSize:                     config.MainVtsShmSize,
 		MainOtelGlobalTraceEnabled:         config.MainOtelTraceInHTTP,
