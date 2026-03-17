@@ -1,4 +1,5 @@
 -include .env
+export $(shell [ -f .env ] && sed 's/=.*//' .env)
 # variables that should not be overridden by the user
 # setting version; will be used to set the binary verson and derive image version from it later
 GIT_TAG = $(shell git describe --exact-match --tags || echo untagged)
