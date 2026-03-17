@@ -1076,6 +1076,8 @@ prometheusExtended:
   endpointPath: "/vts-status"
   ## Detailed status codes to measure (e.g. "all", or "200 301 302 400 403 404 500 502 503")
   # detailedCodes: ""
+  ## Shared memory size for monitoring module (e.g. "1m", "10m", "32m"). Defaults to "10m" if not set.
+  # shmSize: ""
   service:
     ## Creates a ClusterIP Service to expose extended Prometheus metrics
     create: false

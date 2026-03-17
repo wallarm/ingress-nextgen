@@ -264,6 +264,7 @@ type MainConfig struct {
 	MainVtsLoadModule                  bool
 	VtsMetricsPort                     int
 	MainVtsDetailedCodes               string
+	MainVtsShmSize                     string
 	MainOtelGlobalTraceEnabled         bool
 	MainOtelExporterEndpoint           string
 	MainOtelExporterHeaderName         string
