@@ -123,6 +123,7 @@ RUN --mount=type=bind,from=nginx-files,src=nginx_signing.rsa.pub,target=/etc/apk
 ##################################### Build VTS module for Alpine #####################################
 FROM alpine AS vts-files
 ARG VTS_VERSION=0.2.5-fixed
+ARG CI_USER_NAME=gitlab-ci-token
 
 # Uses NGINX_VERSION env var inherited from base nginx image
 RUN --mount=type=secret,id=ci_job_token,env=CI_JOB_TOKEN \
@@ -147,7 +148,7 @@ RUN --mount=type=secret,id=ci_job_token,env=CI_JOB_TOKEN \
 	&& curl -fSL https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -o nginx.tar.gz \
 	&& tar -zxf nginx.tar.gz \
 	# Clone nginx-module-vts at specific version
-	&& git clone --branch v${VTS_VERSION} --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@gl.wallarm.com/wallarm-node/nginx-module-vts.git \
+	&& git clone --branch v${VTS_VERSION} --depth 1 https://${CI_USER_NAME}:${CI_JOB_TOKEN}@gl.wallarm.com/wallarm-node/nginx-module-vts.git \
 	# Extract configure arguments from existing nginx binary and build VTS module
 	&& cd nginx-${NGINX_VERSION} \
 	&& NGINX_CONFIGURE_ARGS=$(nginx -V 2>&1 | grep -oP '(?<=configure arguments: ).*') \

@@ -1106,6 +1106,12 @@ func parseConfigMapVts(cfgm *v1.ConfigMap, cfgParams *ConfigParams) {
 			cfgParams.MainVtsDetailedCodes = vtsDetailedCodes
 		}
 	}
+	if vtsShmSize, exists := cfgm.Data["vts-shm-size"]; exists {
+		vtsShmSize = strings.TrimSpace(vtsShmSize)
+		if vtsShmSize != "" {
+			cfgParams.MainVtsShmSize = vtsShmSize
+		}
+	}
 }
 
 // ParseMGMTConfigMap parses the mgmt block ConfigMap into MGMTConfigParams.
@@ -1294,8 +1300,9 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		NginxStatusPort:                    staticCfgParams.NginxStatusPort,
 		MainOtelLoadModule:                 config.MainOtelLoadModule,
 		MainVtsLoadModule:                  config.MainVtsLoadModule,
-		VtsMetricsPort:                     config.MainVtsMetricsPort,
+		MainVtsMetricsPort:                 config.MainVtsMetricsPort,
 		MainVtsDetailedCodes:               config.MainVtsDetailedCodes,
+		MainVtsShmSize:                     config.MainVtsShmSize,
 		MainOtelGlobalTraceEnabled:         config.MainOtelTraceInHTTP,
 		MainOtelExporterEndpoint:           config.MainOtelExporterEndpoint,
 		MainOtelExporterHeaderName:         config.MainOtelExporterHeaderName,

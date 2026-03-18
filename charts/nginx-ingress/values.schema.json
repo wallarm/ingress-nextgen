@@ -2016,6 +2016,11 @@
           "default": "",
           "title": "Detailed status codes to measure"
         },
+        "shmSize": {
+          "type": "string",
+          "default": "",
+          "title": "Shared memory size for VTS zone (e.g. 1m, 10m, 32m)"
+        },
         "service": {
           "type": "object",
           "default": {},

@@ -27,6 +27,9 @@ data:
 {{- if .Values.prometheusExtended.detailedCodes }}
   vts-detailed-codes: "{{ .Values.prometheusExtended.detailedCodes }}"
 {{- end }}
+{{- if .Values.prometheusExtended.shmSize }}
+  vts-shm-size: "{{ .Values.prometheusExtended.shmSize }}"
+{{- end }}
 {{- end }}
 {{- range $key, $value := .Values.controller.config.entries }}
   {{- $key | nindent 2 }}: {{ tpl (toString $value) $ | quote }}

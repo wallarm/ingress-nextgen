@@ -34,7 +34,7 @@ http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
     {{- if .MainVtsLoadModule}}
-    vhost_traffic_status_zone;
+    vhost_traffic_status_zone shared:vhost_traffic_status:{{ .MainVtsShmSize }};
     {{- if .MainVtsDetailedCodes}}
     vhost_traffic_status_measure_status_codes {{ .MainVtsDetailedCodes }};
     {{- end}}
@@ -317,8 +317,8 @@ http {
     {{- if .MainVtsLoadModule }}
     # VTS metrics server
     server {
-        listen {{ .VtsMetricsPort }};
-        {{if not .DisableIPV6}}listen [::]:{{ .VtsMetricsPort }};{{end}}
+        listen {{ .MainVtsMetricsPort }};
+        {{if not .DisableIPV6}}listen [::]:{{ .MainVtsMetricsPort }};{{end}}
         server_name "vts-metrics";
 
         {{ if .WallarmEnabled }}

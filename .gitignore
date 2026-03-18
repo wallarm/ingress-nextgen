@@ -69,3 +69,6 @@ venv/
 allure_report/
 logs/
 kind_logs.tar.gz
+
+# dot-env file
+.env
