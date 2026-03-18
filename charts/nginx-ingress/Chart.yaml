@@ -1,7 +1,7 @@
 apiVersion: v2
 name: wallarm-ingress
-version: 7.0.0-rc1
-appVersion: 6.10.0
+version: 7.0.0-rc2
+appVersion: 6.10.3
 kubeVersion: ">= 1.25.0-0"
 type: application
 description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer with Wallarm module (new)
