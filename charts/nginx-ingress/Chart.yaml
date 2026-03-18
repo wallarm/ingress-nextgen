@@ -8,7 +8,7 @@ description: Ingress controller for Kubernetes using NGINX as a reverse proxy an
 icon: https://static.wallarm.com/wallarm-logo.svg
 home: https://www.wallarm.com
 sources:
-  - https://github.com/wallarm/ingress
+  - https://github.com/wallarm/ingress-nextgen
 keywords:
   - ingress
   - nginx
