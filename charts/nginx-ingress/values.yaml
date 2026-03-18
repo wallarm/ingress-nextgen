@@ -26,6 +26,8 @@ config:
         # secretKey: "token"
     ## Enable fallback mode when Wallarm proton.db or LOM cannot be downloaded
     fallback: "on"
+    ## Maximum number of simultaneous connections to wstore upstream (don't change unless advised to do so)
+    # wstoreMaxConns: 2
 
   ### Image settings
   images:

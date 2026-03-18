@@ -724,6 +724,16 @@ func ParseConfigMap(ctx context.Context, cfgm *v1.ConfigMap, nginxPlus bool, has
 		cfgParams.MainWallarmUpstreamService = wallarmUpstreamService
 	}
 
+	if wallarmWstoreMaxConns, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-wstore-max-conns", cfgm); exists {
+		if err != nil {
+			nl.Error(l, err)
+			eventLog.Event(cfgm, v1.EventTypeWarning, nl.EventReasonInvalidValue, err.Error())
+			configOk = false
+		} else {
+			cfgParams.MainWallarmWstoreMaxConns = wallarmWstoreMaxConns
+		}
+	}
+
 	if wallarmUpstreamConnectAttempts, exists, err := GetMapKeyAsInt(cfgm.Data, "wallarm-upstream-connect-attempts", cfgm); exists {
 		if err != nil {
 			nl.Error(l, err)
@@ -1372,6 +1382,7 @@ func GenerateNginxMainConfig(staticCfgParams *StaticConfigParams, config *Config
 		// Wallarm WAF configuration
 		WallarmEnabled:                      config.MainWallarmEnabled,
 		WallarmUpstreamService:              config.MainWallarmUpstreamService,
+		WallarmWstoreMaxConns:               config.MainWallarmWstoreMaxConns,
 		WallarmUpstreamConnectAttempts:      config.MainWallarmUpstreamConnectAttempts,
 		WallarmUpstreamReconnectInterval:    config.MainWallarmUpstreamReconnectInterval,
 		WallarmProcessTimeLimit:             config.MainWallarmProcessTimeLimit,

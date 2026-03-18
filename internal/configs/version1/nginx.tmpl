@@ -98,8 +98,8 @@ http {
 
     # Wallarm upstream for postanalytics (wstore)
     upstream wallarm_wstore {
-        server {{.WallarmUpstreamService}}:3313 max_fails=0 fail_timeout=0 max_conns=16;
-        keepalive 16;
+        server {{.WallarmUpstreamService}}:3313 max_fails=0 fail_timeout=0 max_conns={{.WallarmWstoreMaxConns}};
+        keepalive {{.WallarmWstoreMaxConns}};
         keepalive_requests 100;
     }
     wallarm_wstore_upstream wallarm_wstore;
