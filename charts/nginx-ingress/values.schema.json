@@ -2125,6 +2125,11 @@
               "default": "on",
               "title": "Wallarm fallback mode",
               "enum": ["on", "off"]
+            },
+            "wstoreMaxConns": {
+              "type": "integer",
+              "title": "Maximum simultaneous connections to wstore upstream",
+              "minimum": 1
             }
           }
         },

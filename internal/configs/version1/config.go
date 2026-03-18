@@ -327,6 +327,7 @@ type MainConfig struct {
 	// Wallarm WAF static configuration
 	WallarmEnabled                      bool
 	WallarmUpstreamService              string
+	WallarmWstoreMaxConns               int
 	WallarmUpstreamConnectAttempts      int
 	WallarmUpstreamReconnectInterval    string
 	WallarmProcessTimeLimit             int

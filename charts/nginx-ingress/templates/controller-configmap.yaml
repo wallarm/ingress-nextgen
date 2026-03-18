@@ -20,6 +20,9 @@ data:
 {{- if .Values.config.wallarm.fallback }}
   wallarm-fallback: "{{ .Values.config.wallarm.fallback }}"
 {{- end }}
+{{- if .Values.config.wallarm.wstoreMaxConns }}
+  wallarm-wstore-max-conns: "{{ .Values.config.wallarm.wstoreMaxConns }}"
+{{- end }}
 {{- end }}
 {{- if .Values.prometheusExtended.enabled }}
   enable-vts: "true"
