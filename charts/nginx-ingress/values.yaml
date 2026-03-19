@@ -33,7 +33,7 @@ config:
   images:
     controller:
       repository: "docker.io/wallarm/ingress-controller"
-      tag: "7.0.0-rc2"
+      tag: "7.0.0-rc3"
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"
