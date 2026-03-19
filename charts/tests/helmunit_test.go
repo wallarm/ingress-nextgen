@@ -11,7 +11,40 @@ import (
 	"github.com/gkampitakis/go-snaps/snaps"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"gopkg.in/yaml.v3"
 )
+
+// chartMeta holds the version fields from Chart.yaml that change on every release.
+type chartMeta struct {
+	Version    string `yaml:"version"`
+	AppVersion string `yaml:"appVersion"`
+}
+
+// readChartMeta reads Chart.yaml and returns its version fields.
+func readChartMeta(t *testing.T, chartPath string) chartMeta {
+	t.Helper()
+	data, err := os.ReadFile(filepath.Join(chartPath, "Chart.yaml"))
+	if err != nil {
+		t.Fatalf("failed to read Chart.yaml: %v", err)
+	}
+	var meta chartMeta
+	if err := yaml.Unmarshal(data, &meta); err != nil {
+		t.Fatalf("failed to parse Chart.yaml: %v", err)
+	}
+	return meta
+}
+
+// sanitizeVersions replaces dynamic chart/app versions with fixed placeholders
+// so that snapshot files don't change on every version bump.
+func sanitizeVersions(output string, meta chartMeta) string {
+	if meta.Version != "" {
+		output = strings.ReplaceAll(output, meta.Version, "CHART_VERSION")
+	}
+	if meta.AppVersion != "" {
+		output = strings.ReplaceAll(output, meta.AppVersion, "APP_VERSION")
+	}
+	return output
+}
 
 func TestMain(m *testing.M) {
 	code := m.Run()
@@ -184,6 +217,8 @@ func TestHelmNICTemplate(t *testing.T) {
 		t.Fatal("Failed to open helm chart path ../nginx-ingress")
 	}
 
+	meta := readChartMeta(t, helmChartPath)
+
 	for testName, tc := range tests {
 		t.Run(testName, func(t *testing.T) {
 			options := &helm.Options{
@@ -195,6 +230,7 @@ func TestHelmNICTemplate(t *testing.T) {
 			}
 
 			output := helm.RenderTemplate(t, options, helmChartPath, tc.releaseName, make([]string, 0))
+			output = sanitizeVersions(output, meta)
 
 			snaps.MatchSnapshot(t, output)
 			t.Log(output)

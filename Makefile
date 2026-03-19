@@ -109,7 +109,7 @@ govulncheck: ## Run govulncheck linter
 
 .PHONY: test
 test: ## Run GoLang tests
-	go test -tags=aws -shuffle=on ./...
+	go test -tags=aws,helmunit -shuffle=on ./...
 
 .PHONY: test-update-snaps
 test-update-snaps:
