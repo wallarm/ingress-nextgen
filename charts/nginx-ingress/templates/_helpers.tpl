@@ -65,6 +65,9 @@ Pod labels
 */}}
 {{- define "nginx-ingress.podLabels" -}}
 {{- include "nginx-ingress.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
 {{- if .Values.controller.pod.extraLabels }}
 {{ toYaml .Values.controller.pod.extraLabels }}
 {{- end }}

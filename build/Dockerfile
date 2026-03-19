@@ -679,6 +679,7 @@ LABEL org.opencontainers.image.version="${IC_VERSION}" \
 ############################################# Build nginx-ingress in golang container #############################################
 FROM golang-builder AS builder
 ARG IC_VERSION
+ARG AIO_VERSION
 ARG TARGETARCH
 
 WORKDIR /go/src/github.com/nginx/kubernetes-ingress/
@@ -686,7 +687,7 @@ RUN apk add --no-cache git libcap
 RUN --mount=type=bind,target=/go/src/github.com/nginx/kubernetes-ingress/ --mount=type=cache,target=/root/.cache/go-build \
 	go mod download
 RUN --mount=type=bind,target=/go/src/github.com/nginx/kubernetes-ingress/ --mount=type=cache,target=/root/.cache/go-build \
-	CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -trimpath -ldflags "-s -w -X main.version=${IC_VERSION}" \
+	CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -trimpath -ldflags "-s -w -X main.version=${AIO_VERSION}" \
 	-o /nginx-ingress github.com/nginx/kubernetes-ingress/cmd/nginx-ingress \
 	&& setcap 'cap_net_bind_service=+ep' /nginx-ingress && setcap -v 'cap_net_bind_service=+ep' /nginx-ingress
 

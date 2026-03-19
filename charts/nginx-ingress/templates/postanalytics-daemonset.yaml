@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "nginx-ingress.selectorLabels" . | nindent 8 }}
+        {{- include "nginx-ingress.podLabels" . | nindent 8 }}
         app.kubernetes.io/component: wallarm-postanalytics
       {{- with .Values.postanalytics.podLabels }}
         {{- toYaml . | nindent 8 }}

@@ -3,7 +3,6 @@ export $(shell [ -f .env ] && sed 's/=.*//' .env)
 # variables that should not be overridden by the user
 # setting version; will be used to set the binary verson and derive image version from it later
 GIT_TAG = $(shell git describe --exact-match --tags || echo untagged)
-VERSION = $(shell cat TAG)
 # renovate: datasource=docker depName=nginx/nginx
 NGINX_OSS_VERSION             ?= 1.29.5
 NGINX_PLUS_VERSION            ?= R36
@@ -28,10 +27,11 @@ GO_DOCKER_IMAGE         ?= $(GO_DOCKER_IMAGE_NAME):$(GO_DOCKER_IMAGE_VERSION)
 # Variables that can be overridden
 REGISTRY                      ?= docker.io/wallarm ## The registry where the image is located.
 PREFIX                        ?= ingress-controller ## The name of the image. For example, wallarm/ingress-controller
-TAG                           ?= $(VERSION) ## The tag of the image. For example, 2.0.0
+TAG                           ?= $(shell cat TAG) ## The tag of the image. For example, 2.0.0
+AIO_VERSION                   ?= $(shell cat AIO_BASE)
 TARGET                        ?= local ## The target of the build. Possible values: local, container and download
 PLUS_REPO                     ?= "pkgs.nginx.com" ## The package repo to install nginx-plus from
-override DOCKER_BUILD_OPTIONS += --build-arg IC_VERSION=$(VERSION) --build-arg PACKAGE_REPO=$(PLUS_REPO) ## The options for the docker build command. For example, --pull
+override DOCKER_BUILD_OPTIONS += --build-arg IC_VERSION=$(TAG) --build-arg AIO_VERSION=$(AIO_VERSION) --build-arg PACKAGE_REPO=$(PLUS_REPO) ## The options for the docker build command. For example, --pull
 ARCH                          ?= amd64 ## The architecture of the image or binary. For example: amd64, arm64, ppc64le, s390x. Not all architectures are supported for all targets
 PLATFORM                      ?= linux/amd64
 GOOS                          ?= linux ## The OS of the binary. For example linux, darwin
@@ -45,7 +45,7 @@ GOFUMPT_VERSION               ?= v0.9.2 ## The version of gofumpt to use
 
 # Additional flags added here can be accessed in main.go.
 # e.g. `main.version` maps to `var version` in main.go
-GO_LINKER_FLAGS_VARS = -X main.version=${VERSION} -X main.telemetryEndpoint=${TELEMETRY_ENDPOINT}
+GO_LINKER_FLAGS_VARS = -X main.version=${AIO_VERSION} -X main.telemetryEndpoint=${TELEMETRY_ENDPOINT}
 GO_LINKER_FLAGS_OPTIONS = -s -w
 GO_LINKER_FLAGS = $(GO_LINKER_FLAGS_OPTIONS) $(GO_LINKER_FLAGS_VARS)
 DEBUG_GO_LINKER_FLAGS = $(GO_LINKER_FLAGS_VARS)
