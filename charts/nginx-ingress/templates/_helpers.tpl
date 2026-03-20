@@ -647,7 +647,7 @@ Wallarm API Firewall container for controller pod
       value: "false"
 {{- end }}
   {{- with .Values.controller.wallarm.apiFirewall.extraEnvs }}
-    {{- toYaml . | nindent 2 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   ports:
   - name: apifw-health

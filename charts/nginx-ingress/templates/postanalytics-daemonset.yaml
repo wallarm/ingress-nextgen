@@ -54,7 +54,7 @@ spec:
             {{ include "ingress-nginx.wallarmWstoreTlsVariables" . | nindent 12 }}
           {{- end }}
           {{- with .Values.postanalytics.extraEnvs }}
-            {{- toYaml . | nindent 10 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
           - name: wstore
@@ -100,7 +100,7 @@ spec:
           args: ["appstructure"]
           {{- with .Values.postanalytics.appstructure.extraEnvs }}
           env:
-            {{- toYaml . | nindent 10 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
           - name: wallarm
