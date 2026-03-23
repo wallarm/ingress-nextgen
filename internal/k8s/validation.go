@@ -36,7 +36,8 @@ const (
 	clientMaxBodySizeAnnotation           = "nginx.org/client-max-body-size"
 	clientBodyBufferSizeAnnotation        = "nginx.org/client-body-buffer-size"
 	redirectToHTTPSAnnotation             = "nginx.org/redirect-to-https"
-	sslRedirectAnnotation                 = "ingress.kubernetes.io/ssl-redirect"
+	sslRedirectAnnotationDeprecated       = "ingress.kubernetes.io/ssl-redirect"
+	sslRedirectAnnotation                 = "nginx.org/ssl-redirect"
 	proxyBufferingAnnotation              = "nginx.org/proxy-buffering"
 	hstsAnnotation                        = "nginx.org/hsts"
 	hstsMaxAgeAnnotation                  = "nginx.org/hsts-max-age"
@@ -49,10 +50,6 @@ const (
 	upstreamZoneSizeAnnotation            = "nginx.org/upstream-zone-size"
 	basicAuthSecretAnnotation             = "nginx.org/basic-auth-secret" // #nosec G101
 	basicAuthRealmAnnotation              = "nginx.org/basic-auth-realm"
-	jwtRealmAnnotation                    = "nginx.com/jwt-realm"
-	jwtKeyAnnotation                      = "nginx.com/jwt-key"
-	jwtTokenAnnotation                    = "nginx.com/jwt-token" // #nosec G101
-	jwtLoginURLAnnotation                 = "nginx.com/jwt-login-url"
 	listenPortsAnnotation                 = "nginx.org/listen-ports"
 	listenPortsSSLAnnotation              = "nginx.org/listen-ports-ssl"
 	keepaliveAnnotation                   = "nginx.org/keepalive"
@@ -71,9 +68,12 @@ const (
 	grpcServicesAnnotation                = "nginx.org/grpc-services"
 	rewritesAnnotation                    = "nginx.org/rewrites"
 	rewriteTargetAnnotation               = "nginx.org/rewrite-target"
-	stickyCookieServicesAnnotation        = "nginx.com/sticky-cookie-services"
+	stickyCookieServicesAnnotation        = configs.StickyCookieServicesAnnotation
+	stickyCookieServicesAnnotationPlus    = configs.StickyCookieServicesAnnotationPlus
 	pathRegexAnnotation                   = "nginx.org/path-regex"
 	useClusterIPAnnotation                = "nginx.org/use-cluster-ip"
+	httpRedirectCodeAnnotation            = "nginx.org/http-redirect-code"
+	appRootAnnotation                     = "nginx.org/app-root"
 )
 
 const (
@@ -103,7 +103,7 @@ type annotationValidationContext struct {
 	internalRoutesEnabled bool
 	fieldPath             *field.Path
 	snippetsEnabled       bool
-	directiveAutoadjust   bool
+	directiveAutoAdjust   bool
 }
 
 type (
@@ -188,6 +188,10 @@ var (
 			validateRequiredAnnotation,
 			validateBoolAnnotation,
 		},
+		sslRedirectAnnotationDeprecated: {
+			validateRequiredAnnotation,
+			validateBoolAnnotation,
+		},
 		sslRedirectAnnotation: {
 			validateRequiredAnnotation,
 			validateBoolAnnotation,
@@ -230,6 +234,18 @@ var (
 			validateRequiredAnnotation,
 			validateSizeAnnotation,
 		},
+		configs.ProxyNextUpstreamAnnotation: {
+			validateRequiredAnnotation,
+			validateProxyNextUpstreamAnnotation,
+		},
+		configs.ProxyNextUpstreamTimeoutAnnotation: {
+			validateRequiredAnnotation,
+			validateTimeAnnotation,
+		},
+		configs.ProxyNextUpstreamTriesAnnotation: {
+			validateRequiredAnnotation,
+			validateUint64Annotation,
+		},
 		upstreamZoneSizeAnnotation: {
 			validateRequiredAnnotation,
 			validateSizeAnnotation,
@@ -242,21 +258,21 @@ var (
 			validateRelatedAnnotation(basicAuthSecretAnnotation, validateNoop),
 			validateRealmAnnotation,
 		},
-		jwtRealmAnnotation: {
+		configs.JWTRealmAnnotation: {
 			validatePlusOnlyAnnotation,
 			validateRequiredAnnotation,
 			validateJWTRealm,
 		},
-		jwtKeyAnnotation: {
+		configs.JWTKeyAnnotation: {
 			validatePlusOnlyAnnotation,
 			validateRequiredAnnotation,
 			validateJWTKey,
 		},
-		jwtTokenAnnotation: {
+		configs.JWTTokenAnnotation: {
 			validatePlusOnlyAnnotation,
 			validateJWTTokenAnnotation,
 		},
-		jwtLoginURLAnnotation: {
+		configs.JWTLoginURLAnnotation: {
 			validatePlusOnlyAnnotation,
 			validateJWTLoginURLAnnotation,
 		},
@@ -345,6 +361,10 @@ var (
 			validateRewriteTargetAnnotation,
 		},
 		stickyCookieServicesAnnotation: {
+			validateRequiredAnnotation,
+			validateStickyServiceListAnnotation,
+		},
+		stickyCookieServicesAnnotationPlus: {
 			validatePlusOnlyAnnotation,
 			validateRequiredAnnotation,
 			validateStickyServiceListAnnotation,
@@ -355,9 +375,62 @@ var (
 		useClusterIPAnnotation: {
 			validateBoolAnnotation,
 		},
+		httpRedirectCodeAnnotation: {
+			validateRequiredAnnotation,
+			validateHTTPRedirectCodeAnnotation,
+		},
+		appRootAnnotation: {
+			validateAppRootAnnotation,
+		},
+		configs.PoliciesAnnotation: {
+			validateRequiredAnnotation,
+			validateCommaSeparatedList,
+			validatePolicyNames,
+		},
 	}
 	annotationNames = sortedAnnotationNames(annotationValidations)
 )
+
+func validateCommaSeparatedList(context *annotationValidationContext) field.ErrorList {
+	items := strings.Split(context.value, commaDelimiter)
+	var allErrs field.ErrorList
+	for _, item := range items {
+		item = strings.TrimSpace(item)
+		if !validAnnotationValueRegex.MatchString(item) {
+			allErrs = append(allErrs, field.Invalid(context.fieldPath, item, annotationValueFmtErrMsg))
+		}
+	}
+	return allErrs
+}
+
+func validatePolicyNames(context *annotationValidationContext) field.ErrorList {
+	var allErrs field.ErrorList
+	for policy := range strings.SplitSeq(context.value, commaDelimiter) {
+		policy = strings.TrimSpace(policy)
+		var dnsErrs []string
+		policyName := policy
+		if strings.Contains(policy, "/") {
+			parts := strings.SplitN(policy, "/", 2)
+			namespace := parts[0]
+			if namespace == "" {
+				allErrs = append(allErrs, field.Invalid(context.fieldPath, policy, "policy namespace cannot be empty"))
+			}
+			dnsErrs = validation.IsDNS1123Subdomain(namespace)
+			if len(dnsErrs) > 0 {
+				allErrs = append(allErrs, field.Invalid(context.fieldPath, policy, fmt.Sprintf("policy namespace must be a valid DNS subdomain: %s", strings.Join(dnsErrs, "; "))))
+			}
+			policyName = parts[1]
+		}
+		if policyName == "" {
+			allErrs = append(allErrs, field.Invalid(context.fieldPath, policy, "policy name cannot be empty"))
+		}
+		dnsErrs = validation.IsDNS1123Subdomain(policyName)
+		if len(dnsErrs) > 0 {
+			allErrs = append(allErrs, field.Invalid(context.fieldPath, policy, fmt.Sprintf("policy name must be a valid DNS subdomain: %s", strings.Join(dnsErrs, "; "))))
+		}
+	}
+	return allErrs
+}
 
 func validatePathRegex(context *annotationValidationContext) field.ErrorList {
 	switch context.value {
@@ -366,6 +439,60 @@ func validatePathRegex(context *annotationValidationContext) field.ErrorList {
 	default:
 		return field.ErrorList{field.Invalid(context.fieldPath, context.value, "allowed values: 'case_sensitive', 'case_insensitive' or 'exact'")}
 	}
+}
+
+func validateHTTPRedirectCodeAnnotation(context *annotationValidationContext) field.ErrorList {
+	if _, err := configs.ParseHTTPRedirectCode(context.value); err != nil {
+		return field.ErrorList{field.Invalid(context.fieldPath, context.value, err.Error())}
+	}
+	return nil
+}
+
+func validateAppRootAnnotation(context *annotationValidationContext) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	path := context.value
+
+	// App root must start with /
+	if !strings.HasPrefix(path, "/") {
+		allErrs = append(allErrs, field.Invalid(context.fieldPath, path, "must start with '/'"))
+		return allErrs
+	}
+
+	// App root cannot be just "/"
+	if path == "/" {
+		allErrs = append(allErrs, field.Invalid(context.fieldPath, path, "cannot be '/'"))
+		return allErrs
+	}
+
+	// Prevent protocol-relative URLs (//)
+	if strings.HasPrefix(path, "//") {
+		return field.ErrorList{field.Invalid(context.fieldPath, path, "protocol-relative URLs not allowed")}
+	}
+
+	// Prevent path traversal patterns
+	if strings.Contains(path, "../") || strings.Contains(path, "..\\") {
+		return field.ErrorList{field.Invalid(context.fieldPath, path, "path traversal patterns not allowed")}
+	}
+
+	// Prevents invalid config characters
+	if !validateRFC1738Path(path) {
+		allErrs = append(allErrs, field.Invalid(context.fieldPath, path, "path must not contain the following characters: whitespace, '{', '}', ';', '$', '|', '^', '<', '>', '\\', '\"', '#', '[', ']'"))
+		return allErrs
+	}
+
+	// Prevent tilde character
+	if strings.Contains(path, "~") {
+		allErrs = append(allErrs, field.Invalid(context.fieldPath, path, "path must not contain the '~' character"))
+	}
+
+	// Ensure path doesn't end with /
+	if strings.HasSuffix(path, "/") {
+		allErrs = append(allErrs, field.Invalid(context.fieldPath, path, "path should not end with '/'"))
+		return allErrs
+	}
+
+	return allErrs
 }
 
 func validateJWTLoginURLAnnotation(context *annotationValidationContext) field.ErrorList {
@@ -469,6 +596,32 @@ func validateProxySetHeaderAnnotation(context *annotationValidationContext) fiel
 	return allErrs
 }
 
+func validateProxyNextUpstreamAnnotation(context *annotationValidationContext) field.ErrorList {
+	var allErrs field.ErrorList
+
+	methods := strings.Fields(context.value)
+	nextValidUpstreamOptions := sets.NewString("error", "timeout", "invalid_header", "http_500", "http_502", "http_503", "http_504", "http_403", "http_404", "http_429", "non_idempotent", "off")
+
+	if context.isPlus {
+		nextValidUpstreamOptions = nextValidUpstreamOptions.Insert("denied")
+	}
+
+	seen := sets.NewString()
+	for _, method := range methods {
+		if seen.Has(method) {
+			allErrs = append(allErrs, field.Invalid(context.fieldPath, context.value, fmt.Sprintf("duplicate value: %s", method)))
+			continue
+		}
+		if !nextValidUpstreamOptions.Has(method) {
+			validOptions := strings.Join(nextValidUpstreamOptions.List(), ", ")
+			allErrs = append(allErrs, field.Invalid(context.fieldPath, context.value, fmt.Sprintf("must be a space-separated list with any of the following values: %s", validOptions)))
+		}
+		seen.Insert(method)
+	}
+
+	return allErrs
+}
+
 func sortedAnnotationNames(annotationValidations annotationValidationConfig) []string {
 	sortedNames := make([]string, 0)
 	for annotationName := range annotationValidations {
@@ -487,18 +640,20 @@ func validateIngress(
 	appProtectDosEnabled bool,
 	internalRoutesEnabled bool,
 	snippetsEnabled bool,
-	directiveAutoadjust bool,
+	directiveAutoAdjust bool,
 ) field.ErrorList {
 	allErrs := validateIngressAnnotations(
+		IngressOpts{
+			isPlus:                isPlus,
+			appProtectEnabled:     appProtectEnabled,
+			appProtectDosEnabled:  appProtectDosEnabled,
+			internalRoutesEnabled: internalRoutesEnabled,
+			snippetsEnabled:       snippetsEnabled,
+			directiveAutoAdjust:   directiveAutoAdjust,
+		},
 		ing.Annotations,
 		getSpecServices(ing.Spec),
-		isPlus,
-		appProtectEnabled,
-		appProtectDosEnabled,
-		internalRoutesEnabled,
 		field.NewPath("annotations"),
-		snippetsEnabled,
-		directiveAutoadjust,
 	)
 
 	allErrs = append(allErrs, validateIngressSpec(&ing.Spec, field.NewPath("spec"))...)
@@ -539,16 +694,21 @@ func validateChallengeIngress(spec *networking.IngressSpec, fieldPath *field.Pat
 	return allErrs
 }
 
+// IngressOpts contains options that affect how Ingress annotations are validated. This is used to avoid passing a long list of parameters to the validation functions.
+type IngressOpts struct {
+	isPlus                bool
+	appProtectEnabled     bool
+	appProtectDosEnabled  bool
+	internalRoutesEnabled bool
+	snippetsEnabled       bool
+	directiveAutoAdjust   bool
+}
+
 func validateIngressAnnotations(
+	ingOpts IngressOpts,
 	annotations map[string]string,
 	specServices map[string]bool,
-	isPlus bool,
-	appProtectEnabled bool,
-	appProtectDosEnabled bool,
-	internalRoutesEnabled bool,
 	fieldPath *field.Path,
-	snippetsEnabled bool,
-	directiveAutoadjust bool,
 ) field.ErrorList {
 	allErrs := field.ErrorList{}
 
@@ -559,13 +719,13 @@ func validateIngressAnnotations(
 				specServices:          specServices,
 				name:                  name,
 				value:                 value,
-				isPlus:                isPlus,
-				appProtectEnabled:     appProtectEnabled,
-				appProtectDosEnabled:  appProtectDosEnabled,
-				internalRoutesEnabled: internalRoutesEnabled,
+				isPlus:                ingOpts.isPlus,
+				appProtectEnabled:     ingOpts.appProtectEnabled,
+				appProtectDosEnabled:  ingOpts.appProtectDosEnabled,
+				internalRoutesEnabled: ingOpts.internalRoutesEnabled,
 				fieldPath:             fieldPath.Child(name),
-				snippetsEnabled:       snippetsEnabled,
-				directiveAutoadjust:   directiveAutoadjust,
+				snippetsEnabled:       ingOpts.snippetsEnabled,
+				directiveAutoAdjust:   ingOpts.directiveAutoAdjust,
 			}
 			allErrs = append(allErrs, validateIngressAnnotation(context)...)
 		}
@@ -973,6 +1133,15 @@ func validatePath(path string, pathType *networking.PathType, fieldPath *field.P
 	allErrs = append(allErrs, validateIllegalKeywords(path, fieldPath)...)
 
 	return allErrs
+}
+
+// validateRestrictedPath applies RFC 1738 compliant validation that excludes characters problematic for NGINX configuration
+// Allows: A-Z a-z 0-9 / - _ . ~ ! * ' ( ) : @ & = + , ? %
+// Excludes: whitespace { } ; $ | ^ ` < > \ " # [ ]
+var rfc1738PathRegexp = regexp.MustCompile(`^/[A-Za-z0-9\-_.~!*'():@&=+,/?%]*$`)
+
+func validateRFC1738Path(path string) bool {
+	return rfc1738PathRegexp.MatchString(path)
 }
 
 // validateRegexPath validates correctness of the string representing the path.

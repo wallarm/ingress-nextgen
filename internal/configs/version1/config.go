@@ -19,6 +19,8 @@ type IngressNginxConfig struct {
 	Upstreams               []Upstream
 	Servers                 []Server
 	Keepalive               string
+	Maps                    []version2.Map
+	CORSHeaders             []version2.AddHeader
 	Ingress                 Ingress
 	SpiffeClientCerts       bool
 	DynamicSSLReloadEnabled bool
@@ -98,6 +100,7 @@ type Server struct {
 	HTTP2                  bool
 	RedirectToHTTPS        bool
 	SSLRedirect            bool
+	HTTPRedirectCode       int
 	ProxyProtocol          bool
 	HSTS                   bool
 	HSTSMaxAge             int64
@@ -105,6 +108,8 @@ type Server struct {
 	HSTSBehindProxy        bool
 	ProxyHideHeaders       []string
 	ProxyPassHeaders       []string
+	Allow                  []string
+	Deny                   []string
 
 	HealthChecks map[string]HealthCheck
 
@@ -136,6 +141,8 @@ type Server struct {
 	SpiffeCerts bool
 
 	DisableIPV6 bool
+
+	AppRoot string
 }
 
 // JWTRedirectLocation describes a location for redirecting client requests to a login URL for JWT Authentication.
@@ -191,13 +198,21 @@ type Location struct {
 	ProxyBusyBuffersSize string
 	ProxyMaxTempFileSize string
 	ProxySSLName         string
+	AddHeaders           []version2.AddHeader
 	JWTAuth              *JWTAuth
 	BasicAuth            *BasicAuth
 	ServiceName          string
 	LimitReq             *LimitReq
 	Wallarm              *commonhelpers.Wallarm
+	CORSEnabled          bool
 
 	MinionIngress *Ingress
+
+	ProxyNextUpstream        string
+	ProxyNextUpstreamTimeout string
+	ProxyNextUpstreamTries   *uint64
+	Allow                    []string
+	Deny                     []string
 }
 
 // ZoneSyncConfig is tbe configuration for the zone_sync directives for state sharing.
@@ -213,12 +228,17 @@ type ZoneSyncConfig struct {
 
 // OIDCConfig allows to configure OIDC parameters.
 type OIDCConfig struct {
-	Enable         bool
-	PKCETimeout    string
-	IDTokenTimeout string
-	AccessTimeout  string
-	RefreshTimeout string
-	SIDSTimeout    string
+	Enable          bool
+	PKCETimeout     string
+	PKCEZoneSize    string
+	IDTokenTimeout  string
+	IDTokenZoneSize string
+	AccessTimeout   string
+	AccessZoneSize  string
+	RefreshTimeout  string
+	RefreshZoneSize string
+	SIDSTimeout     string
+	SIDSZoneSize    string
 }
 
 // MGMTConfig is tbe configuration for the MGMT block.

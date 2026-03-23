@@ -103,7 +103,7 @@ func TestConfiguratorUpdatesConfigWithNilCustomMainTemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{MainTemplate: nil}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,7 +121,7 @@ func TestConfiguratorUpdatesConfigWithCustomMainTemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{MainTemplate: &customTestMainTemplate}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +143,7 @@ func TestConfiguratorUpdatesConfigWithNilCustomIngressTemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{IngressTemplate: nil}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,7 +161,7 @@ func TestConfiguratorUpdatesConfigWithCustomIngressTemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{IngressTemplate: &customTestIngressTemplate}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -183,7 +183,7 @@ func TestConfigratorUpdatesConfigWithCustomVStemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{VirtualServerTemplate: &customTestVStemplate}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -205,7 +205,7 @@ func TestConfiguratorUpdatesConfigWithNilCustomVSemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{VirtualServerTemplate: nil}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -225,7 +225,7 @@ func TestConfigratorUpdatesConfigWithCustomTStemplate(t *testing.T) {
 	cnf.CfgParams = &ConfigParams{
 		TransportServerTemplate: &customTestTStemplate,
 	}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -247,7 +247,7 @@ func TestConfiguratorUpdatesConfigWithNilCustomTStemplate(t *testing.T) {
 	cnf := createTestConfigurator(t)
 	cnf.CfgParams = &ConfigParams{TransportServerTemplate: nil}
 	cnf.MgmtCfgParams = &MGMTConfigParams{}
-	warnings, err := cnf.UpdateConfig(ExtendedResources{})
+	warnings, _, err := cnf.UpdateConfig(ExtendedResources{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1651,6 +1651,7 @@ func TestGetIngressAnnotations(t *testing.T) {
 				Annotations: map[string]string{
 					"appprotect.f5.com/app-protect-enable": "False",
 					"nginx.org/proxy-set-header":           "X-Forwarded-ABC",
+					"nginx.org/ssl-redirect":               "True",
 					"ingress.kubernetes.io/ssl-redirect":   "True",
 				},
 			},
@@ -1667,6 +1668,7 @@ func TestGetIngressAnnotations(t *testing.T) {
 	expectedAnnotations := []string{
 		"appprotect.f5.com/app-protect-enable",
 		"nginx.org/proxy-set-header",
+		"nginx.org/ssl-redirect",
 		"ingress.kubernetes.io/ssl-redirect",
 	}
 
@@ -1748,6 +1750,7 @@ func TestGetMixedIngressAnnotations(t *testing.T) {
 					"alb.ingress.kubernetes.io/scheme":                 "internal",
 					"appprotect.f5.com/app-protect-enable":             "False",
 					"nginx.org/proxy-set-header":                       "X-Forwarded-ABC",
+					"nginx.org/ssl-redirect":                           "True",
 					"ingress.kubernetes.io/ssl-redirect":               "True",
 				},
 			},
@@ -1760,6 +1763,7 @@ func TestGetMixedIngressAnnotations(t *testing.T) {
 	}
 
 	expectedAnnotations := []string{
+		"nginx.org/ssl-redirect",
 		"ingress.kubernetes.io/ssl-redirect",
 		"nginx.org/proxy-set-header",
 		"appprotect.f5.com/app-protect-enable",

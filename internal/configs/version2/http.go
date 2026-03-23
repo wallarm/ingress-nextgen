@@ -165,6 +165,7 @@ type OIDC struct {
 	TLSVerify             bool
 	VerifyDepth           int
 	CAFile                string
+	PolicyName            string
 }
 
 // APIKey holds API key configuration.
@@ -248,6 +249,7 @@ type Location struct {
 	VSRName                  string
 	VSRNamespace             string
 	GRPCPass                 string
+	CORSEnabled              bool
 }
 
 // ReturnLocation defines a location for returning a fixed response.

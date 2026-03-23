@@ -119,6 +119,7 @@ UNIT_TEST_IC:
     - if: $X_CI_BUILD_KIND =~ /^(develop|production|release-candidate)$/
   script:
     - apk add --no-cache make helm
+    - make secrets
     - make test
 
 IMAGE_BUILD_IC:
