@@ -209,6 +209,16 @@ func TestHelmNICTemplate(t *testing.T) {
 			releaseName: "wallarm-full",
 			namespace:   "wallarm",
 		},
+		"loadBalancerClass": {
+			valuesFile:  "testdata/service-loadbalancerclass.yaml",
+			releaseName: "loadbalancerclass",
+			namespace:   "default",
+		},
+		"listConfigurations": {
+			valuesFile:  "testdata/list-configurations.yaml",
+			releaseName: "list-configs",
+			namespace:   "default",
+		},
 	}
 
 	// Path to the helm chart we will test
