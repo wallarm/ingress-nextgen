@@ -37,12 +37,12 @@ workflow:
     - if: $AIO_VERSION =~ /^([0-9]+.[0-9]+.[0-9]+-rc).*$/
       variables:
         REGISTRY: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
-        HELM_ARGS: --set controller.wallarm.helpers.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
+        HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
         CHART_TYPE: "release-candidate"
     - if: $AIO_VERSION
       variables:
         REGISTRY: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
-        HELM_ARGS: --set controller.wallarm.helpers.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
+        HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
         CHART_TYPE: "release"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^stable\/.*$/
       changes:
@@ -116,7 +116,7 @@ UNIT_TEST_IC:
   image: golang:1.26-alpine
   tags: [node-c2r4-stable-dind-amd]
   rules:
-    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production|release-candidate)$/
   script:
     - apk add --no-cache make helm
     - make test
@@ -152,7 +152,7 @@ SMOKE:
   tags: [node-c2r4-stable-dind-amd]
   allow_failure: true # TODO: tmp
   rules:
-    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production|release-candidate)$/
   extends:
     - .before-test
   parallel:
@@ -178,7 +178,8 @@ SCAN_ARTIFACT:
   extends:
     - .before-build
   script: |
-    [ -z "$TAG" ] && export TAG="$(cat TAG)" && export REGISTRY=docker.io/wallarm
+    export TAG="${TAG:-$(cat TAG)}"
+    export REGISTRY="${REGISTRY:-docker.io/wallarm}"
     echo "Scanning image with tag ${TAG}..."
 
     docker-scout cves "${REGISTRY}/${PREFIX}:${TAG}" --exit-code --only-severity critical,high
@@ -197,15 +198,20 @@ PUBLISH_IMAGE:
   script:
     - |
       set -eo pipefail
-      if [[ ! -z $AIO_VERSION ]]; then
-        echo "Will push ${CI_REGISTRY_IMAGE}/${PREFIX}:${TAG} (private) to wallarm/${PREFIX}:${TAG} (public)..."
+      export TAG="${TAG:-$(cat TAG)}"
+
+      # Re-tag from private to public (when image was built to private registry)
+      # production-local pushes directly to DockerHub, so re-tag is not needed
+      if [[ "$REGISTRY" == "$CI_REGISTRY_IMAGE" ]]; then
+        echo "Pushing ${CI_REGISTRY_IMAGE}/${PREFIX}:${TAG} (private) to wallarm/${PREFIX}:${TAG} (public)..."
         docker buildx imagetools create -t wallarm/${PREFIX}:${TAG} ${CI_REGISTRY_IMAGE}/${PREFIX}:${TAG}
       fi
 
-      if [[ "$CHART_TYPE" == "release" ]]; then
+      if [[ "$TAG" != *-rc* ]]; then
+        export IMAGE="${PREFIX}"
         make sign
       else
-        echo "Skipping signing step (CHART_TYPE=$CHART_TYPE)"
+        echo "Skipping signing step (RC build: TAG=$TAG)"
       fi
   artifacts:
     expire_in: 30 days
