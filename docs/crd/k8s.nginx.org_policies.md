@@ -139,3 +139,14 @@ The `.spec` object supports the following fields:
 | `waf.securityLogs[].apLogConf` | `string` | The App Protect WAF log conf resource. Accepts an optional namespace. Only works with apPolicy. |
 | `waf.securityLogs[].enable` | `boolean` | Enables security log. |
 | `waf.securityLogs[].logDest` | `string` | The log destination for the security log. Only accepted variables are syslog:server=<ip-address>; localhost; fqdn>:<port>, stderr, <absolute path to file>. |
+| `wallarm` | `object` | The Wallarm policy configures Wallarm WAF protection settings. |
+| `wallarm.application` | `integer` | The unique application identifier used in the Wallarm Cloud to distinguish data from different applications. Must be a positive integer. Maps to wallarm_application directive. |
+| `wallarm.blockPage` | `string` | Custom block page configuration. Supports file path, named location, URL, or variable. |
+| `wallarm.fallback` | `string` | Enables fallback mode when Wallarm proton.db or custom ruleset cannot be loaded. Allowed values: on, off. Default is on. Allowed values: `"on"`, `"off"`. |
+| `wallarm.mode` | `string` | The Wallarm WAF mode. Allowed values: off, monitoring, safe_blocking, block. Allowed values: `"off"`, `"monitoring"`, `"safe_blocking"`, `"block"`. |
+| `wallarm.modeAllowOverride` | `string` | Controls whether the wallarm_mode can be overridden via Wallarm filtering rules. Allowed values: on, off, strict. Default is on. Allowed values: `"on"`, `"off"`, `"strict"`. |
+| `wallarm.parseResponse` | `string` | Enables analysis of responses from the application. Allowed values: on, off. Default is on. Allowed values: `"on"`, `"off"`. |
+| `wallarm.parseWebsocket` | `string` | Enables analysis of WebSocket messages. Allowed values: on, off. Default is off. Allowed values: `"on"`, `"off"`. |
+| `wallarm.parserDisable` | `array[string]` | List of parsers to disable. Allowed values: cookie, zlib, htmljs, json, multipart, base64, percent, urlenc, xml, jwt. |
+| `wallarm.partnerClientUUID` | `string` | The UUID of the Wallarm partner client for multi-tenant setups. |
+| `wallarm.unpackResponse` | `string` | Enables decompression of compressed responses before analysis. Allowed values: on, off. Default is on. Allowed values: `"on"`, `"off"`. |
