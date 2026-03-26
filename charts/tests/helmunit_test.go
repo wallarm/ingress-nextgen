@@ -5,6 +5,7 @@ package test
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -36,12 +37,16 @@ func readChartMeta(t *testing.T, chartPath string) chartMeta {
 
 // sanitizeVersions replaces dynamic chart/app versions with fixed placeholders
 // so that snapshot files don't change on every version bump.
+// Uses word-boundary matching to avoid replacing version substrings inside
+// unrelated values (e.g. "7.0.0" inside "127.0.0.1").
 func sanitizeVersions(output string, meta chartMeta) string {
 	if meta.Version != "" {
-		output = strings.ReplaceAll(output, meta.Version, "CHART_VERSION")
+		re := regexp.MustCompile(`(?:^|(?:\b))` + regexp.QuoteMeta(meta.Version) + `(?:\b|$)`)
+		output = re.ReplaceAllString(output, "CHART_VERSION")
 	}
 	if meta.AppVersion != "" {
-		output = strings.ReplaceAll(output, meta.AppVersion, "APP_VERSION")
+		re := regexp.MustCompile(`(?:^|(?:\b))` + regexp.QuoteMeta(meta.AppVersion) + `(?:\b|$)`)
+		output = re.ReplaceAllString(output, "APP_VERSION")
 	}
 	return output
 }
