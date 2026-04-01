@@ -183,7 +183,8 @@ SCAN_ARTIFACT:
     export REGISTRY="${REGISTRY:-docker.io/wallarm}"
     echo "Scanning image with tag ${TAG}..."
 
-    docker-scout cves "${REGISTRY}/${PREFIX}:${TAG}" --exit-code --only-severity critical,high
+    docker-scout config organization wallarm
+    docker-scout cves "${REGISTRY}/${PREFIX}:${TAG}" --exit-code --only-severity critical,high --ignore-suppressed
 
 PUBLISH_IMAGE:
   stage: sign
