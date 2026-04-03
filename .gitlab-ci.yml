@@ -186,8 +186,20 @@ SCAN_ARTIFACT:
     docker-scout config organization wallarm
     docker-scout cves "${REGISTRY}/${PREFIX}:${TAG}" --exit-code --only-severity critical,high --ignore-suppressed
 
+PUBLISH_GUARD:
+  stage: sign
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline" && $X_CI_BUILD_KIND == "production"
+      when: manual
+      allow_failure: true
+    - if: $X_CI_BUILD_KIND =~ /^(production-local|production|release-candidate)$/
+      when: on_success
+  script:
+    - echo "Publish gate opened"
+
 PUBLISH_IMAGE:
   stage: sign
+  needs: [PUBLISH_GUARD]
   tags: [node-c2r4-stable-dind-amd]
   image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/docker:v0.6.3
   rules:
@@ -222,6 +234,11 @@ PUBLISH_IMAGE:
 
 HELM_PUBLISH:
   stage: publish
+  needs:
+    - job: PUBLISH_GUARD
+      optional: true
+    - job: PUBLISH_IMAGE
+      optional: true
   rules:
    - if: $X_CI_BUILD_KIND =~ /^(chart|production|release-candidate)$/
   secrets:
