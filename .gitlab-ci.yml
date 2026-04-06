@@ -37,12 +37,12 @@ workflow:
     - if: $AIO_VERSION =~ /^([0-9]+.[0-9]+.[0-9]+-rc).*$/
       variables:
         REGISTRY: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
-        HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
+        HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION --set config.images.helper.repository=dkr.wallarm.com/wallarm-node/node-helpers
         CHART_TYPE: "release-candidate"
     - if: $AIO_VERSION
       variables:
         REGISTRY: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
-        HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION # only override tag here, registry in use is still PUBLIC (chart default)
+        HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION --set config.images.helper.repository=dkr.wallarm.com/wallarm-node/node-helpers
         CHART_TYPE: "release"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^stable\/.*$/
       changes:
@@ -186,8 +186,20 @@ SCAN_ARTIFACT:
     docker-scout config organization wallarm
     docker-scout cves "${REGISTRY}/${PREFIX}:${TAG}" --exit-code --only-severity critical,high --ignore-suppressed
 
+PUBLISH_GUARD:
+  stage: sign
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline" && $X_CI_BUILD_KIND == "production"
+      when: manual
+      allow_failure: true
+    - if: $X_CI_BUILD_KIND =~ /^(production-local|production|release-candidate)$/
+      when: on_success
+  script:
+    - echo "Publish gate opened"
+
 PUBLISH_IMAGE:
   stage: sign
+  needs: [PUBLISH_GUARD]
   tags: [node-c2r4-stable-dind-amd]
   image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/docker:v0.6.3
   rules:
@@ -222,6 +234,11 @@ PUBLISH_IMAGE:
 
 HELM_PUBLISH:
   stage: publish
+  needs:
+    - job: PUBLISH_GUARD
+      optional: true
+    - job: PUBLISH_IMAGE
+      optional: true
   rules:
    - if: $X_CI_BUILD_KIND =~ /^(chart|production|release-candidate)$/
   secrets:
