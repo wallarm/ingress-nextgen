@@ -148,5 +148,5 @@ The `.spec` object supports the following fields:
 | `wallarm.parseResponse` | `string` | Enables analysis of responses from the application. Allowed values: on, off. Default is on. Allowed values: `"on"`, `"off"`. |
 | `wallarm.parseWebsocket` | `string` | Enables analysis of WebSocket messages. Allowed values: on, off. Default is off. Allowed values: `"on"`, `"off"`. |
 | `wallarm.parserDisable` | `array[string]` | List of parsers to disable. Allowed values: cookie, zlib, htmljs, json, multipart, base64, percent, urlenc, xml, jwt. |
-| `wallarm.partnerClientUUID` | `string` | The UUID of the Wallarm partner client for multi-tenant setups. |
+| `wallarm.partnerClientUUID` | `string` | The UUID of the Wallarm partner client for multi-tenant setups, optionally followed by a space-separated label (e.g. "11111111-1111-1111-1111-111111111111 US-8"). The label requires Wallarm Node 6.12.0+ and surfaces as the client_label Prometheus metric label. Allowed label characters: alphanumerics, '-', and '_'. |
 | `wallarm.unpackResponse` | `string` | Enables decompression of compressed responses before analysis. Allowed values: on, off. Default is on. Allowed values: `"on"`, `"off"`. |

@@ -3390,3 +3390,50 @@ func TestCORSMDNCompliance(t *testing.T) {
 func boolPtr(b bool) *bool {
 	return &b
 }
+
+func TestValidateWallarmPartnerClientUUID(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		value   string
+		wantErr bool
+	}{
+		{
+			name:  "bare UUID",
+			value: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			name:  "UUID with label",
+			value: "11111111-1111-1111-1111-111111111111 US-8",
+		},
+		{
+			name:    "not a UUID",
+			value:   "not-a-uuid",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with multiple labels",
+			value:   "11111111-1111-1111-1111-111111111111 US 8",
+			wantErr: true,
+		},
+		{
+			name:    "label with semicolon",
+			value:   "11111111-1111-1111-1111-111111111111 foo;bar",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			errs := validateWallarmPartnerClientUUID(tt.value, field.NewPath("partnerClientUUID"))
+			if tt.wantErr && len(errs) == 0 {
+				t.Errorf("validateWallarmPartnerClientUUID(%q) returned no errors, want error", tt.value)
+			}
+			if !tt.wantErr && len(errs) != 0 {
+				t.Errorf("validateWallarmPartnerClientUUID(%q) returned errors: %v, want none", tt.value, errs)
+			}
+		})
+	}
+}

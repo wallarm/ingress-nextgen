@@ -1033,8 +1033,11 @@ type Wallarm struct {
 	// Must be a positive integer. Maps to wallarm_application directive.
 	// +kubebuilder:validation:Minimum=1
 	Application *int `json:"application"`
-	// The UUID of the Wallarm partner client for multi-tenant setups.
-	// +kubebuilder:validation:Pattern=`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`
+	// The UUID of the Wallarm partner client for multi-tenant setups, optionally
+	// followed by a space-separated label (e.g. "11111111-1111-1111-1111-111111111111 US-8").
+	// The label requires Wallarm Node 6.12.0+ and surfaces as the client_label
+	// Prometheus metric label. Allowed label characters: alphanumerics, '-', and '_'.
+	// +kubebuilder:validation:Pattern=`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}( [A-Za-z0-9_-]+)?$`
 	PartnerClientUUID string `json:"partnerClientUUID"`
 	// Custom block page configuration. Supports file path, named location, URL, or variable.
 	BlockPage string `json:"blockPage"`

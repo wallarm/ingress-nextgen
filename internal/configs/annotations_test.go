@@ -1409,3 +1409,88 @@ func TestHTTPRedirectCodeAnnotationBehavior(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateWallarmPartnerClientUUID(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		value   string
+		wantErr bool
+	}{
+		{
+			name:  "bare UUID",
+			value: "11111111-1111-1111-1111-111111111111",
+		},
+		{
+			name:  "UUID with label",
+			value: "11111111-1111-1111-1111-111111111111 US-8",
+		},
+		{
+			name:  "UUID with underscore label",
+			value: "11111111-1111-1111-1111-111111111111 tenant_a",
+		},
+		{
+			name:  "UUID with mixed case hex",
+			value: "AaBbCcDd-1111-1111-1111-111111111111 EU-3",
+		},
+		{
+			name:    "empty",
+			value:   "",
+			wantErr: true,
+		},
+		{
+			name:    "not a UUID",
+			value:   "not-a-uuid",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with leading garbage",
+			value:   "x11111111-1111-1111-1111-111111111111",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with trailing garbage no separator",
+			value:   "11111111-1111-1111-1111-111111111111label",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with multiple labels",
+			value:   "11111111-1111-1111-1111-111111111111 US 8",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with semicolon in label (injection)",
+			value:   "11111111-1111-1111-1111-111111111111 foo;bar",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with whitespace in label (tab)",
+			value:   "11111111-1111-1111-1111-111111111111 foo\tbar",
+			wantErr: true,
+		},
+		{
+			name:    "UUID with empty label after space",
+			value:   "11111111-1111-1111-1111-111111111111 ",
+			wantErr: true,
+		},
+		{
+			name:    "leading whitespace",
+			value:   " 11111111-1111-1111-1111-111111111111",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			err := validateWallarmPartnerClientUUID(tt.value)
+			if tt.wantErr && err == nil {
+				t.Errorf("validateWallarmPartnerClientUUID(%q) = nil, want error", tt.value)
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("validateWallarmPartnerClientUUID(%q) = %v, want nil", tt.value, err)
+			}
+		})
+	}
+}
