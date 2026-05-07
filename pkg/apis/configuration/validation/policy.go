@@ -471,6 +471,42 @@ func validateWallarm(wallarm *v1.Wallarm, fieldPath *field.Path) field.ErrorList
 		allErrs = append(allErrs, validateWallarmBlockPage(wallarm.BlockPage, fieldPath.Child("blockPage"))...)
 	}
 
+	// Validate partnerClientUUID format if provided
+	if wallarm.PartnerClientUUID != "" {
+		allErrs = append(allErrs, validateWallarmPartnerClientUUID(wallarm.PartnerClientUUID, fieldPath.Child("partnerClientUUID"))...)
+	}
+
+	return allErrs
+}
+
+var (
+	wallarmPartnerClientUUIDRegex  = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	wallarmPartnerClientLabelRegex = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
+)
+
+// validateWallarmPartnerClientUUID validates the partnerClientUUID value, which is
+// a UUID optionally followed by a single space-separated label (Wallarm Node 6.12.0+).
+// https://docs.wallarm.com/admin-en/configure-parameters-en/#wallarm_partner_client_uuid
+func validateWallarmPartnerClientUUID(value string, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	parts := strings.Split(value, " ")
+	switch len(parts) {
+	case 1:
+		if !wallarmPartnerClientUUIDRegex.MatchString(parts[0]) {
+			allErrs = append(allErrs, field.Invalid(fieldPath, value, "must be a valid UUID"))
+		}
+	case 2:
+		if !wallarmPartnerClientUUIDRegex.MatchString(parts[0]) {
+			allErrs = append(allErrs, field.Invalid(fieldPath, value, "must be a valid UUID"))
+		}
+		if !wallarmPartnerClientLabelRegex.MatchString(parts[1]) {
+			allErrs = append(allErrs, field.Invalid(fieldPath, value, "label must contain only alphanumerics, '-', and '_'"))
+		}
+	default:
+		allErrs = append(allErrs, field.Invalid(fieldPath, value, "must be a UUID optionally followed by a single label"))
+	}
+
 	return allErrs
 }
 

@@ -863,9 +863,9 @@ func parseWallarmAnnotations(ingEx *IngressEx, cfgParams *ConfigParams, l *slog.
 		}
 	}
 
-	// wallarm-partner-client-uuid: UUID string
+	// wallarm-partner-client-uuid: UUID, optionally followed by a label (Node 6.12.0+)
 	if wallarmPartnerClientUUID, exists := ingEx.Ingress.Annotations[WallarmPartnerClientUUIDAnnotation]; exists {
-		if err := validateUUID(wallarmPartnerClientUUID); err != nil {
+		if err := validateWallarmPartnerClientUUID(wallarmPartnerClientUUID); err != nil {
 			nl.Errorf(l, "Ingress %s/%s: Invalid value for %s: got %q: %v",
 				ingEx.Ingress.GetNamespace(), ingEx.Ingress.GetName(), WallarmPartnerClientUUIDAnnotation, wallarmPartnerClientUUID, err)
 		} else {
@@ -983,12 +983,32 @@ func validateApplicationID(s string) error {
 	return err
 }
 
-var uuidRegex = regexp.MustCompile(`[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}`)
+var (
+	partnerClientUUIDRegex  = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+	partnerClientLabelRegex = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
+)
 
-// validateUUID validates that the value is a valid UUID
-func validateUUID(s string) error {
-	if !uuidRegex.MatchString(s) {
-		return fmt.Errorf("value should be a valid UUID")
+// validateWallarmPartnerClientUUID accepts either a bare UUID or a UUID followed by
+// a single space-separated label (Wallarm Node 6.12.0+). The label is restricted to
+// alphanumerics, hyphen, and underscore to prevent injection of additional nginx
+// directive tokens. See:
+// https://docs.wallarm.com/admin-en/configure-parameters-en/#wallarm_partner_client_uuid
+func validateWallarmPartnerClientUUID(s string) error {
+	parts := strings.Split(s, " ")
+	switch len(parts) {
+	case 1:
+		if !partnerClientUUIDRegex.MatchString(parts[0]) {
+			return fmt.Errorf("value should be a valid UUID")
+		}
+	case 2:
+		if !partnerClientUUIDRegex.MatchString(parts[0]) {
+			return fmt.Errorf("value should be a valid UUID")
+		}
+		if !partnerClientLabelRegex.MatchString(parts[1]) {
+			return fmt.Errorf("label should contain only alphanumerics, '-', and '_'")
+		}
+	default:
+		return fmt.Errorf("value should be a UUID optionally followed by a single label")
 	}
 	return nil
 }
