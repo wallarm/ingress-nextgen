@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"testing"
 
@@ -35,19 +36,40 @@ func readChartMeta(t *testing.T, chartPath string) chartMeta {
 	return meta
 }
 
-// sanitizeVersions replaces dynamic chart/app versions with fixed placeholders
-// so that snapshot files don't change on every version bump.
-// Uses word-boundary matching to avoid replacing version substrings inside
-// unrelated values (e.g. "7.0.0" inside "127.0.0.1").
-func sanitizeVersions(output string, meta chartMeta) string {
-	if meta.Version != "" {
-		re := regexp.MustCompile(`(?:^|(?:\b))` + regexp.QuoteMeta(meta.Version) + `(?:\b|$)`)
-		output = re.ReplaceAllString(output, "CHART_VERSION")
+// checksumAnnotationRE matches pod-template `checksum/<name>: <sha256>` annotations
+// (e.g. checksum/wd-config, checksum/token) whose hash changes on any tweak to the
+// hashed template — the underlying ConfigMap/Secret content is in the snapshot
+// already, so the hash adds no coverage.
+var checksumAnnotationRE = regexp.MustCompile(`(checksum/[a-zA-Z0-9_.-]+:\s+)[a-f0-9]{64}`)
+
+// sanitize normalizes volatile fields in helm-rendered output so snapshots don't
+// churn on every version bump or template edit:
+//   - chart/app versions are replaced with CHART_VERSION / APP_VERSION placeholders
+//     (word-boundary matched to avoid touching unrelated substrings like "7.0.0"
+//     inside "127.0.0.1")
+//   - checksum/* pod-template annotation hashes are replaced with SHA256
+//
+// When one version string is a prefix of the other (e.g. chart 7.0.0 and
+// appVersion 7.0.0-rc1, where `\b` matches at the `-`), the longer match is
+// substituted first so the shorter one cannot truncate it into a corrupted
+// placeholder like "CHART_VERSION-rc1".
+func sanitize(output string, meta chartMeta) string {
+	type repl struct{ value, placeholder string }
+	repls := []repl{
+		{meta.Version, "CHART_VERSION"},
+		{meta.AppVersion, "APP_VERSION"},
 	}
-	if meta.AppVersion != "" {
-		re := regexp.MustCompile(`(?:^|(?:\b))` + regexp.QuoteMeta(meta.AppVersion) + `(?:\b|$)`)
-		output = re.ReplaceAllString(output, "APP_VERSION")
+	sort.SliceStable(repls, func(i, j int) bool {
+		return len(repls[i].value) > len(repls[j].value)
+	})
+	for _, r := range repls {
+		if r.value == "" {
+			continue
+		}
+		re := regexp.MustCompile(`(?:^|(?:\b))` + regexp.QuoteMeta(r.value) + `(?:\b|$)`)
+		output = re.ReplaceAllString(output, r.placeholder)
 	}
+	output = checksumAnnotationRE.ReplaceAllString(output, "${1}SHA256")
 	return output
 }
 
@@ -245,7 +267,7 @@ func TestHelmNICTemplate(t *testing.T) {
 			}
 
 			output := helm.RenderTemplate(t, options, helmChartPath, tc.releaseName, make([]string, 0))
-			output = sanitizeVersions(output, meta)
+			output = sanitize(output, meta)
 
 			snaps.MatchSnapshot(t, output)
 			t.Log(output)
@@ -325,6 +347,53 @@ func TestHelmNICTemplateNegative(t *testing.T) {
 			}
 
 			t.Logf("Expected failure occurred: %s", err.Error())
+		})
+	}
+}
+
+func TestSanitize(t *testing.T) {
+	tests := map[string]struct {
+		meta chartMeta
+		in   string
+		want string
+	}{
+		"both versions independent": {
+			meta: chartMeta{Version: "7.0.0", AppVersion: "6.11.0"},
+			in:   "chart=7.0.0 app=6.11.0",
+			want: "chart=CHART_VERSION app=APP_VERSION",
+		},
+		"appVersion is prefix-extension of chart version": {
+			meta: chartMeta{Version: "7.0.0", AppVersion: "7.0.0-rc1"},
+			in:   "image:7.0.0-rc1 chart:7.0.0",
+			want: "image:APP_VERSION chart:CHART_VERSION",
+		},
+		"chart version is prefix-extension of appVersion": {
+			meta: chartMeta{Version: "1.2.3-pre", AppVersion: "1.2.3"},
+			in:   "v=1.2.3-pre app=1.2.3",
+			want: "v=CHART_VERSION app=APP_VERSION",
+		},
+		"version inside an IP literal is not replaced": {
+			meta: chartMeta{Version: "7.0.0", AppVersion: "6.11.0"},
+			in:   "127.0.0.1",
+			want: "127.0.0.1",
+		},
+		"checksum annotation hash collapsed": {
+			meta: chartMeta{},
+			in:   "        checksum/wd-config: " + strings.Repeat("a", 64),
+			want: "        checksum/wd-config: SHA256",
+		},
+		"empty version skipped": {
+			meta: chartMeta{Version: "", AppVersion: "1.0.0"},
+			in:   "1.0.0",
+			want: "APP_VERSION",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			if got := sanitize(tc.in, tc.meta); got != tc.want {
+				t.Errorf("sanitize(%q, %+v)\n  got:  %q\n  want: %q", tc.in, tc.meta, got, tc.want)
+			}
 		})
 	}
 }

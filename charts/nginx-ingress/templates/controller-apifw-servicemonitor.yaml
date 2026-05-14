@@ -1,3 +1,0 @@
-{{- if .Values.config.wallarm.enabled -}}
-{{- include "nginx-ingress.wallarm.serviceMonitor" (dict "metricsConfig" .Values.controller.wallarm.apiFirewall.metrics "monitorSuffix" "apifw" "componentSelector" "controller" "context" .) -}}
-{{- end -}}

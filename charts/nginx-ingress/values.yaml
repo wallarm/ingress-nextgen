@@ -29,64 +29,55 @@ config:
     ## Maximum number of simultaneous connections to wstore upstream (don't change unless advised to do so)
     # wstoreMaxConns: 2
 
+    ## wd process manager configuration (manages wallarm child processes)
+    wd:
+      ## Log level for wd daemon (trace, debug, info, warning, error)
+      logLevel: info
+      ## Per-process log levels for wd child processes
+      processLogLevels:
+        wstore: INFO
+        wcli: WARN
+        appstructure: INFO
+        apiFirewall: INFO
+      ## Port for aggregated Prometheus metrics from all managed processes
+      metricsPort: 9445
+      ## Port for wd health check endpoint (/health)
+      healthPort: 9446
+      ## Enable metrics push to Wallarm Cloud
+      metricsPushEnabled: true
+      ## Remote commands poll interval in seconds (0 to disable)
+      remoteCommandsPollInterval: 60
+      ## CA certificate verification for Cloud API
+      caVerify: true
+      ## Per-component metrics scraping configuration
+      ## wd scrapes these endpoints and aggregates into its single /metrics endpoint
+      scrape:
+        ## wstore metrics (postanalytics pod)
+        wstore:
+          enabled: true
+          endpoint: "http://127.0.0.1:9001/metrics"
+          type: prometheus
+        ## wcli metrics (both pods — port differs per pod, configured in pod-level wd config)
+        wcliPostanalytics:
+          enabled: true
+          endpoint: "http://127.0.0.1:9003/metrics"
+          type: prometheus
+        ## api-firewall metrics (controller pod)
+        apiFirewall:
+          enabled: false
+          endpoint: "http://127.0.0.1:9010/metrics"
+          type: prometheus
+
   ### Image settings
   images:
     controller:
       repository: "docker.io/wallarm/ingress-controller"
-      tag: "7.0.0"
+      tag: "7.1.0-rc0"
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"
-      tag: "6.11.0"
+      tag: "7.1.0-rc0"
       pullPolicy: IfNotPresent
-
-  ## Wallarm CLI postanalytics configuration (runs in postanalytics pod)
-  wcliPostanalytics:
-    ## Log level for wcli
-    logLevel: "WARN"
-    ## Per-job log levels
-    commands:
-      blkexp:
-        logLevel: INFO
-      botexp:
-        logLevel: WARN
-      cntexp:
-        logLevel: ERROR
-      cntsync:
-        logLevel: INFO
-      credstuff:
-        logLevel: INFO
-      envexp:
-        logLevel: INFO
-      jwtexp:
-        logLevel: INFO
-      mrksync:
-        logLevel: INFO
-      register:
-        logLevel: INFO
-      reqexp:
-        logLevel: INFO
-
-  ## Wallarm CLI controller configuration (runs in controller pod)
-  wcliController:
-    ## Log level for wcli
-    logLevel: "WARN"
-    ## Per-job log levels
-    commands:
-      apispec:
-        logLevel: INFO
-      envexp:
-        logLevel: INFO
-      ipfeed:
-        logLevel: INFO
-      iplist:
-        logLevel: INFO
-      metricsexp:
-        logLevel: INFO
-      register:
-        logLevel: INFO
-      syncnode:
-        logLevel: INFO
 
   ## API Firewall configuration (runs in controller pod)
   apiFirewall:
@@ -149,149 +140,43 @@ controller:
 
   # Wallarm containers inside of controller pod
   wallarm:
-    ## Wallarm metrics endpoint configuration
-    metrics:
-      ## Enable Wallarm metrics
-      enabled: false
-      ## Port for Wallarm metrics (separate from NGINX metrics)
-      port: 18080
-      ## Port name for metrics endpoint
-      portName: wallarm-metrics
-      ## Path at which the metrics endpoint is exposed
-      endpointPath: "/wallarm-metrics"
-      service:
-        annotations: {}
-        # prometheus.io/scrape: "true"
-        # prometheus.io/port: "18080"
-        labels: {}
-        # clusterIP: ""
-        externalIPs: []
-        # loadBalancerIP: ""
-        loadBalancerSourceRanges: []
-        servicePort: 18080
-        type: ClusterIP
-        # externalTrafficPolicy: ""
-        # nodePort: ""
-      serviceMonitor:
-        enabled: false
-        additionalLabels: {}
-        annotations: {}
-        namespace: ""
-        namespaceSelector: {}
-        scrapeInterval: 30s
-        # honorLabels: true
-        targetLabels: []
-        relabelings: []
-        metricRelabelings: []
-
-    ## Init container for node registration
-    initContainer:
+    ## wd process manager configuration for controller pod
+    wd:
       ## Resource requests and limits
       resources: {}
-      ## Security context for the init container
+      ## Security context for the wd container
       securityContext: {}
       ## Additional environment variables
       extraEnvs: []
-
-    ## Wallarm CLI controller configuration (runs in controller pod)
-    wcli:
-      ## Resource requests and limits
-      resources: {}
-      ## Security context for the wcli container
-      securityContext: {}
-      ## Metrics configuration
-      metrics:
-        ## Enable metrics collection
-        enabled: true
-        ## Port for metrics endpoint
-        port: 9004
-        ## Port name for metrics endpoint
-        portName: wcli-ctrl-mtrc
-        ## Path at which the metrics endpoint is exposed
-        endpointPath: ""
-        ## IP address and/or port for the metrics endpoint
-        host: ":9004"
-        service:
-          annotations: {}
-          # prometheus.io/scrape: "true"
-          # prometheus.io/port: "9004"
-          labels: {}
-          # clusterIP: ""
-          externalIPs: []
-          # loadBalancerIP: ""
-          loadBalancerSourceRanges: []
-          servicePort: 9004
-          type: ClusterIP
-          # externalTrafficPolicy: ""
-          # nodePort: ""
-        serviceMonitor:
-          enabled: false
-          additionalLabels: {}
-          annotations: {}
-          namespace: ""
-          namespaceSelector: {}
-          scrapeInterval: 30s
-          # honorLabels: true
-          targetLabels: []
-          relabelings: []
-          metricRelabelings: []
-      ## Additional environment variables
-      extraEnvs: []
-
-    ## API Firewall configuration
-    apiFirewall:
-      ## Resource requests and limits
-      resources: {}
-      ## Security context for the API Firewall container
-      securityContext: {}
-      ## Liveness probe configuration
-      livenessProbeEnabled: false
+      ## Additional volume mounts
+      extraVolumeMounts: []
+      ## Liveness probe overrides
       livenessProbe:
-        httpGet:
-          path: "/v1/liveness"
-          port: 18082
-          scheme: HTTP
-        failureThreshold: 3
         initialDelaySeconds: 10
         periodSeconds: 10
+        timeoutSeconds: 3
         successThreshold: 1
-        timeoutSeconds: 1
-      readinessProbeEnabled: false
+        failureThreshold: 3
+      ## Readiness probe overrides
       readinessProbe:
-        httpGet:
-          path: "/v1/readiness"
-          port: 18082
-          scheme: HTTP
-        failureThreshold: 3
-        initialDelaySeconds: 10
+        initialDelaySeconds: 5
         periodSeconds: 10
+        timeoutSeconds: 3
         successThreshold: 1
-        timeoutSeconds: 1
-      ## Metrics configuration
+        failureThreshold: 3
+      ## Metrics configuration (wd aggregates all child process metrics)
       metrics:
-        ## Enable metrics collection
-        enabled: false
-        ## Port for metrics endpoint
-        port: 9010
+        ## Enable metrics service
+        enabled: true
         ## Port name for metrics endpoint
-        portName: apifw-metrics
-        ## Path at which the metrics endpoint is exposed
-        endpointPath: "/metrics"
-        ## IP address and/or port for the metrics endpoint
-        host: ":9010"
+        portName: wd-metrics
+        ## Port for aggregated metrics
+        port: 9445
         service:
           annotations: {}
-          # prometheus.io/scrape: "true"
-          # prometheus.io/port: "9010"
           labels: {}
-          # clusterIP: ""
-          externalIPs: []
-          # loadBalancerIP: ""
-          loadBalancerSourceRanges: []
-          servicePort: 9010
+          servicePort: 9445
           type: ClusterIP
-          # externalTrafficPolicy: ""
-          # nodePort: ""
         serviceMonitor:
           enabled: false
           additionalLabels: {}
@@ -299,12 +184,9 @@ controller:
           namespace: ""
           namespaceSelector: {}
           scrapeInterval: 30s
-          # honorLabels: true
           targetLabels: []
           relabelings: []
           metricRelabelings: []
-      ## Additional environment variables
-      extraEnvs: []
 
     ## Additional volumes for Wallarm
     extraVolumes: []
@@ -960,46 +842,43 @@ postanalytics:
     listenAddress: "127.0.0.1:9001"
     protocol: "tcp4"
 
-  ## Init container for node registration
-  initContainer:
+  ## wd process manager configuration for postanalytics pod
+  wd:
     ## Resource requests and limits
     resources: {}
-    ## Security context for the init container
+    ## Security context for the wd container
     securityContext: {}
     ## Additional environment variables
     extraEnvs: []
-
-  ## Wallarm CLI configuration (runs in postanalytics pod)
-  wcli:
-    ## Resource requests and limits
-    resources: {}
-    ## Security context for the wcli container
-    securityContext: {}
-    ## Metrics configuration
+    ## Additional volume mounts
+    extraVolumeMounts: []
+    ## Liveness probe overrides
+    livenessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 3
+      successThreshold: 1
+      failureThreshold: 3
+    ## Readiness probe overrides
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      successThreshold: 1
+      failureThreshold: 3
+    ## Metrics configuration (wd aggregates all child process metrics)
     metrics:
-      ## Enable metrics collection
+      ## Enable metrics service
       enabled: true
-      ## Port for metrics endpoint
-      port: 9003
       ## Port name for metrics endpoint
-      portName: wcli-post-mtrc
-      ## Path at which the metrics endpoint is exposed
-      endpointPath: ""
-      ## IP address and/or port for the metrics endpoint
-      host: ":9003"
+      portName: wd-metrics
+      ## Port for aggregated metrics
+      port: 9445
       service:
         annotations: {}
-        # prometheus.io/scrape: "true"
-        # prometheus.io/port: "9003"
         labels: {}
-        # clusterIP: ""
-        externalIPs: []
-        # loadBalancerIP: ""
-        loadBalancerSourceRanges: []
-        servicePort: 9003
+        servicePort: 9445
         type: ClusterIP
-        # externalTrafficPolicy: ""
-        # nodePort: ""
       serviceMonitor:
         enabled: false
         additionalLabels: {}
@@ -1007,21 +886,9 @@ postanalytics:
         namespace: ""
         namespaceSelector: {}
         scrapeInterval: 30s
-        # honorLabels: true
         targetLabels: []
         relabelings: []
         metricRelabelings: []
-    ## Additional environment variables
-    extraEnvs: []
-
-  ## Wallarm appstructure configuration (runs in postanalytics pod)
-  appstructure:
-    ## Resource requests and limits
-    resources: {}
-    ## Security context for the appstructure container
-    securityContext: {}
-    ## Additional environment variables
-    extraEnvs: []
 
 
 
