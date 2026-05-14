@@ -19,6 +19,7 @@ variables:
     options:
       - 'develop'
       - 'production-local'
+      - 'cve-scan'
   WALLARM_API_PRESET:
     description: "Wallarm api preset"
     value: audit
@@ -44,7 +45,7 @@ workflow:
         REGISTRY: $CI_REGISTRY_IMAGE # using private registry to build img and run tests before publishing images
         HELM_ARGS: --set config.images.helper.tag=$AIO_VERSION --set config.images.helper.repository=dkr.wallarm.com/wallarm-node/node-helpers
         CHART_TYPE: "release"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^stable\/.*$/
+    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH =~ /^stable\/.*$/) && $CI_PIPELINE_SOURCE == "push"
       changes:
         - TAG
       variables:
@@ -61,6 +62,14 @@ workflow:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^stable\/.*$/ || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
       variables:
         X_CI_BUILD_KIND: "develop"
+        REGISTRY: $CI_REGISTRY_IMAGE
+        TAG: "$CI_COMMIT_SHORT_SHA"
+    - if: $X_CI_BUILD_KIND == "cve-scan"
+      variables:
+        REGISTRY: $CI_REGISTRY_IMAGE
+        TAG: "$CI_COMMIT_SHORT_SHA"
+    - if: $CI_PIPELINE_SOURCE == "api"
+      variables:
         REGISTRY: $CI_REGISTRY_IMAGE
         TAG: "$CI_COMMIT_SHORT_SHA"
     - if: $CI_PIPELINE_SOURCE == "web"
@@ -127,7 +136,7 @@ IMAGE_BUILD_IC:
   image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/tests-k8s:v0.5.0
   tags: [node-c2r4-stable-dind-amd]
   rules:
-    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate)$/
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate|cve-scan)$/
   extends:
     - .before-build
   script: |
@@ -175,7 +184,7 @@ SCAN_ARTIFACT:
   rules:
     - if: '$SKIP_TESTS == "true"'
       when: never
-    - if: $X_CI_BUILD_KIND =~ /^(develop|vulnscan|production|release-candidate)$/
+    - if: $X_CI_BUILD_KIND =~ /^(develop|cve-scan|production|release-candidate)$/
   extends:
     - .before-build
   script: |
