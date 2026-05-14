@@ -33,6 +33,12 @@ CI_REGISTRY_SECRET_NAME="ci-registry-secret"
 DOCKERHUB_USER="${DOCKERHUB_USER:-fake_user}"
 DOCKERHUB_PASSWORD="${DOCKERHUB_PASSWORD:-fake_password}"
 
+# Upstream-triggered pipelines set helpers.image to dkr.wallarm.com/wallarm-node/node-helpers,
+# which needs CI registry auth. Outside CI we fall back to fakes; the default helpers image is public.
+CI_REGISTRY="${CI_REGISTRY:-fake_registry_server}"
+CI_REGISTRY_USER="${CI_REGISTRY_USER:-fake_user}"
+CI_REGISTRY_PASSWORD="${CI_REGISTRY_PASSWORD:-fake_password}"
+
 K8S_VERSION=${K8S_VERSION:-v1.30.13}
 MODE=${MODE:-ingress}
 
@@ -84,6 +90,12 @@ kubectl create secret docker-registry ${DOCKERHUB_SECRET_NAME} \
     --docker-password="${DOCKERHUB_PASSWORD}" \
     --docker-email=docker-pull@unexists.unexists || true
 
+kubectl create secret docker-registry ${CI_REGISTRY_SECRET_NAME} \
+    --docker-server=${CI_REGISTRY} \
+    --docker-username="${CI_REGISTRY_USER}" \
+    --docker-password="${CI_REGISTRY_PASSWORD}" \
+    --docker-email=docker-pull@unexists.unexists || true
+
 if [ "${SKIP_IMAGE_LOADING:-false}" = "false" ]; then
   echo "[test-env] copying ${REGISTRY}/${PREFIX}:${TAG} image to cluster..."
   kind load docker-image --name="${KIND_CLUSTER_NAME}" "${REGISTRY}/${PREFIX}:${TAG}"
@@ -93,6 +105,10 @@ echo "[test-env] installing Helm chart using TAG=${TAG} ..."
 cat << EOF | helm upgrade --install nginx-ingress ./charts/nginx-ingress ${HELM_DEBUG:-} --wait ${HELM_ARGS} --values -
 controller:
   enableSnippets: true
+  serviceAccount:
+    imagePullSecretsNames:
+      - ${DOCKERHUB_SECRET_NAME}
+      - ${CI_REGISTRY_SECRET_NAME}
   config:
     entries:
       real-ip-header: "X-Real-IP"
