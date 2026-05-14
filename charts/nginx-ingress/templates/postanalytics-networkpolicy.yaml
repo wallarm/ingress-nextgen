@@ -37,16 +37,16 @@ spec:
         {{- toYaml .Values.postanalytics.networkPolicy.allowHealthCheckFrom | nindent 8 }}
       ports:
         - protocol: TCP
-          port: {{ include "ingress-nginx.wallarmPostanalyticsHealthPort" . }}
+          port: {{ .Values.config.wallarm.wd.healthPort }}
     {{- end }}
-    # Allow metrics scraping (if enabled)
-    {{- if .Values.postanalytics.wcli.metrics.enabled }}
+    # Allow wd aggregated metrics scraping (if enabled)
+    {{- if .Values.postanalytics.wd.metrics.enabled }}
     {{- if .Values.postanalytics.networkPolicy.allowMetricsFrom }}
     - from:
         {{- toYaml .Values.postanalytics.networkPolicy.allowMetricsFrom | nindent 8 }}
       ports:
         - protocol: TCP
-          port: {{ .Values.postanalytics.wcli.metrics.port }}
+          port: {{ .Values.config.wallarm.wd.metricsPort }}
     {{- else }}
     # Default: allow metrics from same namespace
     - from:
@@ -55,9 +55,17 @@ spec:
               kubernetes.io/metadata.name: {{ .Release.Namespace }}
       ports:
         - protocol: TCP
-          port: {{ .Values.postanalytics.wcli.metrics.port }}
+          port: {{ .Values.config.wallarm.wd.metricsPort }}
     {{- end }}
     {{- end }}
+    # Allow wd health check
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.config.wallarm.wd.healthPort }}
     # Additional custom ingress rules
     {{- with .Values.postanalytics.networkPolicy.ingressRules }}
     {{- toYaml . | nindent 4 }}

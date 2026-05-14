@@ -14,7 +14,7 @@ data:
 {{- if .Values.config.wallarm.enabled }}
   enable-wallarm: "{{ .Values.config.wallarm.enabled }}"
   wallarm-upstream-service: "{{ include "nginx-ingress.fullname" . }}-wallarm-postanalytics"
-  wallarm-metrics-port: "{{ .Values.controller.wallarm.metrics.port }}"
+  wallarm-metrics-port: "18080"
   wallarm-apifw-enabled: "{{ .Values.config.apiFirewall.enabled }}"
   wallarm-apifw-port: "{{ .Values.config.apiFirewall.config.mainPort }}"
 {{- if .Values.config.wallarm.fallback }}

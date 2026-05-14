@@ -24,6 +24,7 @@ spec:
       annotations:
 {{- if .Values.config.wallarm.enabled }}
         wallarm-enabled: "true"
+        checksum/wd-config: {{ include (print $.Template.BasePath "/controller-wd-configmap.yaml") . | sha256sum }}
 {{- if not .Values.config.wallarm.api.existingSecret.enabled }}
         checksum/token: {{ .Values.config.wallarm.api.token | sha256sum }}
 {{- end }}
@@ -96,10 +97,7 @@ spec:
         - name: startup-port
           containerPort: {{ .Values.controller.startupStatus.port }}
 {{- end }}
-{{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.metrics.enabled }}
-        - name: {{ .Values.controller.wallarm.metrics.portName }}
-          containerPort: {{ .Values.controller.wallarm.metrics.port }}
-{{- end }}
+{{- /* wallarm-status port is internal-only, scraped by wd via 127.0.0.8 */ -}}
 {{- if .Values.prometheusExtended.enabled }}
         - name: {{ .Values.prometheusExtended.portName }}
           containerPort: {{ .Values.prometheusExtended.port }}
@@ -159,16 +157,16 @@ spec:
       {{ toYaml .Values.controller.extraContainers | nindent 6 }}
 {{- end }}
 
-{{- /* Wallarm containers */ -}}
+{{- /* Wallarm wd process manager sidecar */ -}}
 {{- if .Values.config.wallarm.enabled }}
-{{ include "nginx-ingress.wallarm.wcliContainer" (dict "context" . "wcliConfig" .Values.controller.wallarm.wcli "wcliArgsConfig" .Values.config.wcliController "volumeMountsType" "controller") | indent 6 }}
-{{- if .Values.config.apiFirewall.enabled }}
-{{ include "nginx-ingress.wallarm.apiFirewallContainer" . | indent 6 }}
-{{- end }}
+{{ include "nginx-ingress.wallarm.wdContainer" (dict "context" . "wdConfig" .Values.controller.wallarm.wd "configMapName" (printf "%s-wallarm-controller-wd" (include "nginx-ingress.fullname" .)) "mode" "controller") | indent 6 }}
 {{- end }}
 
 {{- if or ( eq (include "nginx-ingress.readOnlyRootFilesystem" .) "true" ) .Values.controller.initContainers .Values.config.wallarm.enabled }}
       initContainers:
+{{- end }}
+{{- if .Values.config.wallarm.enabled }}
+      {{ include "nginx-ingress.wallarm.wdInitContainer" (dict "context" . "wdConfig" .Values.controller.wallarm.wd) | nindent 6 }}
 {{- end }}
 {{- if eq (include "nginx-ingress.readOnlyRootFilesystem" .) "true" }}
       - name: init-{{ include "nginx-ingress.name" . }}
@@ -199,10 +197,7 @@ spec:
 {{- if .Values.controller.initContainers }}
 {{ toYaml .Values.controller.initContainers | indent 6 }}
 {{- end }}
-{{- /* Wallarm's init container */ -}}
-{{- if .Values.config.wallarm.enabled }}
-      {{ include "nginx-ingress.wallarm.initContainer" (dict "context" . "registerMode" "filtering" "initContainerConfig" .Values.controller.wallarm.initContainer) | nindent 6 }}
-{{- end }}
+{{- /* Wallarm init is handled by wd pipelines — no init container needed */ -}}
 {{- if .Values.controller.strategy }}
   updateStrategy:
 {{ toYaml .Values.controller.strategy | indent 4 }}

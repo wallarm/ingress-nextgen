@@ -1,0 +1,121 @@
+{{- if .Values.config.wallarm.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nginx-ingress.fullname" . }}-wallarm-postanalytics-wd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nginx-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: wallarm-postanalytics
+data:
+  wd.yaml: |
+    supervisor:
+      logfile_maxbytes: "50MB"
+      logfile_backups: 3
+      loglevel: {{ .Values.config.wallarm.wd.logLevel }}
+      child_adopt_policy: restart
+      tee_output: true
+
+    node:
+      config_path: /opt/wallarm/etc/wallarm/node.yaml
+      mode: post_analytic
+      host: {{ .Values.config.wallarm.api.host }}
+      port: {{ .Values.config.wallarm.api.port }}
+      use_ssl: {{ .Values.config.wallarm.api.ssl }}
+      ca_verify: {{ .Values.config.wallarm.wd.caVerify }}
+      unregister: false
+      ignore_register_error: true
+      metrics_listen_address: ":{{ .Values.config.wallarm.wd.metricsPort }}"
+      healthcheck_listen_address: ":{{ .Values.config.wallarm.wd.healthPort }}"
+      metrics_scrape_interval: 15
+      metrics_push_enabled: {{ .Values.config.wallarm.wd.metricsPushEnabled }}
+      metrics_push_url: /v2/node/stat/victoriametrics
+      metrics_push_interval: 5
+      metrics_deprecated_metricsexp_push: true
+      remote_commands_poll_interval: {{ .Values.config.wallarm.wd.remoteCommandsPollInterval }}
+
+    # Init pipeline runs in the wd-init container (wd ctl init) before main containers start.
+    # The daemon re-runs it via coordination (idempotent — register is a no-op if already done).
+    # Jobs not supported by the current node.mode are silently skipped at runtime.
+    pipelines:
+      init:
+        stages:
+          - steps:
+              - type: job
+                name: register
+          - steps:
+              - type: job
+                name: envexp
+              - type: job
+                name: datasync
+              - type: job
+                name: iplist
+              - type: job
+                name: ipfeed
+              - type: job
+                name: apispec
+
+      background:
+        stages:
+          - steps:
+              - type: job
+                name: register
+          - steps:
+              - type: job
+                name: envexp
+              - type: job
+                name: datasync
+              - type: job
+                name: iplist
+              - type: job
+                name: ipfeed
+              - type: job
+                name: apispec
+
+    processes:
+      - name: wstore
+        command: /opt/wallarm/usr/bin/wstore
+        autostart: true
+        autorestart: true
+        starts_on_init_failure: true
+        redirect_stderr: true
+        stdout_logfile: /opt/wallarm/var/log/wallarm/wstore-out.log
+        stdout_logfile_maxbytes: "50MB"
+        stdout_logfile_backups: 3
+        environment:
+          WALLARM_LOG_LEVEL: {{ .Values.config.wallarm.wd.processLogLevels.wstore }}
+    {{- if .Values.config.wallarm.wd.scrape.wstore.enabled }}
+        metrics_endpoint: {{ .Values.config.wallarm.wd.scrape.wstore.endpoint }}
+        metrics_type: {{ .Values.config.wallarm.wd.scrape.wstore.type }}
+    {{- end }}
+
+      - name: appstructure
+        command: /opt/wallarm/appstructure/usr/bin/python3.11 /opt/wallarm/appstructure/usr/bin/wallarm-appstructure-client --config-file /opt/wallarm/etc/wallarm/node.yaml
+        autostart: true
+        autorestart: true
+        redirect_stderr: true
+        stdout_logfile: /opt/wallarm/var/log/wallarm/appstructure-out.log
+        stdout_logfile_maxbytes: "50MB"
+        stdout_logfile_backups: 3
+        depends_on: [wstore]
+        environment:
+          WALLARM_LOG_LEVEL: {{ .Values.config.wallarm.wd.processLogLevels.appstructure }}
+          LD_LIBRARY_PATH: /opt/wallarm/appstructure/usr/lib:/opt/wallarm/appstructure/usr/lib/python3.11/site-packages/numpy.libs
+          PATH: /opt/wallarm/appstructure/usr/bin:${PATH}
+          PYTHONHOME: /opt/wallarm/appstructure/usr
+          PYTHONPATH: /opt/wallarm/appstructure/usr/bin/python3.11
+
+      - name: wcli
+        command: /opt/wallarm/usr/bin/wcli run -mode post_analytic -log-level {{ .Values.config.wallarm.wd.processLogLevels.wcli }}
+        autostart: true
+        autorestart: true
+        redirect_stderr: true
+        depends_on: [wstore]
+        stdout_logfile: /opt/wallarm/var/log/wallarm/wcli-out.log
+        stdout_logfile_maxbytes: "50MB"
+        stdout_logfile_backups: 3
+    {{- if .Values.config.wallarm.wd.scrape.wcliPostanalytics.enabled }}
+        metrics_endpoint: {{ .Values.config.wallarm.wd.scrape.wcliPostanalytics.endpoint }}
+        metrics_type: {{ .Values.config.wallarm.wd.scrape.wcliPostanalytics.type }}
+    {{- end }}
+{{- end }}

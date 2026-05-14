@@ -62,43 +62,25 @@ spec:
         - protocol: TCP
           port: {{ .Values.controller.readyStatus.port }}
     {{- end }}
-    # Wallarm metrics port
-    {{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.metrics.enabled }}
-    {{- if .Values.controller.networkPolicy.allowMetricsFrom }}
-    - from:
-        {{- toYaml .Values.controller.networkPolicy.allowMetricsFrom | nindent 8 }}
-      ports:
-        - protocol: TCP
-          port: {{ .Values.controller.wallarm.metrics.port }}
-    {{- else }}
+    # Wallarm wd aggregated metrics
+    {{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.wd.metrics.enabled }}
     - from:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: {{ .Release.Namespace }}
       ports:
         - protocol: TCP
-          port: {{ .Values.controller.wallarm.metrics.port }}
+          port: {{ .Values.config.wallarm.wd.metricsPort }}
     {{- end }}
-    {{- end }}
-    # Wallarm wcli metrics
-    {{- if and .Values.config.wallarm.enabled .Values.controller.wallarm.wcli.metrics.enabled }}
+    # Wallarm wd health check
+    {{- if .Values.config.wallarm.enabled }}
     - from:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: {{ .Release.Namespace }}
       ports:
         - protocol: TCP
-          port: {{ .Values.controller.wallarm.wcli.metrics.port }}
-    {{- end }}
-    # API Firewall metrics
-    {{- if and .Values.config.wallarm.enabled .Values.config.apiFirewall.enabled .Values.controller.wallarm.apiFirewall.metrics.enabled }}
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: {{ .Release.Namespace }}
-      ports:
-        - protocol: TCP
-          port: {{ .Values.controller.wallarm.apiFirewall.metrics.port }}
+          port: {{ .Values.config.wallarm.wd.healthPort }}
     {{- end }}
     # Additional custom ingress rules
     {{- with .Values.controller.networkPolicy.ingressRules }}

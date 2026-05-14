@@ -1456,109 +1456,10 @@
           "default": {},
           "title": "Wallarm containers configuration inside controller pod",
           "properties": {
-            "metrics": {
+            "wd": {
               "type": "object",
               "default": {},
-              "title": "Wallarm metrics endpoint configuration",
-              "properties": {
-                "enabled": {
-                  "type": "boolean",
-                  "default": false,
-                  "title": "Enable Wallarm metrics"
-                },
-                "port": {
-                  "type": "integer",
-                  "default": 18080,
-                  "title": "Port for Wallarm metrics"
-                },
-                "portName": {
-                  "type": "string",
-                  "default": "wallarm-metrics",
-                  "title": "Port name for metrics endpoint"
-                },
-                "endpointPath": {
-                  "type": "string",
-                  "default": "/wallarm-metrics",
-                  "title": "Path at which the metrics endpoint is exposed"
-                },
-                "service": {
-                  "type": "object",
-                  "default": {},
-                  "properties": {
-                    "annotations": {
-                      "type": "object",
-                      "default": {}
-                    },
-                    "labels": {
-                      "type": "object",
-                      "default": {}
-                    },
-                    "externalIPs": {
-                      "type": "array",
-                      "default": []
-                    },
-                    "loadBalancerSourceRanges": {
-                      "type": "array",
-                      "default": []
-                    },
-                    "servicePort": {
-                      "type": "integer",
-                      "default": 18080
-                    },
-                    "type": {
-                      "type": "string",
-                      "default": "ClusterIP"
-                    }
-                  }
-                },
-                "serviceMonitor": {
-                  "type": "object",
-                  "default": {},
-                  "properties": {
-                    "enabled": {
-                      "type": "boolean",
-                      "default": false
-                    },
-                    "additionalLabels": {
-                      "type": "object",
-                      "default": {}
-                    },
-                    "annotations": {
-                      "type": "object",
-                      "default": {}
-                    },
-                    "namespace": {
-                      "type": "string",
-                      "default": ""
-                    },
-                    "namespaceSelector": {
-                      "type": "object",
-                      "default": {}
-                    },
-                    "scrapeInterval": {
-                      "type": "string",
-                      "default": "30s"
-                    },
-                    "targetLabels": {
-                      "type": "array",
-                      "default": []
-                    },
-                    "relabelings": {
-                      "type": "array",
-                      "default": []
-                    },
-                    "metricRelabelings": {
-                      "type": "array",
-                      "default": []
-                    }
-                  }
-                }
-              }
-            },
-            "initContainer": {
-              "type": "object",
-              "default": {},
-              "title": "Init container for node registration",
+              "title": "wd process manager configuration",
               "properties": {
                 "resources": {
                   "type": "object",
@@ -1576,23 +1477,65 @@
                   "items": {
                     "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
                   }
-                }
-              }
-            },
-            "wcli": {
-              "type": "object",
-              "default": {},
-              "title": "Wallarm CLI controller configuration",
-              "properties": {
-                "resources": {
-                  "type": "object",
-                  "default": {},
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
                 },
-                "securityContext": {
+                "extraVolumeMounts": {
+                  "type": "array",
+                  "default": [],
+                  "items": {
+                    "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount"
+                  }
+                },
+                "livenessProbe": {
                   "type": "object",
                   "default": {},
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
+                  "properties": {
+                    "initialDelaySeconds": {
+                      "type": "integer",
+                      "default": 10
+                    },
+                    "periodSeconds": {
+                      "type": "integer",
+                      "default": 10
+                    },
+                    "timeoutSeconds": {
+                      "type": "integer",
+                      "default": 3
+                    },
+                    "successThreshold": {
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "failureThreshold": {
+                      "type": "integer",
+                      "default": 3
+                    }
+                  }
+                },
+                "readinessProbe": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "initialDelaySeconds": {
+                      "type": "integer",
+                      "default": 5
+                    },
+                    "periodSeconds": {
+                      "type": "integer",
+                      "default": 10
+                    },
+                    "timeoutSeconds": {
+                      "type": "integer",
+                      "default": 3
+                    },
+                    "successThreshold": {
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "failureThreshold": {
+                      "type": "integer",
+                      "default": 3
+                    }
+                  }
                 },
                 "metrics": {
                   "type": "object",
@@ -1602,21 +1545,13 @@
                       "type": "boolean",
                       "default": true
                     },
-                    "port": {
-                      "type": "integer",
-                      "default": 9004
-                    },
                     "portName": {
                       "type": "string",
-                      "default": "wcli-ctrl-mtrc"
+                      "default": "wd-metrics"
                     },
-                    "endpointPath": {
-                      "type": "string",
-                      "default": ""
-                    },
-                    "host": {
-                      "type": "string",
-                      "default": ":9004"
+                    "port": {
+                      "type": "integer",
+                      "default": 9445
                     },
                     "service": {
                       "type": "object",
@@ -1630,17 +1565,9 @@
                           "type": "object",
                           "default": {}
                         },
-                        "externalIPs": {
-                          "type": "array",
-                          "default": []
-                        },
-                        "loadBalancerSourceRanges": {
-                          "type": "array",
-                          "default": []
-                        },
                         "servicePort": {
                           "type": "integer",
-                          "default": 9004
+                          "default": 9445
                         },
                         "type": {
                           "type": "string",
@@ -1690,153 +1617,6 @@
                         }
                       }
                     }
-                  }
-                },
-                "extraEnvs": {
-                  "type": "array",
-                  "default": [],
-                  "items": {
-                    "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
-                  }
-                }
-              }
-            },
-            "apiFirewall": {
-              "type": "object",
-              "default": {},
-              "title": "API Firewall container configuration",
-              "properties": {
-                "resources": {
-                  "type": "object",
-                  "default": {},
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
-                },
-                "securityContext": {
-                  "type": "object",
-                  "default": {},
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
-                },
-                "livenessProbeEnabled": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "livenessProbe": {
-                  "type": "object",
-                  "default": {},
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
-                },
-                "readinessProbeEnabled": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "readinessProbe": {
-                  "type": "object",
-                  "default": {},
-                  "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
-                },
-                "metrics": {
-                  "type": "object",
-                  "default": {},
-                  "properties": {
-                    "enabled": {
-                      "type": "boolean",
-                      "default": false
-                    },
-                    "port": {
-                      "type": "integer",
-                      "default": 9010
-                    },
-                    "portName": {
-                      "type": "string",
-                      "default": "apifw-metrics"
-                    },
-                    "endpointPath": {
-                      "type": "string",
-                      "default": "/metrics"
-                    },
-                    "host": {
-                      "type": "string",
-                      "default": ":9010"
-                    },
-                    "service": {
-                      "type": "object",
-                      "default": {},
-                      "properties": {
-                        "annotations": {
-                          "type": "object",
-                          "default": {}
-                        },
-                        "labels": {
-                          "type": "object",
-                          "default": {}
-                        },
-                        "externalIPs": {
-                          "type": "array",
-                          "default": []
-                        },
-                        "loadBalancerSourceRanges": {
-                          "type": "array",
-                          "default": []
-                        },
-                        "servicePort": {
-                          "type": "integer",
-                          "default": 9010
-                        },
-                        "type": {
-                          "type": "string",
-                          "default": "ClusterIP"
-                        }
-                      }
-                    },
-                    "serviceMonitor": {
-                      "type": "object",
-                      "default": {},
-                      "properties": {
-                        "enabled": {
-                          "type": "boolean",
-                          "default": false
-                        },
-                        "additionalLabels": {
-                          "type": "object",
-                          "default": {}
-                        },
-                        "annotations": {
-                          "type": "object",
-                          "default": {}
-                        },
-                        "namespace": {
-                          "type": "string",
-                          "default": ""
-                        },
-                        "namespaceSelector": {
-                          "type": "object",
-                          "default": {}
-                        },
-                        "scrapeInterval": {
-                          "type": "string",
-                          "default": "30s"
-                        },
-                        "targetLabels": {
-                          "type": "array",
-                          "default": []
-                        },
-                        "relabelings": {
-                          "type": "array",
-                          "default": []
-                        },
-                        "metricRelabelings": {
-                          "type": "array",
-                          "default": []
-                        }
-                      }
-                    }
-                  }
-                },
-                "extraEnvs": {
-                  "type": "array",
-                  "default": [],
-                  "items": {
-                    "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
                   }
                 }
               }
@@ -2244,6 +2024,135 @@
               "type": "integer",
               "title": "Maximum simultaneous connections to wstore upstream",
               "minimum": 1
+            },
+            "wd": {
+              "type": "object",
+              "default": {},
+              "title": "wd process manager configuration (manages wallarm child processes)",
+              "properties": {
+                "logLevel": {
+                  "type": "string",
+                  "default": "info",
+                  "title": "Log level for wd daemon",
+                  "enum": [
+                    "trace",
+                    "debug",
+                    "info",
+                    "warning",
+                    "error"
+                  ]
+                },
+                "processLogLevels": {
+                  "type": "object",
+                  "default": {},
+                  "title": "Per-process log levels for wd child processes",
+                  "properties": {
+                    "wstore": {
+                      "type": "string",
+                      "default": "INFO"
+                    },
+                    "wcli": {
+                      "type": "string",
+                      "default": "WARN"
+                    },
+                    "appstructure": {
+                      "type": "string",
+                      "default": "INFO"
+                    },
+                    "apiFirewall": {
+                      "type": "string",
+                      "default": "INFO"
+                    }
+                  }
+                },
+                "metricsPort": {
+                  "type": "integer",
+                  "default": 9445,
+                  "title": "Port for aggregated Prometheus metrics from all managed processes"
+                },
+                "healthPort": {
+                  "type": "integer",
+                  "default": 9446,
+                  "title": "Port for wd health check endpoint (/health)"
+                },
+                "metricsPushEnabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "Enable metrics push to Wallarm Cloud"
+                },
+                "remoteCommandsPollInterval": {
+                  "type": "integer",
+                  "default": 60,
+                  "title": "Remote commands poll interval in seconds (0 to disable)",
+                  "minimum": 0
+                },
+                "caVerify": {
+                  "type": "boolean",
+                  "default": true,
+                  "title": "CA certificate verification for Cloud API"
+                },
+                "scrape": {
+                  "type": "object",
+                  "default": {},
+                  "title": "Per-component metrics scraping configuration",
+                  "properties": {
+                    "wstore": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "endpoint": {
+                          "type": "string",
+                          "default": "http://127.0.0.1:9001/metrics"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "prometheus"
+                        }
+                      }
+                    },
+                    "wcliPostanalytics": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": true
+                        },
+                        "endpoint": {
+                          "type": "string",
+                          "default": "http://127.0.0.1:9003/metrics"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "prometheus"
+                        }
+                      }
+                    },
+                    "apiFirewall": {
+                      "type": "object",
+                      "default": {},
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "endpoint": {
+                          "type": "string",
+                          "default": "http://127.0.0.1:9010/metrics"
+                        },
+                        "type": {
+                          "type": "string",
+                          "default": "prometheus"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -2305,40 +2214,6 @@
                   "title": "Image pull policy"
                 }
               }
-            }
-          }
-        },
-        "wcliPostanalytics": {
-          "type": "object",
-          "default": {},
-          "title": "WCLI configuration for postanalytics pod",
-          "properties": {
-            "logLevel": {
-              "type": "string",
-              "default": "WARN",
-              "title": "Log level for WCLI"
-            },
-            "commands": {
-              "type": "object",
-              "default": {},
-              "title": "Per-job log levels"
-            }
-          }
-        },
-        "wcliController": {
-          "type": "object",
-          "default": {},
-          "title": "WCLI configuration for controller pod",
-          "properties": {
-            "logLevel": {
-              "type": "string",
-              "default": "WARN",
-              "title": "Log level for WCLI"
-            },
-            "commands": {
-              "type": "object",
-              "default": {},
-              "title": "Per-job log levels"
             }
           }
         },
@@ -2861,36 +2736,86 @@
             }
           }
         },
-        "initContainer": {
+        "wd": {
           "type": "object",
           "default": {},
+          "title": "wd process manager configuration",
           "properties": {
             "resources": {
               "type": "object",
-              "default": {}
+              "default": {},
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements"
             },
             "securityContext": {
               "type": "object",
-              "default": {}
+              "default": {},
+              "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
             },
             "extraEnvs": {
               "type": "array",
-              "default": []
-            }
-          }
-        },
-        "wcli": {
-          "type": "object",
-          "default": {},
-          "title": "WCLI container configuration",
-          "properties": {
-            "resources": {
-              "type": "object",
-              "default": {}
+              "default": [],
+              "items": {
+                "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.EnvVar"
+              }
             },
-            "securityContext": {
+            "extraVolumeMounts": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "$ref": "https://raw.githubusercontent.com/nginxinc/kubernetes-json-schema/master/v1.34.0/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount"
+              }
+            },
+            "livenessProbe": {
               "type": "object",
-              "default": {}
+              "default": {},
+              "properties": {
+                "initialDelaySeconds": {
+                  "type": "integer",
+                  "default": 10
+                },
+                "periodSeconds": {
+                  "type": "integer",
+                  "default": 10
+                },
+                "timeoutSeconds": {
+                  "type": "integer",
+                  "default": 3
+                },
+                "successThreshold": {
+                  "type": "integer",
+                  "default": 1
+                },
+                "failureThreshold": {
+                  "type": "integer",
+                  "default": 3
+                }
+              }
+            },
+            "readinessProbe": {
+              "type": "object",
+              "default": {},
+              "properties": {
+                "initialDelaySeconds": {
+                  "type": "integer",
+                  "default": 5
+                },
+                "periodSeconds": {
+                  "type": "integer",
+                  "default": 10
+                },
+                "timeoutSeconds": {
+                  "type": "integer",
+                  "default": 3
+                },
+                "successThreshold": {
+                  "type": "integer",
+                  "default": 1
+                },
+                "failureThreshold": {
+                  "type": "integer",
+                  "default": 3
+                }
+              }
             },
             "metrics": {
               "type": "object",
@@ -2900,33 +2825,79 @@
                   "type": "boolean",
                   "default": true
                 },
-                "port": {
-                  "type": "integer",
-                  "default": 9003
-                },
                 "portName": {
                   "type": "string",
-                  "default": "wcli-post-mtrc"
+                  "default": "wd-metrics"
+                },
+                "port": {
+                  "type": "integer",
+                  "default": 9445
+                },
+                "service": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "annotations": {
+                      "type": "object",
+                      "default": {}
+                    },
+                    "labels": {
+                      "type": "object",
+                      "default": {}
+                    },
+                    "servicePort": {
+                      "type": "integer",
+                      "default": 9445
+                    },
+                    "type": {
+                      "type": "string",
+                      "default": "ClusterIP"
+                    }
+                  }
+                },
+                "serviceMonitor": {
+                  "type": "object",
+                  "default": {},
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "additionalLabels": {
+                      "type": "object",
+                      "default": {}
+                    },
+                    "annotations": {
+                      "type": "object",
+                      "default": {}
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "default": ""
+                    },
+                    "namespaceSelector": {
+                      "type": "object",
+                      "default": {}
+                    },
+                    "scrapeInterval": {
+                      "type": "string",
+                      "default": "30s"
+                    },
+                    "targetLabels": {
+                      "type": "array",
+                      "default": []
+                    },
+                    "relabelings": {
+                      "type": "array",
+                      "default": []
+                    },
+                    "metricRelabelings": {
+                      "type": "array",
+                      "default": []
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        "appstructure": {
-          "type": "object",
-          "default": {},
-          "properties": {
-            "resources": {
-              "type": "object",
-              "default": {}
-            },
-            "securityContext": {
-              "type": "object",
-              "default": {}
-            },
-            "extraEnvs": {
-              "type": "array",
-              "default": []
             }
           }
         }

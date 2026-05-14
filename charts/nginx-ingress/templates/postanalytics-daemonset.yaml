@@ -27,6 +27,7 @@ spec:
       {{- end }}
       annotations:
         wallarm-enabled: "true"
+        checksum/wd-config: {{ include (print $.Template.BasePath "/postanalytics-wd-configmap.yaml") . | sha256sum }}
 {{- if not .Values.config.wallarm.api.existingSecret.enabled }}
         checksum/token: {{ .Values.config.wallarm.api.token | sha256sum }}
 {{- end }}
@@ -41,80 +42,9 @@ spec:
       serviceAccountName: {{ include "nginx-ingress.serviceAccountName" . }}
       terminationGracePeriodSeconds: {{ .Values.postanalytics.terminationGracePeriodSeconds | default 30 }}
       initContainers:
-      {{ include "nginx-ingress.wallarm.initContainer" (dict "context" . "registerMode" "post_analytic" "initContainerConfig" .Values.postanalytics.initContainer) | nindent 6 }}
+      {{ include "nginx-ingress.wallarm.wdInitContainer" (dict "context" . "wdConfig" .Values.postanalytics.wd) | nindent 6 }}
       containers:
-        {{ include "nginx-ingress.wallarm.wcliContainer" (dict "context" . "wcliConfig" .Values.postanalytics.wcli "wcliArgsConfig" .Values.config.wcliPostanalytics "volumeMountsType" "postanalytics") | nindent 8 }}
-        - name: wstore
-          image: {{ .Values.config.images.helper.repository }}:{{ .Values.config.images.helper.tag }}
-          imagePullPolicy: {{ .Values.config.images.helper.pullPolicy }}
-          args: ["wstore"]
-          env:
-            {{ include "ingress-nginx.wallarmWstoreVariables" . | nindent 12 }}
-          {{- if .Values.postanalytics.tls.enabled }}
-            {{ include "ingress-nginx.wallarmWstoreTlsVariables" . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.postanalytics.extraEnvs }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          ports:
-          - name: wstore
-            containerPort: {{ include "ingress-nginx.wallarmPostanalyticsPort" . }}
-            protocol: TCP
-          volumeMounts:
-          - name: wallarm
-            mountPath: /opt/wallarm/etc/wallarm
-          {{- with .Values.postanalytics.extraVolumeMounts }}
-            {{- toYaml . | nindent 10 }}
-          {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: {{ include "ingress-nginx.wallarmPostanalyticsHealthPort" . }}
-            initialDelaySeconds: {{ .Values.postanalytics.livenessProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.postanalytics.livenessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.postanalytics.livenessProbe.timeoutSeconds | default 5 }}
-            successThreshold: {{ .Values.postanalytics.livenessProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.postanalytics.livenessProbe.failureThreshold | default 3 }}
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: {{ include "ingress-nginx.wallarmPostanalyticsHealthPort" . }}
-            initialDelaySeconds: {{ .Values.postanalytics.readinessProbe.initialDelaySeconds | default 5 }}
-            periodSeconds: {{ .Values.postanalytics.readinessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.postanalytics.readinessProbe.timeoutSeconds | default 5 }}
-            successThreshold: {{ .Values.postanalytics.readinessProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.postanalytics.readinessProbe.failureThreshold | default 3 }}
-          {{- with .Values.postanalytics.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- if .Values.postanalytics.securityContext }}
-          securityContext:
-            {{- toYaml .Values.postanalytics.securityContext | nindent 12 }}
-          {{- else }}
-          {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .) | nindent 10 }}
-          {{- end }}
-        - name: wallarm-appstructure
-          image: {{ .Values.config.images.helper.repository }}:{{ .Values.config.images.helper.tag }}
-          imagePullPolicy: {{ .Values.config.images.helper.pullPolicy }}
-          args: ["appstructure"]
-          {{- with .Values.postanalytics.appstructure.extraEnvs }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-          - name: wallarm
-            mountPath: /opt/wallarm/etc/wallarm
-          {{- with .Values.postanalytics.appstructure.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- if .Values.postanalytics.appstructure.securityContext }}
-          securityContext:
-            {{- toYaml .Values.postanalytics.appstructure.securityContext | nindent 12 }}
-          {{- else }}
-          {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .) | nindent 10 }}
-          {{- end }}
+        {{ include "nginx-ingress.wallarm.wdContainer" (dict "context" . "wdConfig" .Values.postanalytics.wd "configMapName" (printf "%s-wallarm-postanalytics-wd" (include "nginx-ingress.fullname" .)) "mode" "postanalytics") | nindent 8 }}
 
       {{- with .Values.postanalytics.nodeSelector }}
       nodeSelector:
@@ -129,13 +59,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      - name: wallarm
-        emptyDir: {}
-      - name: wallarm-acl
-        emptyDir: {}
-      - name: wallarm-apifw
-        emptyDir: {}
-      {{- include "ingress-nginx.wallarmTokenVolume" . | nindent 6 }}
+      {{ include "nginx-ingress.wallarm.wdVolumes" (dict "context" . "configMapName" (printf "%s-wallarm-postanalytics-wd" (include "nginx-ingress.fullname" .))) | nindent 6 }}
       {{- with .Values.postanalytics.extraVolumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}

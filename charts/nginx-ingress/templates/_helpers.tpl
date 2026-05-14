@@ -469,17 +469,16 @@ securityContext:
 {{- end }}
 
 {{/*
-Wallarm init container for controller/postanalytics pod (registers node with Wallarm cloud)
+Wallarm wd init container — runs "wd ctl init" to register node and sync data before main containers start.
 Accepts a dict with:
   - context: the root context (.)
-  - registerMode: "filtering" or "post_analytic"
-  - initContainerConfig: the initContainer config object containing resources and extraEnvs
+  - wdConfig: the wd configuration object containing resources, securityContext, extraEnvs
 */}}
-{{- define "nginx-ingress.wallarm.initContainer" -}}
-- name: wallarm-init
+{{- define "nginx-ingress.wallarm.wdInitContainer" -}}
+- name: wd-init
   image: {{ .context.Values.config.images.helper.repository }}:{{ .context.Values.config.images.helper.tag }}
   imagePullPolicy: {{ .context.Values.config.images.helper.pullPolicy }}
-  args: [ "register", "{{ .registerMode }}" {{- if eq .context.Values.config.wallarm.fallback "on" }}, "fallback"{{- end }} ]
+  args: ["/opt/wallarm/usr/bin/wd", "ctl", "init", "--config", "/etc/wallarm/wd.yaml"]
   env:
   {{- include "wallarm.credentials" .context | nindent 2 }}
   - name: WALLARM_NODE_NAME
@@ -490,200 +489,203 @@ Accepts a dict with:
     value: www-data
   - name: WALLARM_SYNCNODE_GROUP
     value: www-data
-{{- if .context.Values.config.wallarm.api.nodeGroup }}
   - name: WALLARM_LABELS
     value: "group={{ .context.Values.config.wallarm.api.nodeGroup }}"
-{{- end }}
-  {{- with .initContainerConfig.extraEnvs }}
+  {{- with .wdConfig.extraEnvs }}
     {{- toYaml . | nindent 2 }}
   {{- end }}
   volumeMounts:
-  - mountPath: {{ include "wallarm.path" .context }}
-    name: wallarm
-  - mountPath: {{ include "wallarm-acl.path" .context }}
-    name: wallarm-acl
-  - mountPath: {{ include "wallarm-apifw.path" .context }}
-    name: wallarm-apifw
-  - mountPath: /secrets/wallarm/token
-    name: wallarm-token
-    subPath: token
+  - name: wd-config
+    mountPath: /etc/wallarm/wd.yaml
+    subPath: wd.yaml
     readOnly: true
-{{- if .initContainerConfig.securityContext }}
+  - name: wallarm
+    mountPath: {{ include "wallarm.path" .context }}
+  - name: wallarm-acl
+    mountPath: {{ include "wallarm-acl.path" .context }}
+  - name: wallarm-token
+    mountPath: /secrets/wallarm/token
+    subPath: {{ include "nginx-ingress.wallarm.tokenSecretKey" .context }}
+    readOnly: true
+{{- if .wdConfig.securityContext }}
   securityContext:
-{{ toYaml .initContainerConfig.securityContext | indent 4 }}
+{{ toYaml .wdConfig.securityContext | indent 4 }}
 {{- else }}
   {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .context) | nindent 2 }}
 {{- end }}
-  {{- with .initContainerConfig.resources }}
+  {{- with .wdConfig.resources }}
   resources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
 
 {{/*
-Universal Wallarm WCLI container template
+Wallarm wd (process manager) container template.
 Accepts a dict with:
   - context: the root context (.)
-  - wcliConfig: the wcli configuration object containing resources, metrics, extraEnvs, securityContext
-  - wcliArgsConfig: the wcli args configuration object containing logLevel and commands
-  - volumeMountsType: "controller" or "postanalytics" - determines which volume mounts template to use
+  - wdConfig: the wd configuration object containing resources, securityContext, extraEnvs
+  - configMapName: name of the ConfigMap containing wd.yaml
+  - mode: "postanalytics" or "controller" - determines ports and volume mounts
 */}}
-{{- define "nginx-ingress.wallarm.wcliContainer" -}}
-- name: wcli
+{{- define "nginx-ingress.wallarm.wdContainer" -}}
+- name: wd
   image: {{ .context.Values.config.images.helper.repository }}:{{ .context.Values.config.images.helper.tag }}
   imagePullPolicy: {{ .context.Values.config.images.helper.pullPolicy }}
-  args: ["wcli", "run", {{ include "ingress-nginx.wcli-args" .wcliArgsConfig | trimSuffix ", " | replace "\n" ""}}]
+  args: ["/opt/wallarm/usr/bin/wd", "--config", "/etc/wallarm/wd.yaml"]
   env:
   {{- include "wallarm.credentials" .context | nindent 2 }}
   - name: WALLARM_NODE_NAME
     valueFrom:
       fieldRef:
         fieldPath: metadata.name
-  {{- if .wcliConfig.metrics.enabled }}
-  - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
-    value: "{{ .wcliConfig.metrics.host }}"
-    {{- if .wcliConfig.metrics.endpointPath }}
-  - name: WALLARM_WCLI__METRICS__ENDPOINT
-    value: "{{ .wcliConfig.metrics.endpointPath }}"
-    {{- end }}
-  {{- else }}
-  - name: WALLARM_WCLI__METRICS__LISTEN_ADDRESS
-    value: ""
+  - name: WALLARM_SYNCNODE_OWNER
+    value: www-data
+  - name: WALLARM_SYNCNODE_GROUP
+    value: www-data
+  - name: WALLARM_LABELS
+    value: "group={{ .context.Values.config.wallarm.api.nodeGroup }}"
+{{- if eq .mode "postanalytics" }}
+  - name: SLAB_ALLOC_ARENA
+    value: "{{ .context.Values.postanalytics.arena }}"
+  - name: WALLARM_WSTORE__SERVICE__ADDRESS
+    value: "{{ .context.Values.postanalytics.serviceAddress }}"
+  - name: WALLARM_WSTORE__SERVICE__PROTOCOL
+    value: "{{ .context.Values.postanalytics.serviceProtocol }}"
+  - name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
+    value: "{{ .context.Values.postanalytics.metrics.listenAddress }}"
+  - name: WALLARM_WSTORE__METRICS__PROTOCOL
+    value: "{{ .context.Values.postanalytics.metrics.protocol }}"
+  {{- if .context.Values.postanalytics.tls.enabled }}
+  {{- include "ingress-nginx.wallarmWstoreTlsVariables" .context | nindent 2 }}
   {{- end }}
-  {{- with .wcliConfig.extraEnvs }}
+{{- end }}
+{{- if eq .mode "controller" }}
+{{- if .context.Values.config.apiFirewall.enabled }}
+  - name: APIFW_SPECIFICATION_UPDATE_PERIOD
+    value: "{{ .context.Values.config.apiFirewall.config.specificationUpdatePeriod }}"
+  - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
+    value: "{{ .context.Values.config.apiFirewall.config.unknownParametersDetection }}"
+  - name: APIFW_URL
+    value: "http://0.0.0.0:{{ .context.Values.config.apiFirewall.config.mainPort }}"
+  - name: APIFW_HEALTH_HOST
+    value: "0.0.0.0:{{ .context.Values.config.apiFirewall.config.healthPort }}"
+  - name: APIFW_LOG_LEVEL
+    value: "{{ .context.Values.config.apiFirewall.config.logLevel }}"
+  - name: APIFW_LOG_FORMAT
+    value: "{{ .context.Values.config.apiFirewall.config.logFormat }}"
+  - name: APIFW_MODE
+    value: api
+  - name: APIFW_READ_TIMEOUT
+    value: 5s
+  - name: APIFW_WRITE_TIMEOUT
+    value: 5s
+  - name: APIFW_READ_BUFFER_SIZE
+    value: "{{ .context.Values.config.apiFirewall.readBufferSize | int64 }}"
+  - name: APIFW_WRITE_BUFFER_SIZE
+    value: "{{ .context.Values.config.apiFirewall.writeBufferSize | int64 }}"
+  - name: APIFW_MAX_REQUEST_BODY_SIZE
+    value: "{{ .context.Values.config.apiFirewall.maxRequestBodySize | int64 }}"
+  - name: APIFW_DISABLE_KEEPALIVE
+    value: "{{ .context.Values.config.apiFirewall.disableKeepalive }}"
+  - name: APIFW_MAX_CONNS_PER_IP
+    value: "{{ .context.Values.config.apiFirewall.maxConnectionsPerIp }}"
+  - name: APIFW_MAX_REQUESTS_PER_CONN
+    value: "{{ .context.Values.config.apiFirewall.maxRequestsPerConnection }}"
+  - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
+    value: "{{ .context.Values.config.apiFirewall.maxErrorsInResponse }}"
+  - name: APIFW_API_MODE_DEBUG_PATH_DB
+    value: "{{ include "wallarm-apifw.path" .context }}/3/wallarm_api.db"
+{{- end }}
+{{- end }}
+  {{- with .wdConfig.extraEnvs }}
     {{- toYaml . | nindent 2 }}
   {{- end }}
-  {{- if .wcliConfig.metrics.enabled }}
   ports:
-  - name: {{ .wcliConfig.metrics.portName }}
-    containerPort: {{ .wcliConfig.metrics.port }}
+  - name: wd-metrics
+    containerPort: {{ .context.Values.config.wallarm.wd.metricsPort }}
     protocol: TCP
-  {{- end }}
+  - name: wd-health
+    containerPort: {{ .context.Values.config.wallarm.wd.healthPort }}
+    protocol: TCP
+{{- if eq .mode "postanalytics" }}
+  - name: wstore
+    containerPort: {{ include "ingress-nginx.wallarmPostanalyticsPort" .context }}
+    protocol: TCP
+{{- end }}
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: wd-health
+    initialDelaySeconds: {{ .wdConfig.livenessProbe.initialDelaySeconds | default 10 }}
+    periodSeconds: {{ .wdConfig.livenessProbe.periodSeconds | default 10 }}
+    timeoutSeconds: {{ .wdConfig.livenessProbe.timeoutSeconds | default 3 }}
+    successThreshold: {{ .wdConfig.livenessProbe.successThreshold | default 1 }}
+    failureThreshold: {{ .wdConfig.livenessProbe.failureThreshold | default 3 }}
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: wd-health
+    initialDelaySeconds: {{ .wdConfig.readinessProbe.initialDelaySeconds | default 5 }}
+    periodSeconds: {{ .wdConfig.readinessProbe.periodSeconds | default 10 }}
+    timeoutSeconds: {{ .wdConfig.readinessProbe.timeoutSeconds | default 3 }}
+    successThreshold: {{ .wdConfig.readinessProbe.successThreshold | default 1 }}
+    failureThreshold: {{ .wdConfig.readinessProbe.failureThreshold | default 3 }}
   volumeMounts:
-  {{- if eq .volumeMountsType "controller" }}
-  {{- include "nginx-ingress.wallarm.wcliVolumeMounts" .context | nindent 2 }}
-  - mountPath: {{ include "wallarm-apifw.path" .context }}
-    name: wallarm-apifw
-  {{- else if eq .volumeMountsType "postanalytics" }}
-  {{- include "nginx-ingress.wallarm.wcliVolumeMounts" .context | nindent 2 }}
+  - name: wd-config
+    mountPath: /etc/wallarm/wd.yaml
+    subPath: wd.yaml
+    readOnly: true
+  - name: wallarm
+    mountPath: {{ include "wallarm.path" .context }}
+  - name: wallarm-acl
+    mountPath: {{ include "wallarm-acl.path" .context }}
+  - name: wallarm-token
+    mountPath: /secrets/wallarm/token
+    subPath: {{ include "nginx-ingress.wallarm.tokenSecretKey" .context }}
+    readOnly: true
+{{- if eq .mode "controller" }}
+  - name: wallarm-apifw
+    mountPath: {{ include "wallarm-apifw.path" .context }}
+{{- end }}
+  {{- with .wdConfig.extraVolumeMounts }}
+    {{- toYaml . | nindent 2 }}
   {{- end }}
-{{- if .wcliConfig.securityContext }}
+{{- if .wdConfig.securityContext }}
   securityContext:
-{{ toYaml .wcliConfig.securityContext | indent 4 }}
+{{ toYaml .wdConfig.securityContext | indent 4 }}
 {{- else }}
   {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .context) | nindent 2 }}
 {{- end }}
-  {{- with .wcliConfig.resources }}
+  {{- with .wdConfig.resources }}
   resources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
 
 {{/*
-Wallarm WCLI volume mounts
+Wallarm wd volumes for a pod.
+Accepts a dict with:
+  - context: the root context (.)
+  - configMapName: name of the ConfigMap containing wd.yaml
 */}}
-{{- define "nginx-ingress.wallarm.wcliVolumeMounts" -}}
-- mountPath: {{ include "wallarm.path" . }}
-  name: wallarm
-- mountPath: {{ include "wallarm-acl.path" . }}
-  name: wallarm-acl
-- mountPath: /secrets/wallarm/token
-  name: wallarm-token
-  subPath: token
-  readOnly: true
+{{- define "nginx-ingress.wallarm.wdVolumes" -}}
+- name: wd-config
+  configMap:
+    name: {{ .configMapName }}
+- name: wallarm
+  emptyDir: {}
+- name: wallarm-acl
+  emptyDir: {}
+{{ include "ingress-nginx.wallarmTokenVolume" .context }}
 {{- end }}
 
 {{/*
-Wallarm API Firewall container for controller pod
-*/}}
-{{- define "nginx-ingress.wallarm.apiFirewallContainer" -}}
-- name: api-firewall
-  image: {{ .Values.config.images.helper.repository }}:{{ .Values.config.images.helper.tag }}
-  imagePullPolicy: {{ .Values.config.images.helper.pullPolicy }}
-  args: ["api-firewall"]
-  env:
-    - name: APIFW_SPECIFICATION_UPDATE_PERIOD
-      value: "{{ .Values.config.apiFirewall.config.specificationUpdatePeriod }}"
-    - name: API_MODE_UNKNOWN_PARAMETERS_DETECTION
-      value: "{{ .Values.config.apiFirewall.config.unknownParametersDetection }}"
-    - name: APIFW_URL
-      value: "http://0.0.0.0:{{ .Values.config.apiFirewall.config.mainPort }}"
-    - name: APIFW_HEALTH_HOST
-      value: "0.0.0.0:{{ .Values.config.apiFirewall.config.healthPort }}"
-    - name: APIFW_LOG_LEVEL
-      value: "{{ .Values.config.apiFirewall.config.logLevel }}"
-    - name: APIFW_LOG_FORMAT
-      value: "{{ .Values.config.apiFirewall.config.logFormat }}"
-    - name: APIFW_MODE
-      value: api
-    - name: APIFW_READ_TIMEOUT
-      value: 5s
-    - name: APIFW_WRITE_TIMEOUT
-      value: 5s
-    - name: APIFW_READ_BUFFER_SIZE
-      value: "{{ .Values.config.apiFirewall.readBufferSize | int64 }}"
-    - name: APIFW_WRITE_BUFFER_SIZE
-      value: "{{ .Values.config.apiFirewall.writeBufferSize | int64 }}"
-    - name: APIFW_MAX_REQUEST_BODY_SIZE
-      value: "{{ .Values.config.apiFirewall.maxRequestBodySize | int64 }}"
-    - name: APIFW_DISABLE_KEEPALIVE
-      value: "{{ .Values.config.apiFirewall.disableKeepalive }}"
-    - name: APIFW_MAX_CONNS_PER_IP
-      value: "{{ .Values.config.apiFirewall.maxConnectionsPerIp }}"
-    - name: APIFW_MAX_REQUESTS_PER_CONN
-      value: "{{ .Values.config.apiFirewall.maxRequestsPerConnection }}"
-    - name: APIFW_API_MODE_MAX_ERRORS_IN_RESPONSE
-      value: "{{ .Values.config.apiFirewall.maxErrorsInResponse }}"
-    - name: APIFW_API_MODE_DEBUG_PATH_DB
-      value: "{{ include "wallarm-apifw.path" . }}/3/wallarm_api.db"
-{{- if .Values.controller.wallarm.apiFirewall.metrics.enabled }}
-    - name: APIFW_METRICS_ENABLED
-      value: "true"
-    - name: APIFW_METRICS_HOST
-      value: "{{ .Values.controller.wallarm.apiFirewall.metrics.host }}"
-    - name: APIFW_METRICS_ENDPOINT_NAME
-      value: "{{ .Values.controller.wallarm.apiFirewall.metrics.endpointPath }}"
-{{- else }}
-    - name: APIFW_METRICS_ENABLED
-      value: "false"
-{{- end }}
-  {{- with .Values.controller.wallarm.apiFirewall.extraEnvs }}
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-  ports:
-  - name: apifw-health
-    containerPort: {{ .Values.config.apiFirewall.config.healthPort }}
-    protocol: TCP
-  {{- if .Values.controller.wallarm.apiFirewall.metrics.enabled }}
-  - name: apifw-metrics
-    containerPort: {{ .Values.controller.wallarm.apiFirewall.metrics.port }}
-    protocol: TCP
-  {{- end }}
-  volumeMounts:
-  - name: wallarm-apifw
-    mountPath: /opt/wallarm/var/lib/wallarm-api
-{{- if .Values.controller.wallarm.apiFirewall.livenessProbeEnabled }}
-  livenessProbe: {{ toYaml .Values.controller.wallarm.apiFirewall.livenessProbe | nindent 4 }}
-{{- end }}
-{{- if .Values.controller.wallarm.apiFirewall.readinessProbeEnabled }}
-  readinessProbe: {{ toYaml .Values.controller.wallarm.apiFirewall.readinessProbe | nindent 4 }}
-{{- end }}
-{{- if .Values.controller.wallarm.apiFirewall.securityContext }}
-  securityContext:
-{{ toYaml .Values.controller.wallarm.apiFirewall.securityContext | indent 4 }}
-{{- else }}
-  {{ include "nginx-ingress.wallarm.defaultSecurityContext" (dict "context" .) | nindent 2 }}
-{{- end }}
-  {{- with .Values.controller.wallarm.apiFirewall.resources }}
-  resources:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-{{- end }}
-
-{{/*
-Wallarm volumes for controller pod
+Wallarm volumes for controller pod (with wd ConfigMap)
 */}}
 {{- define "nginx-ingress.wallarm.volumes" -}}
+- name: wd-config
+  configMap:
+    name: {{ include "nginx-ingress.fullname" . }}-wallarm-controller-wd
 - name: wallarm
   emptyDir: {}
 - name: wallarm-acl
@@ -691,10 +693,8 @@ Wallarm volumes for controller pod
 - name: wallarm-cache
   emptyDir: {}
 {{ include "ingress-nginx.wallarmTokenVolume" . }}
-{{- if .Values.config.apiFirewall.enabled }}
 - name: wallarm-apifw
   emptyDir: {}
-{{- end }}
 {{- with .Values.controller.wallarm.extraVolumes }}
   {{- toYaml . | nindent 0 }}
 {{- end }}
@@ -837,7 +837,7 @@ Convert camelCase to kebab‑case
 {{- end }}
 
 {{/*
-Wcli arguments building
+Wcli arguments building — used by wd ConfigMaps to construct wcli command with per-job log levels.
 */}}
 {{- define "ingress-nginx.wcli-args" -}}
 "-log-level", "{{ .logLevel }}",{{ " " }}
@@ -875,15 +875,3 @@ Wcli arguments building
   value: "{{ .Values.postanalytics.tls.mutualTLS.clientCACertFile }}"
 {{- end -}}
 
-{{- define "ingress-nginx.wallarmWstoreVariables" -}}
-- name: SLAB_ALLOC_ARENA
-  value: "{{ .Values.postanalytics.arena }}"
-- name: WALLARM_WSTORE__METRICS__LISTEN_ADDRESS
-  value: "{{ .Values.postanalytics.metrics.listenAddress }}"
-- name: WALLARM_WSTORE__METRICS__PROTOCOL
-  value: "{{ .Values.postanalytics.metrics.protocol }}"
-- name: WALLARM_WSTORE__SERVICE__ADDRESS
-  value: "{{ .Values.postanalytics.serviceAddress }}"
-- name: WALLARM_WSTORE__SERVICE__PROTOCOL
-  value: "{{ .Values.postanalytics.serviceProtocol }}"
-{{- end -}}
