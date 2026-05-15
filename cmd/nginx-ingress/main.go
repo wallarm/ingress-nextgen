@@ -416,7 +416,8 @@ func mustCreateConfigAndKubeClient(ctx context.Context) (*rest.Config, *kubernet
 				ClusterInfo: clientcmdapi.Cluster{
 					Server: *proxyURL,
 				},
-			}).ClientConfig()
+			},
+		).ClientConfig()
 		if err != nil {
 			nl.Fatalf(l, "error creating client configuration: %v", err)
 		}
@@ -1203,7 +1204,7 @@ func createHeadlessService(l *slog.Logger, kubeClient kubernetes.Interface, cont
 
 func logEventAndExit(ctx context.Context, eventLog record.EventRecorder, obj pkg_runtime.Object, reason string, err error) {
 	l := nl.LoggerFromContext(ctx)
-	eventLog.Eventf(obj, api_v1.EventTypeWarning, reason, err.Error())
+	eventLog.Event(obj, api_v1.EventTypeWarning, reason, err.Error())
 	time.Sleep(fatalEventFlushTime) // wait for the event to be flushed
 	nl.Fatal(l, err.Error())
 }

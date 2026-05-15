@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dlclark/regexp2"
+	"github.com/dlclark/regexp2/v2"
 	"github.com/nginx/kubernetes-ingress/internal/configs"
 	"github.com/nginx/kubernetes-ingress/internal/nsutils"
 	internalValidation "github.com/nginx/kubernetes-ingress/internal/validation"
@@ -674,7 +674,8 @@ func validateBackup(backup string, backupPort *uint16, lbMethod string, idxPath 
 	}
 
 	if strings.Contains(lbMethod, "hash") || strings.Contains(lbMethod, "hash_ip") || strings.Contains(lbMethod, "random") {
-		allErrs = append(allErrs, field.Forbidden(idxPath.Child("backup"),
+		allErrs = append(allErrs, field.Forbidden(
+			idxPath.Child("backup"),
 			"backup cannot be used along with the 'hash', 'hash_ip' and 'random' load balancing methods",
 		))
 	}
@@ -1364,7 +1365,7 @@ func validateRoutePath(path string, fieldPath *field.Path) field.ErrorList {
 //
 // Internally it uses Perl5 compatible regexp2 package.
 func validateRegexPath(path string, fieldPath *field.Path) field.ErrorList {
-	if _, err := regexp2.Compile(path, 0); err != nil {
+	if _, err := regexp2.Compile(path); err != nil {
 		return field.ErrorList{field.Invalid(fieldPath, path, fmt.Sprintf("must be a valid regular expression: %v", err))}
 	}
 	if err := ValidateEscapedString(path, "*.jpg", "^/images/image_*.png$"); err != nil {
