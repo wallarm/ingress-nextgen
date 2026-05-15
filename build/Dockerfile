@@ -21,6 +21,14 @@ FROM ghcr.io/nginx/dependencies/nginx-ubi:ubi9@sha256:f523999e16c8d4743a634d9abf
 FROM ghcr.io/nginx/alpine-fips:0.5.0-alpine3.22@sha256:f907d7541ab03453fd7d630dc0fb8d9a819717ea52a7956fe1f45b9833051177 AS alpine-fips-3.22
 FROM redhat/ubi9-minimal:9.7-1778072020@sha256:b9b10f42d7eba7ad4a6d5ef26b7d34fdc892b2ffe59b8d0372ec884008569eb6 AS ubi-minimal
 FROM golang:1.26-alpine@sha256:f85330846cde1e57ca9ec309382da3b8e6ae3ab943d2739500e08c86393a21b1 AS golang-builder
+# Let Go fetch the toolchain go.mod requires. The base image bakes
+# GOTOOLCHAIN=local + a specific Go 1.26.x; any go.mod requiring a
+# higher 1.26.z (e.g. a remediator stdlib bump) would otherwise fail
+# `go mod download` with "go: go.mod requires go >= ...". Inherited
+# by the `builder` and `debug-builder` stages below via FROM
+# golang-builder. Costs ~30s + ~110 MB on first build until the base
+# image is rebumped to a newer 1.26.z.
+ENV GOTOOLCHAIN=auto
 
 ############################################# NGINX files #############################################
 FROM scratch AS nginx-files
