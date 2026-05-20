@@ -130,7 +130,7 @@ config:
   images:
     controller:
       repository: ${REGISTRY}/${PREFIX}
-      tag: $TAG
+      tag: "$TAG"
 EOF
 kubectl wait --for=condition=Ready pods --all --timeout=120s
 
