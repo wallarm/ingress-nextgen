@@ -51,6 +51,19 @@ workflow:
       variables:
         X_CI_BUILD_KIND: "production-local"
         REGISTRY: docker.io/wallarm
+    # Post-MR-merge cache warmup: only IMAGE_BUILD_IC + UNIT_TEST_IC run,
+    # populating main-keyed Go cache + buildcache:main for MR pipelines to fall back to.
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - "**/*.go"
+        - go.mod
+        - go.sum
+        - build/Dockerfile
+        - Makefile
+      variables:
+        X_CI_BUILD_KIND: "warm-cache"
+        REGISTRY: $CI_REGISTRY_IMAGE
+        TAG: "$CI_COMMIT_SHORT_SHA"
     - if: $CI_COMMIT_TAG =~ /^([0-9]+.[0-9]+.[0-9]+\+upstream).*$/
       variables:
         X_CI_BUILD_KIND: "chart"
@@ -125,18 +138,15 @@ UNIT_TEST_IC:
   image: golang:1.26-alpine
   tags: [node-c2r4-stable-dind-amd]
   rules:
-    - if: $X_CI_BUILD_KIND =~ /^(develop|production|release-candidate)$/
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production|release-candidate|warm-cache)$/
   variables:
     GOCACHE: $CI_PROJECT_DIR/.cache/go-build
     GOMODCACHE: $CI_PROJECT_DIR/.cache/go-mod
     GOTOOLCHAIN: auto
   cache:
-    - key:
-        files:
-          - go.sum
-        prefix: unit-test-$CI_COMMIT_REF_SLUG
+    - key: unit-test-$CI_COMMIT_REF_SLUG
       fallback_keys:
-        - unit-test-go-cache-$CI_DEFAULT_BRANCH
+        - unit-test-$CI_DEFAULT_BRANCH
       paths:
         - .cache/go-build
         - .cache/go-mod
@@ -150,7 +160,7 @@ IMAGE_BUILD_IC:
   image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/tests-k8s:v0.5.0
   tags: [node-c2r4-stable-dind-amd]
   rules:
-    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate|cve-scan)$/
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate|cve-scan|warm-cache)$/
   extends:
     - .before-build
   variables:
@@ -158,12 +168,9 @@ IMAGE_BUILD_IC:
     GOMODCACHE: $CI_PROJECT_DIR/.cache/go-mod
     GOTOOLCHAIN: auto
   cache:
-    - key:
-        files:
-          - go.sum
-        prefix: $CI_COMMIT_REF_SLUG
+    - key: $CI_COMMIT_REF_SLUG
       fallback_keys:
-        - go-cache-$CI_DEFAULT_BRANCH
+        - $CI_DEFAULT_BRANCH
       paths:
         - .cache/go-build
         - .cache/go-mod
