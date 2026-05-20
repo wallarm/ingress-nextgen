@@ -139,19 +139,79 @@ IMAGE_BUILD_IC:
     - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate|cve-scan)$/
   extends:
     - .before-build
-  script: |
-    if [[ ! -z $AIO_VERSION ]]; then
-      .gitlab/calculate-version.sh
-      source version.env && export TAG
-    fi
-    echo "Calculated node version: ${TAG:-from TAG}"
-    echo "Building for registry: $REGISTRY/$PREFIX"
+  variables:
+    GOCACHE: $CI_PROJECT_DIR/.cache/go-build
+    GOMODCACHE: $CI_PROJECT_DIR/.cache/go-mod
+    GOTOOLCHAIN: auto
+  cache:
+    - key:
+        files:
+          - go.sum
+        prefix: $CI_COMMIT_REF_SLUG
+      fallback_keys:
+        - go-cache-$CI_DEFAULT_BRANCH
+      paths:
+        - .cache/go-build
+        - .cache/go-mod
+  script:
+    - |
+      # === Resolve version (TAG/AIO_VERSION) ===
+      set -exo pipefail
+      if [[ ! -z $AIO_VERSION ]]; then
+        .gitlab/calculate-version.sh
+        source version.env && export TAG
+      fi
+      echo "Calculated node version: ${TAG:-from TAG}"
+      echo "Building for registry: $REGISTRY/$PREFIX"
+    - |
+      # === Install Go (Alpine package; GOTOOLCHAIN handles go.mod version) ===
+      apk add --no-cache go
+      go version
+    - |
+      # === Compile nginx-ingress natively for amd64 and arm64 ===
+      # Output layout matches upstream's goreleaser target so the Dockerfile
+      # `goreleaser-setcap` stage finds binaries via dist/kubernetes-ingress_linux_<arch>*/nginx-ingress
+      for ARCH in amd64 arm64; do
+        mkdir -p "dist/kubernetes-ingress_linux_${ARCH}"
+        CGO_ENABLED=0 GOOS=linux GOARCH=$ARCH \
+          go build -trimpath \
+            -ldflags "-s -w -X main.version=${AIO_VERSION} -X main.telemetryEndpoint=${TELEMETRY_ENDPOINT:-oss.edge.df.f5.com:443}" \
+            -o "dist/kubernetes-ingress_linux_${ARCH}/nginx-ingress" \
+            github.com/nginx/kubernetes-ingress/cmd/nginx-ingress
+      done
+    - |
+      # === Enable docker buildx ===
+      docker buildx create --name multi-arch --platform linux/amd64,linux/arm64 --driver docker-container --use
+    - |
+      # === Compile VTS module (or reuse cached image from registry) ===
+      NGINX_PIN=$(grep -E '^FROM nginx.*AS alpine$' build/Dockerfile)
+      VTS_VER=$(awk -F'=' '/^ARG VTS_VERSION=/{print $2; exit}' build/Dockerfile | tr -d ' "')
+      VTS_HASH=$(printf "%s\n%s\n" "$NGINX_PIN" "$VTS_VER" | sha256sum | cut -c1-12)
+      VTS_IMAGE="$CI_REGISTRY_IMAGE/vts-cache:$VTS_HASH"
+      echo "  nginx pin: $NGINX_PIN"
+      echo "  vts version: $VTS_VER"
+      echo "  cache image: $VTS_IMAGE"
 
-    echo "Enabling docker buildx..."
-    docker buildx create --name multi-arch --platform linux/amd64,linux/arm64 --driver docker-container --use
-
-    echo "Building ingress and ingress-chroot images (multi-platform)..."
-    PLATFORM=linux/arm64,linux/amd64 TARGET=container make alpine-vts-image
+      if docker manifest inspect "$VTS_IMAGE" >/dev/null 2>&1; then
+        echo "VTS cache hit; skipping compile"
+      else
+        echo "VTS cache miss; compiling and pushing..."
+        docker buildx build \
+          --target vts-files \
+          --platform linux/amd64,linux/arm64 \
+          --tag "$VTS_IMAGE" \
+          --push \
+          --build-arg IC_VERSION="${TAG}" \
+          --build-arg AIO_VERSION="${AIO_VERSION}" \
+          --build-arg PACKAGE_REPO="pkgs.nginx.com" \
+          --secret id=ci_job_token,env=CI_JOB_TOKEN \
+          -f build/Dockerfile .
+      fi
+      export DOCKER_BUILD_OPTIONS="--build-context vts-files=docker-image://$VTS_IMAGE"
+    - |
+      # === Build multi-arch alpine-vts image (TARGET=goreleaser uses the upstream
+      # builder-style stages that COPY the prebuilt binaries from dist/) ===
+      PLATFORM=linux/arm64,linux/amd64 TARGET=goreleaser make alpine-vts-image
   artifacts:
     reports:
       dotenv: version.env

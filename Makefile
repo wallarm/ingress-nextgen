@@ -32,6 +32,12 @@ AIO_VERSION                   ?= $(shell cat AIO_BASE)
 TARGET                        ?= local ## The target of the build. Possible values: local, container and download
 PLUS_REPO                     ?= "pkgs.nginx.com" ## The package repo to install nginx-plus from
 override DOCKER_BUILD_OPTIONS += --build-arg IC_VERSION=$(TAG) --build-arg AIO_VERSION=$(AIO_VERSION) --build-arg PACKAGE_REPO=$(PLUS_REPO) ## The options for the docker build command. For example, --pull
+ifeq ($(CI),true)
+override DOCKER_BUILD_OPTIONS += --cache-from=type=registry,ref=$(CI_REGISTRY_IMAGE)/buildcache:$(CI_COMMIT_REF_SLUG) \
+                                 --cache-from=type=registry,ref=$(CI_REGISTRY_IMAGE)/buildcache:main \
+                                 --cache-to=type=registry,ref=$(CI_REGISTRY_IMAGE)/buildcache:$(CI_COMMIT_REF_SLUG),mode=max \
+                                 --no-cache-filter=wallarm-files,alpine,alpine-vts,common
+endif
 ARCH                          ?= amd64 ## The architecture of the image or binary. For example: amd64, arm64, ppc64le, s390x. Not all architectures are supported for all targets
 PLATFORM                      ?= linux/amd64
 GOOS                          ?= linux ## The OS of the binary. For example linux, darwin
@@ -154,6 +160,9 @@ else ifeq ($(strip $(TARGET)),download)
 else ifeq ($(strip $(TARGET)),debug)
 	@go version || (code=$$?; printf "\033[0;31mError\033[0m: unable to build locally, try using the parameter TARGET=container or TARGET=download\n"; exit $$code)
 	CGO_ENABLED=0 GOOS=$(strip $(GOOS)) GOARCH=$(strip $(ARCH)) go build -ldflags "$(DEBUG_GO_LINKER_FLAGS)" -gcflags "$(DEBUG_GO_GC_FLAGS)" -o nginx-ingress github.com/nginx/kubernetes-ingress/cmd/nginx-ingress
+else ifeq ($(strip $(TARGET)),goreleaser)
+	@go version || (code=$$?; printf "\033[0;31mError\033[0m: unable to build locally, try using the parameter TARGET=container or TARGET=download\n"; exit $$code)
+	mkdir -p dist/kubernetes-ingress_linux_$(strip $(ARCH)) && CGO_ENABLED=0 GOOS=$(strip $(GOOS)) GOARCH=$(strip $(ARCH)) go build -trimpath -ldflags "$(GO_LINKER_FLAGS)" -o dist/kubernetes-ingress_linux_$(strip $(ARCH))/nginx-ingress github.com/nginx/kubernetes-ingress/cmd/nginx-ingress
 endif
 
 .PHONY: download-binary-docker
