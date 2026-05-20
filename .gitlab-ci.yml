@@ -126,6 +126,20 @@ UNIT_TEST_IC:
   tags: [node-c2r4-stable-dind-amd]
   rules:
     - if: $X_CI_BUILD_KIND =~ /^(develop|production|release-candidate)$/
+  variables:
+    GOCACHE: $CI_PROJECT_DIR/.cache/go-build
+    GOMODCACHE: $CI_PROJECT_DIR/.cache/go-mod
+    GOTOOLCHAIN: auto
+  cache:
+    - key:
+        files:
+          - go.sum
+        prefix: unit-test-$CI_COMMIT_REF_SLUG
+      fallback_keys:
+        - unit-test-go-cache-$CI_DEFAULT_BRANCH
+      paths:
+        - .cache/go-build
+        - .cache/go-mod
   script:
     - apk add --no-cache make helm
     - make secrets
