@@ -377,11 +377,13 @@ HELM_PUBLISH:
     else
       echo "Upstream-based chart publishing flow..."
       CHART_VERSION=$TAG
-      curl -Lo /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 && chmod +x /usr/bin/yq
       echo "$AIO_VERSION" > AIO_BASE
-      yq e -i '.appVersion = "'$AIO_VERSION'"' charts/nginx-ingress/Chart.yaml
-      yq e -i '.config.images.helper.tag = "'$AIO_VERSION'"' charts/nginx-ingress/values.yaml
-      yq e -i '.config.images.controller.tag = "'$TAG'"' charts/nginx-ingress/values.yaml
+      # Update versions in-place with sed, not yq: yq re-serializes the YAML tree and
+      # drops all blank lines, which makes values.yaml much harder to read.
+      # tag lines are anchored on the repository line directly above them.
+      sed -i -E 's/^(appVersion: ).*/\1'"$AIO_VERSION"'/' charts/nginx-ingress/Chart.yaml
+      sed -i -E '\#repository: "docker.io/wallarm/node-helpers"#{n;s/^( *tag: ).*/\1"'"$AIO_VERSION"'"/}' charts/nginx-ingress/values.yaml
+      sed -i -E '\#repository: "docker.io/wallarm/ingress-controller"#{n;s/^( *tag: ).*/\1"'"$TAG"'"/}' charts/nginx-ingress/values.yaml
     fi
     export CHART_VERSION
     echo "CHART_VERSION=$CHART_VERSION" >> chart.env
