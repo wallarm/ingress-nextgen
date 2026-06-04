@@ -2055,10 +2055,6 @@
                       "type": "string",
                       "default": "WARN"
                     },
-                    "appstructure": {
-                      "type": "string",
-                      "default": "INFO"
-                    },
                     "apiFirewall": {
                       "type": "string",
                       "default": "INFO"
@@ -2082,7 +2078,7 @@
                 },
                 "remoteCommandsPollInterval": {
                   "type": "integer",
-                  "default": 60,
+                  "default": 0,
                   "title": "Remote commands poll interval in seconds (0 to disable)",
                   "minimum": 0
                 },
