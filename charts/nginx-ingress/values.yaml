@@ -37,7 +37,6 @@ config:
       processLogLevels:
         wstore: INFO
         wcli: WARN
-        appstructure: INFO
         apiFirewall: INFO
       ## Port for aggregated Prometheus metrics from all managed processes
       metricsPort: 9445
@@ -46,7 +45,8 @@ config:
       ## Enable metrics push to Wallarm Cloud
       metricsPushEnabled: true
       ## Remote commands poll interval in seconds (0 to disable)
-      remoteCommandsPollInterval: 60
+      ## Disabled by default to match node 7.1 (Cloud endpoint not yet shipped)
+      remoteCommandsPollInterval: 0
       ## CA certificate verification for Cloud API
       caVerify: true
       ## Per-component metrics scraping configuration

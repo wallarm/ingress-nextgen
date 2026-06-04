@@ -31,12 +31,12 @@ data:
       metrics_push_enabled: {{ .Values.config.wallarm.wd.metricsPushEnabled }}
       metrics_push_url: /v2/node/stat/victoriametrics
       metrics_push_interval: 5
-      metrics_deprecated_metricsexp_push: true
       remote_commands_poll_interval: {{ .Values.config.wallarm.wd.remoteCommandsPollInterval }}
 
     # Init pipeline runs in the wd-init container (wd ctl init) before main containers start.
     # The daemon re-runs it via coordination (idempotent — register is a no-op if already done).
-    # Jobs not supported by the current node.mode are silently skipped at runtime.
+    # post_analytic mode supports only register + envexp; datasync/iplist/ipfeed/
+    # apispec/nsf_download are filtering-only and are omitted here.
     pipelines:
       init:
         stages:
@@ -46,14 +46,6 @@ data:
           - steps:
               - type: job
                 name: envexp
-              - type: job
-                name: datasync
-              - type: job
-                name: iplist
-              - type: job
-                name: ipfeed
-              - type: job
-                name: apispec
 
       background:
         stages:
@@ -63,14 +55,6 @@ data:
           - steps:
               - type: job
                 name: envexp
-              - type: job
-                name: datasync
-              - type: job
-                name: iplist
-              - type: job
-                name: ipfeed
-              - type: job
-                name: apispec
 
     processes:
       - name: wstore
@@ -88,22 +72,6 @@ data:
         metrics_endpoint: {{ .Values.config.wallarm.wd.scrape.wstore.endpoint }}
         metrics_type: {{ .Values.config.wallarm.wd.scrape.wstore.type }}
     {{- end }}
-
-      - name: appstructure
-        command: /opt/wallarm/appstructure/usr/bin/python3.11 /opt/wallarm/appstructure/usr/bin/wallarm-appstructure-client --config-file /opt/wallarm/etc/wallarm/node.yaml
-        autostart: true
-        autorestart: true
-        redirect_stderr: true
-        stdout_logfile: /opt/wallarm/var/log/wallarm/appstructure-out.log
-        stdout_logfile_maxbytes: "50MB"
-        stdout_logfile_backups: 3
-        depends_on: [wstore]
-        environment:
-          WALLARM_LOG_LEVEL: {{ .Values.config.wallarm.wd.processLogLevels.appstructure }}
-          LD_LIBRARY_PATH: /opt/wallarm/appstructure/usr/lib:/opt/wallarm/appstructure/usr/lib/python3.11/site-packages/numpy.libs
-          PATH: /opt/wallarm/appstructure/usr/bin:${PATH}
-          PYTHONHOME: /opt/wallarm/appstructure/usr
-          PYTHONPATH: /opt/wallarm/appstructure/usr/bin/python3.11
 
       - name: wcli
         command: /opt/wallarm/usr/bin/wcli run -mode post_analytic -log-level {{ .Values.config.wallarm.wd.processLogLevels.wcli }}
