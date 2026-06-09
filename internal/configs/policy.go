@@ -22,6 +22,10 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
+// DefaultSigninRedirectBasePath is the default base path for the NGINX location
+// that handles sign-in redirect requests (e.g. oauth2-proxy expects /oauth2).
+const DefaultSigninRedirectBasePath = "/oauth2"
+
 // rateLimit hold the configuration for the ratelimiting Policy
 type rateLimit struct {
 	Reqs             []version2.LimitReq
@@ -58,6 +62,7 @@ type policiesCfg struct {
 	Deny            []string
 	RateLimit       rateLimit
 	JWTAuth         jwtAuth
+	ExternalAuth    *version2.ExternalAuth
 	BasicAuth       *version2.BasicAuth
 	IngressMTLS     *version2.IngressMTLS
 	EgressMTLS      *version2.EgressMTLS
@@ -85,7 +90,7 @@ type policyOptions struct {
 	tls             bool
 	zoneSync        bool
 	secretRefs      map[string]*secrets.SecretReference
-	apResources     *appProtectResourcesForVS
+	apResources     *appProtectPolicyResources
 	defaultCABundle string
 	replicas        int
 	oidcPolicyName  string
@@ -109,7 +114,12 @@ func newPoliciesConfig(bv bundleValidator) *policiesCfg {
 // Also ensure that createIngressEx() in controller.go loads any required secret or service
 // references for that policy type.
 func IsPolicySupportedOnIngress(pol *conf_v1.Policy) bool {
-	return pol.Spec.AccessControl != nil || pol.Spec.CORS != nil
+	return pol.Spec.AccessControl != nil ||
+		pol.Spec.CORS != nil ||
+		pol.Spec.ExternalAuth != nil ||
+		pol.Spec.IngressMTLS != nil ||
+		pol.Spec.EgressMTLS != nil ||
+		pol.Spec.WAF != nil
 }
 
 func (p *policiesCfg) addAccessControlConfig(accessControl *conf_v1.AccessControl) *validationResults {
@@ -278,6 +288,120 @@ func (p *policiesCfg) addJWTAuthConfig(
 	return res
 }
 
+func (p *policiesCfg) addExternalAuthConfig(
+	externalAuth *conf_v1.ExternalAuth,
+	polKey string,
+	polNamespace string,
+	polName string,
+	secretRefs map[string]*secrets.SecretReference,
+	policyOpts policyOptions,
+	ownerDetails policyOwnerDetails,
+) *validationResults {
+	res := newValidationResults()
+	if p.ExternalAuth != nil {
+		res.addWarningf("Multiple external auth policies in the same context is not valid. External auth policy %s will be ignored", polNamespace+"/"+polName)
+		return res
+	}
+
+	upstreamName := fmt.Sprintf("%s_exauth_%s_%s", ownerDetails.parentType, polNamespace, polName)
+	internalPath := fmt.Sprintf("/_external_auth%s", externalAuth.AuthURI)
+
+	p.ExternalAuth = &version2.ExternalAuth{
+		URI: &version2.AuthURI{
+			Service:      externalAuth.AuthServiceName,
+			Upstream:     upstreamName,
+			Path:         externalAuth.AuthURI,
+			InternalPath: internalPath,
+		},
+		ServicePorts: externalAuth.AuthServicePorts,
+		SSLEnabled:   externalAuth.SSLEnabled,
+	}
+	if externalAuth.AuthSigninURI != "" {
+		p.ExternalAuth.SigninURL = externalAuth.AuthSigninURI
+
+		// Set the SigninRedirectBasePath to the default value, and override it if the user has specified a custom value. This is needed to ensure that the correct default path is used when the user specifies a custom signin URI but does not specify a custom signin redirect base path.
+		p.ExternalAuth.SigninRedirectBasePath = DefaultSigninRedirectBasePath
+		if externalAuth.AuthSigninRedirectBasePath != "" {
+			p.ExternalAuth.SigninRedirectBasePath = externalAuth.AuthSigninRedirectBasePath
+		}
+	}
+	if externalAuth.AuthSnippets != "" {
+		p.ExternalAuth.Snippets = externalAuth.AuthSnippets
+	}
+
+	// Handle SSL verification for external auth
+	if externalAuth.SSLEnabled && externalAuth.SSLVerify {
+		sslRes := p.configureExternalAuthSSL(externalAuth, polKey, polNamespace, secretRefs, policyOpts)
+		res.warnings = append(res.warnings, sslRes.warnings...)
+		if sslRes.isError {
+			res.isError = true
+			return res
+		}
+	}
+
+	return res
+}
+
+// configureExternalAuthSSL configures SSL verification settings for external auth.
+func (p *policiesCfg) configureExternalAuthSSL(
+	externalAuth *conf_v1.ExternalAuth,
+	polKey string,
+	polNamespace string,
+	secretRefs map[string]*secrets.SecretReference,
+	policyOpts policyOptions,
+) *validationResults {
+	res := newValidationResults()
+	p.ExternalAuth.SSLVerify = true
+
+	sslVerifyDepth := 1
+	if externalAuth.SSLVerifyDepth != nil {
+		sslVerifyDepth = *externalAuth.SSLVerifyDepth
+	}
+	p.ExternalAuth.SSLVerifyDepth = sslVerifyDepth
+
+	trustedCertPath := policyOpts.defaultCABundle
+	if externalAuth.TrustedCertSecret != "" {
+		secretNS, secretName := ParseResourceReference(externalAuth.TrustedCertSecret, polNamespace)
+		trustedCertSecretRefName := fmt.Sprintf("%s/%s", secretNS, secretName)
+		trustedCertSecretRef := secretRefs[trustedCertSecretRefName]
+
+		if trustedCertSecretRef == nil {
+			res.addWarningf("ExternalAuth policy %s references a non-existent trusted cert secret %s", polKey, trustedCertSecretRefName)
+			res.isError = true
+			return res
+		}
+
+		var secretType api_v1.SecretType
+		if trustedCertSecretRef.Secret != nil {
+			secretType = trustedCertSecretRef.Secret.Type
+		}
+		if secretType != "" && secretType != secrets.SecretTypeCA {
+			res.addWarningf("ExternalAuth policy %s references a secret %s of a wrong type '%s', must be '%s'", polKey, trustedCertSecretRefName, secretType, secrets.SecretTypeCA)
+			res.isError = true
+			return res
+		} else if trustedCertSecretRef.Error != nil {
+			res.addWarningf("ExternalAuth policy %s references an invalid trusted cert secret %s: %v", polKey, trustedCertSecretRefName, trustedCertSecretRef.Error)
+			res.isError = true
+			return res
+		}
+
+		caFields := strings.Fields(trustedCertSecretRef.Path)
+		if len(caFields) > 0 {
+			trustedCertPath = caFields[0]
+		}
+	}
+	p.ExternalAuth.SSLTrustedCert = trustedCertPath
+
+	if externalAuth.SNIName != "" {
+		p.ExternalAuth.SNIName = externalAuth.SNIName
+	} else {
+		svcNs, svcName := ParseServiceReference(externalAuth.AuthServiceName, polNamespace)
+		p.ExternalAuth.SNIName = fmt.Sprintf("%s.%s.svc", svcName, svcNs)
+	}
+
+	return res
+}
+
 func (p *policiesCfg) addBasicAuthConfig(
 	basicAuth *conf_v1.BasicAuth,
 	polKey string,
@@ -322,13 +446,13 @@ func (p *policiesCfg) addIngressMTLSConfig(
 	secretRefs map[string]*secrets.SecretReference,
 ) *validationResults {
 	res := newValidationResults()
-	if !tls {
-		res.addWarningf("TLS must be enabled in VirtualServer for IngressMTLS policy %s", polKey)
+	if context != specContext {
+		res.addWarningf("IngressMTLS policy %s is not allowed in the %v context", polKey, context)
 		res.isError = true
 		return res
 	}
-	if context != specContext {
-		res.addWarningf("IngressMTLS policy %s is not allowed in the %v context", polKey, context)
+	if !tls {
+		res.addWarningf("TLS must be enabled for IngressMTLS policy %s", polKey)
 		res.isError = true
 		return res
 	}
@@ -340,7 +464,7 @@ func (p *policiesCfg) addIngressMTLSConfig(
 	secretKey := fmt.Sprintf("%v/%v", polNamespace, ingressMTLS.ClientCertSecret)
 	secretRef := secretRefs[secretKey]
 	if secretRef == nil {
-		res.addWarningf("IngressMTLS policy %s references a secret %s that is not available", polKey, secretKey)
+		res.addWarningf("IngressMTLS policy %q references a non-existent secret %s", polKey, secretKey)
 		res.isError = true
 		return res
 	}
@@ -418,6 +542,11 @@ func (p *policiesCfg) addEgressMTLSConfig(
 		egressTLSSecret := fmt.Sprintf("%v/%v", polNamespace, egressMTLS.TLSSecret)
 
 		secretRef := secretRefs[egressTLSSecret]
+		if secretRef == nil {
+			res.addWarningf("EgressMTLS policy %s references an invalid secret %s: secret doesn't exist", polKey, egressTLSSecret)
+			res.isError = true
+			return res
+		}
 		var secretType api_v1.SecretType
 		if secretRef.Secret != nil {
 			secretType = secretRef.Secret.Type
@@ -441,6 +570,11 @@ func (p *policiesCfg) addEgressMTLSConfig(
 		trustedCertSecret := fmt.Sprintf("%v/%v", polNamespace, egressMTLS.TrustedCertSecret)
 
 		secretRef := secretRefs[trustedCertSecret]
+		if secretRef == nil {
+			res.addWarningf("EgressMTLS policy %s references an invalid secret %s: secret doesn't exist", polKey, trustedCertSecret)
+			res.isError = true
+			return res
+		}
 		var secretType api_v1.SecretType
 		if secretRef.Secret != nil {
 			secretType = secretRef.Secret.Type
@@ -459,6 +593,7 @@ func (p *policiesCfg) addEgressMTLSConfig(
 	}
 
 	if len(trustedSecretPath) != 0 {
+		// CA secret refs can include an optional CRL path after the bundle path; NGINX trusted_certificate only needs the bundle itself.
 		caFields := strings.Fields(trustedSecretPath)
 		trustedSecretPath = caFields[0]
 	}
@@ -679,7 +814,7 @@ func (p *policiesCfg) addWAFConfig(
 	waf *conf_v1.WAF,
 	polKey string,
 	polNamespace string,
-	apResources *appProtectResourcesForVS,
+	apResources *appProtectPolicyResources,
 ) *validationResults {
 	l := nl.LoggerFromContext(ctx)
 	res := newValidationResults()
@@ -1056,6 +1191,8 @@ func generatePolicies(
 		if pol, exists := policies[key]; exists {
 			// Reject policy types that are not supported on Ingress resources.
 			// IsPolicySupportedOnIngress is the single source of truth for the allowlist.
+			// If a new resource type with a subset of supported policy types is added,
+			// a matching parentType check must also be added in syncPolicy() in internal/k8s/policy.go.
 			if ownerDetails.parentType == "ing" && !IsPolicySupportedOnIngress(pol) {
 				warnings.AddWarningf(ownerDetails.owner, "Policy %s is not supported on Ingress resources", key)
 				return policiesCfg{
@@ -1077,6 +1214,8 @@ func generatePolicies(
 				)
 			case pol.Spec.JWTAuth != nil:
 				res = config.addJWTAuthConfig(pol.Spec.JWTAuth, key, polNamespace, policyOpts.secretRefs)
+			case pol.Spec.ExternalAuth != nil:
+				res = config.addExternalAuthConfig(pol.Spec.ExternalAuth, key, polNamespace, p.Name, policyOpts.secretRefs, policyOpts, ownerDetails)
 			case pol.Spec.BasicAuth != nil:
 				res = config.addBasicAuthConfig(pol.Spec.BasicAuth, key, polNamespace, policyOpts.secretRefs)
 			case pol.Spec.IngressMTLS != nil:

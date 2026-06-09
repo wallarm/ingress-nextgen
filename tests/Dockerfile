@@ -1,6 +1,8 @@
-# syntax=docker/dockerfile:1.23
-FROM python:3.14-trixie@sha256:7095074ca8a6ecb0af0af2fa8acb6ff09b4d49d160844fe6aa03c9ac35523ece
+# syntax=docker/dockerfile:1.24
+FROM python:3.14-trixie@sha256:11591407222400cafc1b2bd03fe09a90988f091fc9ddff4a901f80ceb02b78b3
 ARG ARCH=amd64
+
+ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
 	&& apt-get install -y curl git apache2-utils ca-certificates \
