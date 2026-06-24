@@ -376,11 +376,13 @@ HELM_PUBLISH:
       fi
     else
       echo "Upstream-based chart publishing flow..."
+      echo "$TAG" > TAG
       CHART_VERSION=$TAG
       echo "$AIO_VERSION" > AIO_BASE
       # Update versions in-place with sed, not yq: yq re-serializes the YAML tree and
       # drops all blank lines, which makes values.yaml much harder to read.
       # tag lines are anchored on the repository line directly above them.
+      sed -i -E 's/^(version: ).*/\1'"$CHART_VERSION"'/' charts/nginx-ingress/Chart.yaml
       sed -i -E 's/^(appVersion: ).*/\1'"$AIO_VERSION"'/' charts/nginx-ingress/Chart.yaml
       sed -i -E '\#repository: "docker.io/wallarm/node-helpers"#{n;s/^( *tag: ).*/\1"'"$AIO_VERSION"'"/}' charts/nginx-ingress/values.yaml
       sed -i -E '\#repository: "docker.io/wallarm/ingress-controller"#{n;s/^( *tag: ).*/\1"'"$TAG"'"/}' charts/nginx-ingress/values.yaml
@@ -396,7 +398,7 @@ HELM_PUBLISH:
     if git diff --quiet; then
       echo "No changes to commit"
     else
-      git add AIO_BASE
+      git add AIO_BASE TAG
       git add charts/nginx-ingress/Chart.yaml charts/nginx-ingress/values.yaml
       git commit -m "Bump versions for chart release $CHART_VERSION [skip ci]"
       git push origin $CI_COMMIT_REF_NAME
