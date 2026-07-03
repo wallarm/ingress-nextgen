@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.23
 ARG BUILD_OS=debian
 # renovate: datasource=docker depName=nginx/nginx
-ARG NGINX_OSS_VERSION=1.31.1
+ARG NGINX_OSS_VERSION=1.31.2
 ARG NGINX_PLUS_VERSION=R37.0
 ARG NAP_WAF_VERSION=37.0+5.635
 ARG NAP_WAF_COMMON_VERSION=11.665
@@ -110,7 +110,7 @@ RUN apk upgrade --no-cache --scripts=no apk-tools && \
 	./fetch-wallarm.sh
 
 ############################################# Base image for Alpine #############################################
-FROM nginx:1.31.1-alpine3.23@sha256:8b1e78743a03dbb2c95171cc58639fef29abc8816598e27fb910ed2e621e589a AS alpine
+FROM nginx:1.31.2-alpine3.23@sha256:81595dd77c2cc4ec66c6721daa3c13b6a1f7bb3a8a2cd3247a874e3bd5c39dd2 AS alpine
 ARG PACKAGE_REPO
 ARG NGINX_OSS_VERSION
 ARG NGINX_AGENT_VERSION
@@ -174,7 +174,7 @@ RUN --mount=type=bind,from=vts-files,src=/tmp/vts/,target=/tmp/vts/ \
 
 
 ############################################# Base image for Debian #############################################
-FROM nginx:1.31.1@sha256:5aca99593157f4ae539a5dec1092a0ad8762f8e2eb1789085a13a0f5622369f6 AS debian
+FROM nginx:1.31.2@sha256:351872cd77d5a6221ff3950af72453167b7fbc3d73aa21ad2606e85c76151792 AS debian
 ARG NGINX_OSS_VERSION
 ARG NGINX_AGENT_VERSION
 
