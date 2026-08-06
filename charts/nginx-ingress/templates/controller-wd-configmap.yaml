@@ -34,7 +34,7 @@ data:
 {{- if .Values.controller.nginxStatus.enable }}
       extra_scrape_targets:
         - name: nginx
-          endpoint: 127.0.0.1:{{ .Values.controller.nginxStatus.port }}/wallarm-status
+          endpoint: http://127.0.0.1:{{ .Values.controller.nginxStatus.port }}/wallarm-status
           type: wallarm-status
 {{- end }}
       metrics_push_interval: 5
@@ -84,20 +84,7 @@ data:
                 name: apispec
 
     processes:
-      - name: wcli
-        command: /opt/wallarm/usr/bin/wcli run -mode filtering -log-level {{ .Values.config.wallarm.wd.processLogLevels.wcli }}
-        autostart: true
-        autorestart: true
-        redirect_stderr: true
-        stdout_logfile: /opt/wallarm/var/log/wallarm/wcli-out.log
-        stdout_logfile_maxbytes: "50MB"
-        stdout_logfile_backups: 3
-{{- if .Values.config.wallarm.wd.scrape.wcliPostanalytics.enabled }}
-        metrics_endpoint: {{ .Values.config.wallarm.wd.scrape.wcliPostanalytics.endpoint }}
-        metrics_type: {{ .Values.config.wallarm.wd.scrape.wcliPostanalytics.type }}
-{{- end }}
 {{- if .Values.config.apiFirewall.enabled }}
-
       - name: api-firewall
         command: /opt/wallarm/usr/bin/api-firewall
         autostart: true

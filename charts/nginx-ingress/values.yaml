@@ -57,7 +57,7 @@ config:
           enabled: true
           endpoint: "http://127.0.0.1:9001/metrics"
           type: prometheus
-        ## wcli metrics (both pods — port differs per pod, configured in pod-level wd config)
+        ## wcli metrics (postanalytics pod)
         wcliPostanalytics:
           enabled: true
           endpoint: "http://127.0.0.1:9003/metrics"
@@ -72,11 +72,11 @@ config:
   images:
     controller:
       repository: "docker.io/wallarm/ingress-controller"
-      tag: "7.1.0"
+      tag: "7.1.1-rc0"
       pullPolicy: IfNotPresent
     helper:
       repository: "docker.io/wallarm/node-helpers"
-      tag: "7.1.0"
+      tag: "7.1.1-rc0"
       pullPolicy: IfNotPresent
 
   ## API Firewall configuration (runs in controller pod)
