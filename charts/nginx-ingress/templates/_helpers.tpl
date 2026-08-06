@@ -829,37 +829,6 @@ Wallarm postanalytics name (for component selector)
 wallarm-postanalytics
 {{- end -}}
 
-{{/*
-Convert camelCase to kebab‑case
-*/}}
-{{- define "wallarm.kebabcase" -}}
-{{- regexReplaceAll "([a-z0-9])([A-Z])" . "${1}-${2}" | lower -}}
-{{- end }}
-
-{{/*
-Wcli arguments building — used by wd ConfigMaps to construct wcli command with per-job log levels.
-*/}}
-{{- define "ingress-nginx.wcli-args" -}}
-"-log-level", "{{ .logLevel }}",{{ " " }}
-{{- with .commands }}
-{{- range $jobName, $jobCfg := . }}
-"job:{{ $jobName }}",{{ " " }}
-{{- range $key, $val := $jobCfg }}
-{{- $flag := include "wallarm.kebabcase" $key -}}
-{{- if ne $flag "log-level" }}
-  {{- $kind := kindOf $val -}}
-  {{- if or (eq $kind "map") (eq $kind "slice") }}
-"-{{ $flag }}", {{ $val | toJson | quote }},{{ " " }}
-  {{- else }}
-"-{{ $flag }}", {{ $val | quote }},{{ " " }}
-  {{- end }}
-{{- end }}
-{{- end }}
-"-log-level", "{{ $jobCfg.logLevel | default .logLevel }}",{{ " " }}
-{{- end }}
-{{- end }}
-{{- end -}}
-
 {{- define "ingress-nginx.wallarmWstoreTlsVariables" -}}
 - name: WALLARM_WSTORE__SERVICE__TLS__ENABLED
   value: "{{ .Values.postanalytics.tls.enabled }}"

@@ -13821,7 +13821,7 @@ data:
       metrics_deprecated_metricsexp_push: true
       extra_scrape_targets:
         - name: nginx
-          endpoint: 127.0.0.1:10246/wallarm-status
+          endpoint: http://127.0.0.1:10246/wallarm-status
           type: wallarm-status
       metrics_push_interval: 5
       remote_commands_poll_interval: 0
@@ -13870,17 +13870,6 @@ data:
                 name: apispec
 
     processes:
-      - name: wcli
-        command: /opt/wallarm/usr/bin/wcli run -mode filtering -log-level WARN
-        autostart: true
-        autorestart: true
-        redirect_stderr: true
-        stdout_logfile: /opt/wallarm/var/log/wallarm/wcli-out.log
-        stdout_logfile_maxbytes: "50MB"
-        stdout_logfile_backups: 3
-        metrics_endpoint: http://127.0.0.1:9003/metrics
-        metrics_type: prometheus
-
       - name: api-firewall
         command: /opt/wallarm/usr/bin/api-firewall
         autostart: true
@@ -13964,6 +13953,9 @@ data:
         stdout_logfile_backups: 3
         environment:
           WALLARM_LOG_LEVEL: INFO
+        readiness_probe:
+          tcp:
+            address: 127.0.0.1:3313
         metrics_endpoint: http://127.0.0.1:9001/metrics
         metrics_type: prometheus
 
@@ -14926,7 +14918,7 @@ data:
       metrics_deprecated_metricsexp_push: true
       extra_scrape_targets:
         - name: nginx
-          endpoint: 127.0.0.1:10246/wallarm-status
+          endpoint: http://127.0.0.1:10246/wallarm-status
           type: wallarm-status
       metrics_push_interval: 5
       remote_commands_poll_interval: 0
@@ -14975,17 +14967,6 @@ data:
                 name: apispec
 
     processes:
-      - name: wcli
-        command: /opt/wallarm/usr/bin/wcli run -mode filtering -log-level WARN
-        autostart: true
-        autorestart: true
-        redirect_stderr: true
-        stdout_logfile: /opt/wallarm/var/log/wallarm/wcli-out.log
-        stdout_logfile_maxbytes: "50MB"
-        stdout_logfile_backups: 3
-        metrics_endpoint: http://127.0.0.1:9003/metrics
-        metrics_type: prometheus
-
       - name: api-firewall
         command: /opt/wallarm/usr/bin/api-firewall
         autostart: true
@@ -15069,6 +15050,9 @@ data:
         stdout_logfile_backups: 3
         environment:
           WALLARM_LOG_LEVEL: INFO
+        readiness_probe:
+          tcp:
+            address: 127.0.0.1:3313
         metrics_endpoint: http://127.0.0.1:9001/metrics
         metrics_type: prometheus
 
@@ -16045,7 +16029,7 @@ data:
       metrics_deprecated_metricsexp_push: true
       extra_scrape_targets:
         - name: nginx
-          endpoint: 127.0.0.1:10246/wallarm-status
+          endpoint: http://127.0.0.1:10246/wallarm-status
           type: wallarm-status
       metrics_push_interval: 5
       remote_commands_poll_interval: 0
@@ -16094,17 +16078,6 @@ data:
                 name: apispec
 
     processes:
-      - name: wcli
-        command: /opt/wallarm/usr/bin/wcli run -mode filtering -log-level WARN
-        autostart: true
-        autorestart: true
-        redirect_stderr: true
-        stdout_logfile: /opt/wallarm/var/log/wallarm/wcli-out.log
-        stdout_logfile_maxbytes: "50MB"
-        stdout_logfile_backups: 3
-        metrics_endpoint: http://127.0.0.1:9003/metrics
-        metrics_type: prometheus
-
       - name: api-firewall
         command: /opt/wallarm/usr/bin/api-firewall
         autostart: true
@@ -16188,6 +16161,9 @@ data:
         stdout_logfile_backups: 3
         environment:
           WALLARM_LOG_LEVEL: INFO
+        readiness_probe:
+          tcp:
+            address: 127.0.0.1:3313
         metrics_endpoint: http://127.0.0.1:9001/metrics
         metrics_type: prometheus
 
@@ -17166,7 +17142,7 @@ data:
       metrics_deprecated_metricsexp_push: true
       extra_scrape_targets:
         - name: nginx
-          endpoint: 127.0.0.1:10246/wallarm-status
+          endpoint: http://127.0.0.1:10246/wallarm-status
           type: wallarm-status
       metrics_push_interval: 5
       remote_commands_poll_interval: 0
@@ -17215,17 +17191,6 @@ data:
                 name: apispec
 
     processes:
-      - name: wcli
-        command: /opt/wallarm/usr/bin/wcli run -mode filtering -log-level WARN
-        autostart: true
-        autorestart: true
-        redirect_stderr: true
-        stdout_logfile: /opt/wallarm/var/log/wallarm/wcli-out.log
-        stdout_logfile_maxbytes: "50MB"
-        stdout_logfile_backups: 3
-        metrics_endpoint: http://127.0.0.1:9003/metrics
-        metrics_type: prometheus
-
       - name: api-firewall
         command: /opt/wallarm/usr/bin/api-firewall
         autostart: true
@@ -17309,6 +17274,9 @@ data:
         stdout_logfile_backups: 3
         environment:
           WALLARM_LOG_LEVEL: INFO
+        readiness_probe:
+          tcp:
+            address: 127.0.0.1:3313
         metrics_endpoint: http://127.0.0.1:9001/metrics
         metrics_type: prometheus
 
