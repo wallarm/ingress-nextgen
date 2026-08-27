@@ -8,9 +8,9 @@ include:
       # ingress-new is released from the 7.x Node line only (nginx 1.31.x modules
       # exist in 7.x AiO artifacts only) — hence the static 7.x path segment
       scout_sbom_bucket: 'wlrm-devops-cve-dashboard/nginx-node/ingress-new/7.x'
-      # 'true' also publishes SBOMs from MR/dev pipelines (wanted for E2E validation
-      # of the dashboard ingestion); releases are additionally forced via workflow rules
-      scout_publish_sbom: 'true'
+      # only release pipelines publish SBOMs; they set SCOUT_PUBLISH_SBOM in the
+      # workflow rules below, dev/MR/api/web pipelines do not
+      scout_publish_sbom: 'false'
       stage: 'scan'
 
 default:
