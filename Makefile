@@ -4,7 +4,7 @@ export $(shell [ -f .env ] && sed 's/=.*//' .env)
 # setting version; will be used to set the binary verson and derive image version from it later
 GIT_TAG = $(shell git describe --exact-match --tags || echo untagged)
 # renovate: datasource=docker depName=nginx/nginx
-NGINX_OSS_VERSION             ?= 1.31.3
+NGINX_OSS_VERSION             ?= 1.31.4
 NGINX_PLUS_VERSION            ?= R37.0
 NAP_WAF_VERSION               ?= 37.0+5.635
 NAP_WAF_COMMON_VERSION        ?= 11.665
@@ -14,14 +14,14 @@ NGINX_AGENT_VERSION           ?= 3.9
 PLUS_ARGS = --build-arg NGINX_PLUS_VERSION=$(NGINX_PLUS_VERSION) --secret id=nginx-repo.crt,src=nginx-repo.crt --secret id=nginx-repo.key,src=nginx-repo.key
 
 # renovate: datasource=github-releases depName=dominikh/go-tools
-STATICCHECK_VERSION ?= 2026.1
+STATICCHECK_VERSION ?= 2026.2.1
 
 # renovate: datasource=github-releases depName=golang/vuln
 GOVULNCHECK_VERSION ?= v1.1.4
 
 GO_DOCKER_IMAGE_NAME    ?= golang
 # renovate: datasource=docker depName=golang versioning=docker
-GO_DOCKER_IMAGE_VERSION ?= 1.26.5-trixie
+GO_DOCKER_IMAGE_VERSION ?= 1.27.1-trixie
 GO_DOCKER_IMAGE         ?= $(GO_DOCKER_IMAGE_NAME):$(GO_DOCKER_IMAGE_VERSION)
 
 # Variables that can be overridden
@@ -42,12 +42,12 @@ ARCH                          ?= amd64 ## The architecture of the image or binar
 PLATFORM                      ?= linux/amd64
 GOOS                          ?= linux ## The OS of the binary. For example linux, darwin
 TELEMETRY_ENDPOINT            ?= oss.edge.df.f5.com:443
-# renovate: datasource=docker depName=golangci/golangci-lint
-GOLANGCI_LINT_VERSION         ?= v2.12.2 ## The version of golangci-lint to use
+# renovate: datasource=github-releases depName=golangci/golangci-lint
+GOLANGCI_LINT_VERSION         ?= v2.13.2 ## The version of golangci-lint to use
 # renovate: datasource=go depName=golang.org/x/tools
-GOIMPORTS_VERSION             ?= v0.48.0 ## The version of goimports to use
+GOIMPORTS_VERSION             ?= v0.50.0 ## The version of goimports to use
 # renovate: datasource=go depName=mvdan.cc/gofumpt
-GOFUMPT_VERSION               ?= v0.10.0 ## The version of gofumpt to use
+GOFUMPT_VERSION               ?= v0.12.0 ## The version of gofumpt to use
 
 # Additional flags added here can be accessed in main.go.
 # e.g. `main.version` maps to `var version` in main.go
