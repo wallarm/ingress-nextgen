@@ -1,7 +1,7 @@
-# syntax=docker/dockerfile:1.25
+# syntax=docker/dockerfile:1.27
 ARG BUILD_OS=debian
 # renovate: datasource=docker depName=nginx/nginx
-ARG NGINX_OSS_VERSION=1.31.3
+ARG NGINX_OSS_VERSION=1.31.4
 ARG NGINX_PLUS_VERSION=R37.0
 ARG NAP_WAF_VERSION=37.0+5.635
 ARG NAP_WAF_COMMON_VERSION=11.665
@@ -20,14 +20,14 @@ FROM ghcr.io/nginx/dependencies/nginx-ubi:ubi8@sha256:8029153866d5f51ee9080f61a4
 FROM ghcr.io/nginx/dependencies/nginx-ubi:ubi9@sha256:f523999e16c8d4743a634d9abf3815631860a3e027d6c78e106b5b46330baff0 AS ubi9-packages
 FROM ghcr.io/nginx/alpine-fips:0.5.0-alpine3.22@sha256:f907d7541ab03453fd7d630dc0fb8d9a819717ea52a7956fe1f45b9833051177 AS alpine-fips-3.22
 FROM redhat/ubi9-minimal:9.7-1778072020@sha256:b9b10f42d7eba7ad4a6d5ef26b7d34fdc892b2ffe59b8d0372ec884008569eb6 AS ubi-minimal
-FROM golang:1.26-alpine@sha256:f85330846cde1e57ca9ec309382da3b8e6ae3ab943d2739500e08c86393a21b1 AS golang-builder
+FROM golang:1.27.1-alpine@sha256:cf6fca6641884b8433441b2b0652976f975e1d0fdd26d177eaaf8596087f3125 AS golang-builder
 # Let Go fetch the toolchain go.mod requires. The base image bakes
-# GOTOOLCHAIN=local + a specific Go 1.26.x; any go.mod requiring a
-# higher 1.26.z (e.g. a remediator stdlib bump) would otherwise fail
+# GOTOOLCHAIN=local + a specific Go 1.27.x; any go.mod requiring a
+# higher 1.27.z (e.g. a remediator stdlib bump) would otherwise fail
 # `go mod download` with "go: go.mod requires go >= ...". Inherited
 # by the `builder` and `debug-builder` stages below via FROM
 # golang-builder. Costs ~30s + ~110 MB on first build until the base
-# image is rebumped to a newer 1.26.z.
+# image is rebumped to a newer 1.27.z.
 ENV GOTOOLCHAIN=auto
 
 ############################################# NGINX files #############################################
@@ -110,7 +110,7 @@ RUN apk upgrade --no-cache --scripts=no apk-tools && \
 	./fetch-wallarm.sh
 
 ############################################# Base image for Alpine #############################################
-FROM nginx:1.31.3-alpine@sha256:4a73073bd557c65b759505da037898b61f1be6cbcc3c2c3aeac22d2a470c1752 AS alpine
+FROM nginx:1.31.4-alpine@sha256:db35bfc6b2951e7f8a72db5db120288c127ffaeeb4a6d4b95a26fead017d5913 AS alpine
 ARG PACKAGE_REPO
 ARG NGINX_OSS_VERSION
 ARG NGINX_AGENT_VERSION
@@ -121,6 +121,9 @@ RUN --mount=type=bind,from=nginx-files,src=nginx_signing.rsa.pub,target=/etc/apk
 	--mount=type=bind,from=wallarm-files,src=/tmp/opt/wallarm/,target=/tmp/opt/wallarm/ \
 	/tmp/copy-wallarm.sh \
 	apk add --no-cache libcap libstdc++ \
+	# Pull Alpine security fixes the pinned nginx base predates (CVE fixes in libexpat/libuuid).
+	# Targeted on purpose: a blanket upgrade could move nginx past the version the Wallarm module was picked for.
+	&& apk upgrade --no-cache libexpat libuuid \
 	&& export $(cat /tmp/user_agent) \
 	&& printf "%s%s%s\n" "http://packages.nginx.org/nginx/mainline/alpine/v" `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` "/main" >> /etc/apk/repositories \
 	&& apk add --no-cache nginx-module-otel~${NGINX_OSS_VERSION} \
@@ -174,7 +177,7 @@ RUN --mount=type=bind,from=vts-files,src=/tmp/vts/,target=/tmp/vts/ \
 
 
 ############################################# Base image for Debian #############################################
-FROM nginx:1.31.3@sha256:5a88c9c45479443d7be2eadc894b4ed0a9801bae03d97a5760ae13b5c2005942 AS debian
+FROM nginx:1.31.4@sha256:b34848eff6db786b6b1282d3a9c3fd0b5563dfb6d261df4923378b419e0d24f0 AS debian
 ARG NGINX_OSS_VERSION
 ARG NGINX_AGENT_VERSION
 
