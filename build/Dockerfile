@@ -20,7 +20,7 @@ FROM ghcr.io/nginx/dependencies/nginx-ubi:ubi8@sha256:8029153866d5f51ee9080f61a4
 FROM ghcr.io/nginx/dependencies/nginx-ubi:ubi9@sha256:f523999e16c8d4743a634d9abf3815631860a3e027d6c78e106b5b46330baff0 AS ubi9-packages
 FROM ghcr.io/nginx/alpine-fips:0.5.0-alpine3.22@sha256:f907d7541ab03453fd7d630dc0fb8d9a819717ea52a7956fe1f45b9833051177 AS alpine-fips-3.22
 FROM redhat/ubi9-minimal:9.7-1778072020@sha256:b9b10f42d7eba7ad4a6d5ef26b7d34fdc892b2ffe59b8d0372ec884008569eb6 AS ubi-minimal
-FROM golang:1.27.1-alpine@sha256:cf6fca6641884b8433441b2b0652976f975e1d0fdd26d177eaaf8596087f3125 AS golang-builder
+FROM golang:1.27.2-alpine@sha256:cf6fca6641884b8433441b2b0652976f975e1d0fdd26d177eaaf8596087f3125 AS golang-builder
 # Let Go fetch the toolchain go.mod requires. The base image bakes
 # GOTOOLCHAIN=local + a specific Go 1.27.x; any go.mod requiring a
 # higher 1.27.z (e.g. a remediator stdlib bump) would otherwise fail
