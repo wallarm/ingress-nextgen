@@ -58,6 +58,13 @@ data:
         location /smoke-auto-forced-browsing/ {
             return 404;
         }
+        # ptrav_etc_passwd: passive detect matches "root:[x*]:0:0:root:/root" in the
+        # response (test_triggers_incidents_exceeded.py). Mirrors smoke-tests
+        # data/ingress_conf/workload_common.yaml and aio-deploy backend_nginx.conf.
+        location /passive-detect/ptrav {
+            default_type text/plain;
+            return 200 'root:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\n';
+        }
       }
     }
 ---
