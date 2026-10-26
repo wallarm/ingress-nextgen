@@ -354,7 +354,6 @@ HELM_PUBLISH:
    - if: $X_CI_BUILD_KIND =~ /^(chart|production|release-candidate)$/
   secrets:
     GITHUB_TOKEN: {vault: "pipelines/common/github_token/token@node-team", file: false}
-    GITLAB_TOKEN: {vault: "pipelines/gl_ingress_repo_creds/token_key@node-team", file: true}
   variables:
     GITHUB_REPOSITORY: wallarm/helm-charts
     CHARTS_DIR: charts
@@ -368,14 +367,7 @@ HELM_PUBLISH:
     - |
       git config user.email "noreply+ci@wallarm.com"
       git config user.name "Wallarm CI"
-      git remote set-url origin "git@${CI_SERVER_HOST}:${CI_PROJECT_PATH}.git"
       git checkout $CI_COMMIT_REF_NAME
-
-      mkdir -p ~/.ssh
-      eval $(ssh-agent -s)
-      ssh-keyscan "$CI_SERVER_HOST" >> ~/.ssh/known_hosts
-      chmod 600 "$GITLAB_TOKEN"
-      ssh-add "$GITLAB_TOKEN"
   ## Original flow (with CHART_TYPE pre-set by CI based on git tag)
   # Git tags used for (final) releases are long (include two versions) and we only need first part for helm chart version, so we crop it
   # Git tags used for RC contain only one version and there is no need to change them, so we pass them as is
@@ -418,7 +410,10 @@ HELM_PUBLISH:
       git add AIO_BASE TAG
       git add charts/nginx-ingress/Chart.yaml charts/nginx-ingress/values.yaml
       git commit -m "Bump versions for chart release $CHART_VERSION [skip ci]"
-      git push origin $CI_COMMIT_REF_NAME
+      # Push with the job token ("Allow Git push requests to the repository" is on in
+      # Settings > CI/CD > Job token permissions). It acts as the user who started the
+      # pipeline, so pushing to the protected main needs a Maintainer to start the release.
+      git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "$CI_COMMIT_REF_NAME"
     fi
   artifacts:
     reports:
