@@ -14,6 +14,17 @@ metadata:
 spec:
   wallarm:
     mode: block
+---
+# Passive detect needs the leaking RESPONSE, so the attack must reach the backend:
+# monitoring, not block, plus parse-response (on by default, pinned here).
+apiVersion: k8s.nginx.org/v1
+kind: Policy
+metadata:
+  name: wallarm-passive-detect
+spec:
+  wallarm:
+    mode: monitoring
+    parseResponse: "on"
 
 ---
 apiVersion: k8s.nginx.org/v1
@@ -33,6 +44,8 @@ spec:
       route: default/block-by-tor-ip
     - path: /wallarm-mode/monitoring
       route: default/wallarm-mode-monitoring
+    - path: /passive-detect
+      route: default/wallarm-passive-detect
 
 ---
 apiVersion: k8s.nginx.org/v1
@@ -124,5 +137,22 @@ spec:
   - path: /wallarm-mode/monitoring
     policies:
       - name: wallarm-monitoring
+    action:
+      pass: workload
+---
+apiVersion: k8s.nginx.org/v1
+kind: VirtualServerRoute
+metadata:
+  name: wallarm-passive-detect
+spec:
+  host: nginx-ingress-wallarm-ingress-controller.default.svc
+  upstreams:
+  - name: workload
+    service: workload
+    port: 80
+  subroutes:
+  - path: /passive-detect
+    policies:
+      - name: wallarm-passive-detect
     action:
       pass: workload

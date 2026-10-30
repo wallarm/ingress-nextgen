@@ -122,3 +122,27 @@ spec:
                   number: 80
             path: /wallarm-mode/monitoring
             pathType: Prefix
+---
+# Passive detect needs the leaking RESPONSE, so the attack must reach the backend:
+# monitoring, not block, plus parse-response (on by default, pinned here).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/wallarm-mode: monitoring
+    nginx.org/wallarm-parse-response: "on"
+  name: wallarm-passive-detect
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: nginx-ingress-wallarm-ingress-controller.default.svc
+      http:
+        paths:
+          - backend:
+              service:
+                name: workload
+                port:
+                  number: 80
+            path: /passive-detect
+            pathType: Prefix
