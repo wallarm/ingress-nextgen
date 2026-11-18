@@ -126,6 +126,16 @@ workflow:
         -u "${X_CREDS_DOCKERHUB_WALLARMCICD_USER}" \
         -p "${X_CREDS_DOCKERHUB_WALLARMCICD_PASSWORD}"
 
+.vts-cache-image: &vts_cache_image |
+  # VTS cache image is keyed by the nginx base pin and the VTS version
+  NGINX_PIN=$(grep -E '^FROM nginx.*AS alpine$' build/Dockerfile)
+  VTS_VER=$(awk -F'=' '/^ARG VTS_VERSION=/{print $2; exit}' build/Dockerfile | tr -d ' "')
+  VTS_HASH=$(printf "%s\n%s\n" "$NGINX_PIN" "$VTS_VER" | sha256sum | cut -c1-12)
+  VTS_IMAGE="$CI_REGISTRY_IMAGE/vts-cache:$VTS_HASH"
+  echo "  nginx pin: $NGINX_PIN"
+  echo "  vts version: $VTS_VER"
+  echo "  cache image: $VTS_IMAGE"
+
 .before-build:
   before_script:
     - *x_docker_login_private
@@ -178,6 +188,43 @@ UNIT_TEST_IC:
     - make secrets
     - make test
 
+# Compile the VTS module natively on each arch: under QEMU the arm64 compile
+# on the Alpine 3.24 base fails at random (configure probes, gcc segfaults).
+VTS_CACHE:
+  stage: build
+  image: docker:27.5.1-cli
+  tags: [$VTS_RUNNER]
+  rules:
+    - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate|cve-scan|warm-cache)$/
+  extends:
+    - .before-build
+  parallel:
+    matrix:
+      - VTS_ARCH: amd64
+        VTS_RUNNER: node-c6r12-stable-dind-amd
+      - VTS_ARCH: arm64
+        VTS_RUNNER: node-c6r12-stable-dind-arm
+  script:
+    - set -exo pipefail
+    - *vts_cache_image
+    - |
+      if docker manifest inspect "$VTS_IMAGE" >/dev/null 2>&1 \
+        || docker manifest inspect "$VTS_IMAGE-$VTS_ARCH" >/dev/null 2>&1; then
+        echo "VTS cache hit ($VTS_ARCH); skipping compile"
+        exit 0
+      fi
+      docker buildx create --driver docker-container --driver-opt image=${BUILDKIT_IMAGE} --use
+      docker buildx build \
+        --target vts-files \
+        --platform "linux/$VTS_ARCH" \
+        --tag "$VTS_IMAGE-$VTS_ARCH" \
+        --push \
+        --build-arg IC_VERSION="${AIO_VERSION:-$CI_COMMIT_SHORT_SHA}" \
+        --build-arg AIO_VERSION="${AIO_VERSION}" \
+        --build-arg PACKAGE_REPO="pkgs.nginx.com" \
+        --secret id=ci_job_token,env=CI_JOB_TOKEN \
+        -f build/Dockerfile .
+
 IMAGE_BUILD_IC:
   stage: build
   image: europe-docker.pkg.dev/wallarm-infra/wallarm-cloud-europe/wallarm-node/node-gitlab-runner/tests-k8s:v0.5.0
@@ -186,6 +233,7 @@ IMAGE_BUILD_IC:
     - if: $X_CI_BUILD_KIND =~ /^(develop|production-local|production|release-candidate|cve-scan|warm-cache)$/
   extends:
     - .before-build
+  needs: [VTS_CACHE]
   variables:
     GOCACHE: $CI_PROJECT_DIR/.cache/go-build
     GOMODCACHE: $CI_PROJECT_DIR/.cache/go-mod
@@ -231,30 +279,11 @@ IMAGE_BUILD_IC:
     - |
       # === Enable docker buildx ===
       docker buildx create --name multi-arch --platform linux/amd64,linux/arm64 --driver docker-container --driver-opt image=${BUILDKIT_IMAGE} --use
+    - *vts_cache_image
     - |
-      # === Compile VTS module (or reuse cached image from registry) ===
-      NGINX_PIN=$(grep -E '^FROM nginx.*AS alpine$' build/Dockerfile)
-      VTS_VER=$(awk -F'=' '/^ARG VTS_VERSION=/{print $2; exit}' build/Dockerfile | tr -d ' "')
-      VTS_HASH=$(printf "%s\n%s\n" "$NGINX_PIN" "$VTS_VER" | sha256sum | cut -c1-12)
-      VTS_IMAGE="$CI_REGISTRY_IMAGE/vts-cache:$VTS_HASH"
-      echo "  nginx pin: $NGINX_PIN"
-      echo "  vts version: $VTS_VER"
-      echo "  cache image: $VTS_IMAGE"
-
-      if docker manifest inspect "$VTS_IMAGE" >/dev/null 2>&1; then
-        echo "VTS cache hit; skipping compile"
-      else
-        echo "VTS cache miss; compiling and pushing..."
-        docker buildx build \
-          --target vts-files \
-          --platform linux/amd64,linux/arm64 \
-          --tag "$VTS_IMAGE" \
-          --push \
-          --build-arg IC_VERSION="${TAG}" \
-          --build-arg AIO_VERSION="${AIO_VERSION}" \
-          --build-arg PACKAGE_REPO="pkgs.nginx.com" \
-          --secret id=ci_job_token,env=CI_JOB_TOKEN \
-          -f build/Dockerfile .
+      # === Reuse the VTS module that VTS_CACHE compiled natively per arch ===
+      if ! docker manifest inspect "$VTS_IMAGE" >/dev/null 2>&1; then
+        docker buildx imagetools create -t "$VTS_IMAGE" "$VTS_IMAGE-amd64" "$VTS_IMAGE-arm64"
       fi
       export DOCKER_BUILD_OPTIONS="--build-context vts-files=docker-image://$VTS_IMAGE"
     - |
