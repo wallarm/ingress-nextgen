@@ -432,7 +432,9 @@ func TestValidateTransportServerLoadBalancingMethod(t *testing.T) {
 			hasError: true,
 		},
 		{
-			method:   "hash ${remote_addr}#comment",
+			// '#' starts a comment only at the start of a token. Mid-token, as
+			// in ${remote_addr}#comment, NGINX reads it as part of the key.
+			method:   "hash ${remote_addr} #comment",
 			isPlus:   false,
 			hasError: true,
 		},
@@ -484,6 +486,26 @@ func TestValidateTransportServerLoadBalancingMethod(t *testing.T) {
 		},
 		{
 			method:   "random two least_conn",
+			isPlus:   false,
+			hasError: false,
+		},
+		{
+			method:   "least_time connect",
+			isPlus:   false,
+			hasError: false,
+		},
+		{
+			method:   "least_time first_byte",
+			isPlus:   false,
+			hasError: false,
+		},
+		{
+			method:   "least_time last_byte",
+			isPlus:   false,
+			hasError: false,
+		},
+		{
+			method:   "least_time last_byte inflight",
 			isPlus:   false,
 			hasError: false,
 		},

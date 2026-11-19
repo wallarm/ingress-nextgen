@@ -186,6 +186,29 @@ func isServerOkForWallarmAPIFW(server Server) bool {
 	return false
 }
 
+// hasExternalAuthSignin reports whether the server needs the shared signin redirect location.
+func hasExternalAuthSignin(s Server) bool {
+	if s.ExternalAuth != nil && s.ExternalAuth.SigninURL != "" {
+		return true
+	}
+	for _, location := range s.Locations {
+		if location.ExternalAuth != nil && location.ExternalAuth.SigninURL != "" {
+			return true
+		}
+	}
+	return false
+}
+
+// hasExternalAuthNoSignin reports whether a location needs an explicit 401 handler.
+func hasExternalAuthNoSignin(s Server) bool {
+	for _, location := range s.Locations {
+		if location.ExternalAuth != nil && location.ExternalAuth.SigninURL == "" {
+			return true
+		}
+	}
+	return false
+}
+
 var helperFunctions = template.FuncMap{
 	"split":                       split,
 	"trim":                        trim,
@@ -201,6 +224,8 @@ var helperFunctions = template.FuncMap{
 	"makeOnOffFromBool":           commonhelpers.MakeOnOffFromBool,
 	"boolToPointerBool":           commonhelpers.BoolToPointerBool,
 	"makeResolver":                makeResolver,
+	"hasExternalAuthSignin":       hasExternalAuthSignin,
+	"hasExternalAuthNoSignin":     hasExternalAuthNoSignin,
 	"isLocationOkForWallarmAPIFW": isLocationOkForWallarmAPIFW,
 	"isServerOkForWallarmAPIFW":   isServerOkForWallarmAPIFW,
 }

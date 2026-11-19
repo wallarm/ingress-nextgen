@@ -14,14 +14,14 @@ NGINX_AGENT_VERSION           ?= 3.9
 PLUS_ARGS = --build-arg NGINX_PLUS_VERSION=$(NGINX_PLUS_VERSION) --secret id=nginx-repo.crt,src=nginx-repo.crt --secret id=nginx-repo.key,src=nginx-repo.key
 
 # renovate: datasource=github-releases depName=dominikh/go-tools
-STATICCHECK_VERSION ?= 2026.2.1
+STATICCHECK_VERSION ?= 452d5bb86b45416c35891262f6a11dbd6a970117
 
 # renovate: datasource=github-releases depName=golang/vuln
-GOVULNCHECK_VERSION ?= v1.1.4
+GOVULNCHECK_VERSION ?= v1.9.0
 
 GO_DOCKER_IMAGE_NAME    ?= golang
 # renovate: datasource=docker depName=golang versioning=docker
-GO_DOCKER_IMAGE_VERSION ?= 1.27.1-trixie
+GO_DOCKER_IMAGE_VERSION ?= 1.27.3-trixie
 GO_DOCKER_IMAGE         ?= $(GO_DOCKER_IMAGE_NAME):$(GO_DOCKER_IMAGE_VERSION)
 
 # Variables that can be overridden
@@ -43,7 +43,7 @@ PLATFORM                      ?= linux/amd64
 GOOS                          ?= linux ## The OS of the binary. For example linux, darwin
 TELEMETRY_ENDPOINT            ?= oss.edge.df.f5.com:443
 # renovate: datasource=github-releases depName=golangci/golangci-lint
-GOLANGCI_LINT_VERSION         ?= v2.13.2 ## The version of golangci-lint to use
+GOLANGCI_LINT_VERSION         ?= v2.15.0 ## The version of golangci-lint to use
 # renovate: datasource=go depName=golang.org/x/tools
 GOIMPORTS_VERSION             ?= v0.50.0 ## The version of goimports to use
 # renovate: datasource=go depName=mvdan.cc/gofumpt
