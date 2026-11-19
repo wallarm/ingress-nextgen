@@ -278,7 +278,6 @@ func boolToInteger(b bool) int {
 	return i
 }
 
-
 // Location is suitable for Wallarm APIFW if wallarm_mode is not "off" and
 // backend protocol is supported
 // Basically, we only support HTTP(s) but there is no straightforward way
@@ -303,23 +302,48 @@ func isServerOkForWallarmAPIFW(server Server) bool {
 	return false
 }
 
+// hasExternalAuthSignin reports whether the server needs the shared signin redirect location.
+func hasExternalAuthSignin(s Server) bool {
+	if s.ExternalAuth != nil && s.ExternalAuth.SigninURL != "" {
+		return true
+	}
+	for _, location := range s.Locations {
+		if location.ExternalAuth != nil && location.ExternalAuth.SigninURL != "" {
+			return true
+		}
+	}
+	return false
+}
+
+// hasExternalAuthNoSignin reports whether a location needs an explicit 401 handler.
+func hasExternalAuthNoSignin(s Server) bool {
+	for _, location := range s.Locations {
+		if location.ExternalAuth != nil && location.ExternalAuth.SigninURL == "" {
+			return true
+		}
+	}
+	return false
+}
+
 var helperFunctions = template.FuncMap{
-	"split":                 split,
-	"headerListToCIMap":     headerListToCIMap,
-	"hasCIKey":              hasCIKey,
-	"contains":              strings.Contains,
-	"hasPrefix":             strings.HasPrefix,
-	"hasSuffix":             strings.HasSuffix,
-	"toLower":               strings.ToLower,
-	"toUpper":               strings.ToUpper,
-	"replaceAll":            strings.ReplaceAll,
-	"makeHTTPListener":      makeHTTPListener,
-	"makeHTTPSListener":     makeHTTPSListener,
-	"makeSecretPath":        commonhelpers.MakeSecretPath,
-	"makeHeaderQueryValue":  makeHeaderQueryValue,
-	"makeTransportListener": makeTransportListener,
-	"makeServerName":        makeServerName,
-	"makeLocationPath":      makeLocationPath,
+	"split":                   split,
+	"headerListToCIMap":       headerListToCIMap,
+	"hasCIKey":                hasCIKey,
+	"contains":                strings.Contains,
+	"hasPrefix":               strings.HasPrefix,
+	"hasSuffix":               strings.HasSuffix,
+	"toLower":                 strings.ToLower,
+	"toUpper":                 strings.ToUpper,
+	"replaceAll":              strings.ReplaceAll,
+	"makeHTTPListener":        makeHTTPListener,
+	"makeHTTPSListener":       makeHTTPSListener,
+	"makeSecretPath":          commonhelpers.MakeSecretPath,
+	"makeHeaderQueryValue":    makeHeaderQueryValue,
+	"makeTransportListener":   makeTransportListener,
+	"makeServerName":          makeServerName,
+	"makeLocationPath":        makeLocationPath,
+	"hasExternalAuthSignin":   hasExternalAuthSignin,
+	"hasExternalAuthNoSignin": hasExternalAuthNoSignin,
 
 	"boolToInteger":               boolToInteger,
 	"isLocationOkForWallarmAPIFW": isLocationOkForWallarmAPIFW,
